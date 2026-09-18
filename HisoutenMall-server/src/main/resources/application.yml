@@ -8,6 +8,9 @@ spring:
     url: jdbc:mysql://${datasource.host}:${datasource.port}/${datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true&useGeneratedKeys=true
     username: ${datasource.username}
     password: ${datasource.password}
+  mvc:
+    servlet:
+      path: /api
 knife4j:
   setting:
     language: zh_cn

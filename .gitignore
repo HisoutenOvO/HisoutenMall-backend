@@ -13,7 +13,7 @@ target/
 *.iml
 *.ipr
 
-src/main/resources/application-dev.yml
+HisoutenMall-server/src/main/resources/application-dev.yml
 
 ### Eclipse ###
 .apt_generated
