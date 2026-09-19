@@ -1,6 +1,7 @@
 package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.pojo.dto.product.ProductAddDTO;
+import cn.hisouten.mall.pojo.dto.product.ProductUpdateDTO;
 import cn.hisouten.mall.pojo.vo.product.ProductDetailVO;
 
 public interface ProductService {
@@ -16,4 +17,11 @@ public interface ProductService {
      * @param productAddDTO 商品内容
      */
     void addProduct(ProductAddDTO productAddDTO);
+
+    /**
+     * 修改商品
+     * @param productId 需要修改商品的id
+     * @param productUpdateDTO 修改的数据
+     */
+    void updateProduct(Long productId, ProductUpdateDTO productUpdateDTO);
 }

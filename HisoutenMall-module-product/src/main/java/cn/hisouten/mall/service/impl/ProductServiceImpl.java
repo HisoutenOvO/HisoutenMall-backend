@@ -2,6 +2,7 @@ package cn.hisouten.mall.service.impl;
 
 import cn.hisouten.mall.mapper.ProductMapper;
 import cn.hisouten.mall.pojo.dto.product.ProductAddDTO;
+import cn.hisouten.mall.pojo.dto.product.ProductUpdateDTO;
 import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.vo.product.ProductDetailVO;
 import cn.hisouten.mall.service.BrandService;
@@ -52,5 +53,17 @@ public class ProductServiceImpl implements ProductService {
         Product product = new Product();
         BeanUtils.copyProperties(productAddDTO,product);
         productMapper.insert(product);
+    }
+
+    /**
+     * 修改商品
+     * @param productId 需要修改商品的id
+     * @param productUpdateDTO 修改的数据
+     */
+    @Override
+    public void updateProduct(Long productId, ProductUpdateDTO productUpdateDTO) {
+        Product product = productMapper.selectById(productId);
+        BeanUtils.copyProperties(productUpdateDTO,product);
+        productMapper.updateById(product);
     }
 }
