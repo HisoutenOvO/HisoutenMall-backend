@@ -1,13 +1,11 @@
 package cn.hisouten.mall.mapper;
 
+import cn.hisouten.mall.pojo.dto.common.ProductPageQueryDTO;
 import cn.hisouten.mall.pojo.entity.Product;
-import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
+import cn.hisouten.mall.pojo.vo.product.ProductListVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface ProductMapper extends BaseMapper<Product> {
@@ -36,8 +34,8 @@ public interface ProductMapper extends BaseMapper<Product> {
     /**
      * 分页查询商品分类
      * @param page 分页参数
-     * @param keyword 关键词
+     * @param productPageQueryDTO 查询条件
      * @return
      */
-    Page<CategoryListVO> pageQuery(Page<Product> page, String keyword);
+    Page<ProductListVO> pageQuery(Page<Product> page,@Param("dto") ProductPageQueryDTO productPageQueryDTO);
 }

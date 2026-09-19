@@ -2,11 +2,11 @@ package cn.hisouten.mall.controller.merchant;
 
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
-import cn.hisouten.mall.pojo.dto.category.CategoryPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.product.ProductAddDTO;
-import cn.hisouten.mall.pojo.dto.product.ProductUpdateDTO;
-import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
+import cn.hisouten.mall.pojo.dto.merchant.product.ProductAddDTO;
+import cn.hisouten.mall.pojo.dto.common.ProductPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.merchant.product.ProductUpdateDTO;
 import cn.hisouten.mall.pojo.vo.product.ProductDetailVO;
+import cn.hisouten.mall.pojo.vo.product.ProductListVO;
 import cn.hisouten.mall.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,15 +24,15 @@ public class ProductController {
     private final ProductService productService;
 
     /**
-     * 分页查询商品分类
-     * @param categoryPageQueryDTO 分页查询参数
+     * 分页查询商品
+     * @param productPageQueryDTO 分页查询参数
      * @return 返回分页查询结果
      */
     @GetMapping("/page")
     @Operation(summary = "商品分页查询")
-    public Result<PageResult<CategoryListVO>> pageQuery(CategoryPageQueryDTO categoryPageQueryDTO){
+    public Result<PageResult<ProductListVO>> pageQuery(ProductPageQueryDTO productPageQueryDTO){
         log.info("分页查询商品信息");
-        PageResult<CategoryListVO> pageResult = productService.pageQuery(categoryPageQueryDTO);
+        PageResult<ProductListVO> pageResult = productService.pageQuery(productPageQueryDTO);
         return Result.success(pageResult);
     }
 

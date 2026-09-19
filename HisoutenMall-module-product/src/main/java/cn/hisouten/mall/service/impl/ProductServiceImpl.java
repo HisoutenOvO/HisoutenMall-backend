@@ -4,12 +4,12 @@ import cn.hisouten.mall.exception.businessexception.ProductHasNotDeletedExceptio
 import cn.hisouten.mall.exception.businessexception.ProductNotFoundException;
 import cn.hisouten.mall.mapper.ProductMapper;
 import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.dto.category.CategoryPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.product.ProductAddDTO;
-import cn.hisouten.mall.pojo.dto.product.ProductUpdateDTO;
+import cn.hisouten.mall.pojo.dto.merchant.product.ProductAddDTO;
+import cn.hisouten.mall.pojo.dto.common.ProductPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.merchant.product.ProductUpdateDTO;
 import cn.hisouten.mall.pojo.entity.Product;
-import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
 import cn.hisouten.mall.pojo.vo.product.ProductDetailVO;
+import cn.hisouten.mall.pojo.vo.product.ProductListVO;
 import cn.hisouten.mall.service.BrandService;
 import cn.hisouten.mall.service.CategoryService;
 import cn.hisouten.mall.service.ProductService;
@@ -146,16 +146,16 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * 分页查询商品分类
-     * @param categoryPageQueryDTO 分页查询参数
+     * @param productPageQueryDTO 分页查询参数
      * @return 返回分页查询结果
      */
     @Override
-    public PageResult<CategoryListVO> pageQuery(CategoryPageQueryDTO categoryPageQueryDTO) {
-        Page<Product> page = new Page<>(categoryPageQueryDTO.getPage(), categoryPageQueryDTO.getPageSize());
-        String keyword = categoryPageQueryDTO.getKeyword();
-        Page<CategoryListVO> result = productMapper.pageQuery(page, keyword);
+    public PageResult<ProductListVO> pageQuery(ProductPageQueryDTO productPageQueryDTO) {
+        Page<Product> page = new Page<>(productPageQueryDTO.getPage(), productPageQueryDTO.getPageSize());
+        String keyword = productPageQueryDTO.getKeyword();
+        Page<ProductListVO> result = productMapper.pageQuery(page, productPageQueryDTO);
         long total = result.getTotal();
-        List<CategoryListVO> records = result.getRecords();
+        List<ProductListVO> records = result.getRecords();
         return new PageResult<>(total, records);
     }
 }

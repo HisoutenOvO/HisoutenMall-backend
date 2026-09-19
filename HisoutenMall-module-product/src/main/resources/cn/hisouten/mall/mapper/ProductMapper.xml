@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.hisouten.mall.mapper.ProductMapper">
-    <select id="pageQuery" resultType="cn.hisouten.mall.pojo.vo.category.CategoryListVO">
-        select id,parent_id,name,level,sort,status,deleted
-        from category
+    <select id="pageQuery" resultType="cn.hisouten.mall.pojo.vo.product.ProductListVO">
+        select p.id,p.name,p.merchant_id,p.category_id,p.brand_id,p.main_image,p.status,p.deleted,b.name as brandName,c.name as categoryName,mp.shop_name as merchantName
+        from product p
+        left join merchant_profile mp on p.merchant_id = mp.id
+        left join brand b on p.brand_id = b.id
+        left join category c on p.category_id = c.id
         <where>
-            <if test="keyword != null and keyword != ''">
-                and name like concat('%',#{keyword},'%')
+            <if test="dto.keyword != null and dto.keyword != ''">
+                and p.name like concat('%',#{dto.keyword},'%')
+            </if>
+            <if test="dto.categoryId != null and dto.categoryId != ''">
+                and p.category_id = #{dto.categoryId}
             </if>
         </where>
-        order by sort asc
+        order by p.create_time desc
     </select>
 </mapper>

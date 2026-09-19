@@ -1,15 +1,14 @@
-package cn.hisouten.mall.pojo.dto.category;
+package cn.hisouten.mall.pojo.dto.common;
 
 import cn.hisouten.mall.pojo.BasePageQuery;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class CategoryPageQueryDTO extends BasePageQuery {
+public class ProductPageQueryDTO extends BasePageQuery {
 
     private String keyword;
 
+    private Long categoryId;
 }
