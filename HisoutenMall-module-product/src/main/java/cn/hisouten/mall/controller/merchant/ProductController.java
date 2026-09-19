@@ -84,4 +84,14 @@ public class ProductController {
         productService.logicDeleteProduct(productId);
         return Result.success();
     }
+
+
+
+    @PutMapping("/{productId}/deleted")
+    @Operation(summary = "复原删除的商品")
+    public Result recoveryProduct(@PathVariable Long productId){
+        log.info("复原商品：{}",productId);
+        productService.recoveryProduct(productId);
+        return Result.success();
+    }
 }

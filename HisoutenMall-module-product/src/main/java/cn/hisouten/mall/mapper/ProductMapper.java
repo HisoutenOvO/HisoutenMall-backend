@@ -3,7 +3,23 @@ package cn.hisouten.mall.mapper;
 import cn.hisouten.mall.pojo.entity.Product;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface ProductMapper extends BaseMapper<Product> {
+    /**
+     * 绕过mybatis检测逻辑删除来查找真正的记录
+     * @param productId 商品id
+     * @return 返回真正的记录
+     */
+    @Select("select * from product where id = #{productId}")
+    Product selectByIdIgnoreLogic(Long productId);
+
+    /**
+     * 恢复逻辑删除的商品
+     * @param productId 商品id
+     */
+    @Update("update product set deleted = 0 where id = #{productId}")
+    void recoveryProduct(Long productId);
 }

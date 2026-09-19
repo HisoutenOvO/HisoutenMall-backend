@@ -36,4 +36,10 @@ public interface ProductService {
      * @param productId 商品id
      */
     void logicDeleteProduct(Long productId);
+
+    /**
+     * 复原逻辑删除的商品
+     * @param productId
+     */
+    void recoveryProduct(Long productId);
 }

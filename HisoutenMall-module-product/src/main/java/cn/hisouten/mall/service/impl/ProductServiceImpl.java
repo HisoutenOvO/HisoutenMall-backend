@@ -1,5 +1,6 @@
 package cn.hisouten.mall.service.impl;
 
+import cn.hisouten.mall.exception.businessexception.ProductHasNotDeletedException;
 import cn.hisouten.mall.exception.businessexception.ProductNotFoundException;
 import cn.hisouten.mall.mapper.ProductMapper;
 import cn.hisouten.mall.pojo.dto.product.ProductAddDTO;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import static cn.hisouten.mall.exception.constant.ExceptionMessageConstant.PRODUCT_HAS_NOT_DELETED;
 import static cn.hisouten.mall.exception.constant.ExceptionMessageConstant.PRODUCT_NOT_FOUND;
 
 @Service
@@ -104,5 +106,22 @@ public class ProductServiceImpl implements ProductService {
             throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
         }
         productMapper.deleteById(productId);
+    }
+
+    /**
+     * f复原逻辑删除的商品
+     * @param productId 复原商品id
+     */
+    @Override
+    public void recoveryProduct(Long productId) {
+        Product product = productMapper.selectByIdIgnoreLogic(productId);
+        if(product == null){
+            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        }
+        //若本就未被删除就提示
+        if(product.getDeleted() == 0){
+            throw new ProductHasNotDeletedException(PRODUCT_HAS_NOT_DELETED);
+        }
+        productMapper.recoveryProduct(productId);
     }
 }
