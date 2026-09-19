@@ -2,6 +2,7 @@ package cn.hisouten.mall.mapper;
 
 import cn.hisouten.mall.pojo.entity.Product;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -22,4 +23,11 @@ public interface ProductMapper extends BaseMapper<Product> {
      */
     @Update("update product set deleted = 0 where id = #{productId}")
     void recoveryProduct(Long productId);
+
+    /**
+     * 彻底删除商品数据
+     * @param productId 商品id
+     */
+    @Delete("delete from product where id = #{productId}")
+    void realDelete(Long productId);
 }

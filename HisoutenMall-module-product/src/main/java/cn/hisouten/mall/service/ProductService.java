@@ -39,7 +39,13 @@ public interface ProductService {
 
     /**
      * 复原逻辑删除的商品
-     * @param productId
+     * @param productId 商品id
      */
     void recoveryProduct(Long productId);
+
+    /**
+     * 彻底删除商品数据
+     * @param productId 商品id
+     */
+    void deleteProduct(Long productId);
 }

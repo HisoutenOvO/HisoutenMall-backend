@@ -77,7 +77,7 @@ public class ProductController {
      * @param productId 商品id
      * @return 返回空
      */
-    @DeleteMapping("/{productId}")
+    @DeleteMapping("/{productId}/deleted")
     @Operation(summary = "逻辑删除商品")
     public Result logicDeleteProduct(@PathVariable Long productId){
         log.info("逻辑删除商品：{}",productId);
@@ -86,12 +86,29 @@ public class ProductController {
     }
 
 
-
+    /**
+     * 恢复逻辑删除的商品
+     * @param productId 商品id
+     * @return 返回空
+     */
     @PutMapping("/{productId}/deleted")
     @Operation(summary = "复原删除的商品")
     public Result recoveryProduct(@PathVariable Long productId){
         log.info("复原商品：{}",productId);
         productService.recoveryProduct(productId);
+        return Result.success();
+    }
+
+    /**
+     * 彻底删除商品数据
+     * @param productId 商品id
+     * @return 返回空
+     */
+    @DeleteMapping("/{productId}")
+    @Operation(summary = "删除商品数据")
+    public Result deleteProduct(@PathVariable Long productId){
+        log.info("删除商品数据:{}",productId);
+        productService.deleteProduct(productId);
         return Result.success();
     }
 }

@@ -124,4 +124,17 @@ public class ProductServiceImpl implements ProductService {
         }
         productMapper.recoveryProduct(productId);
     }
+
+    /**
+     * 彻底删除商品数据
+     * @param productId 商品id
+     */
+    @Override
+    public void deleteProduct(Long productId) {
+        Product product = productMapper.selectByIdIgnoreLogic(productId);
+        if(product == null){
+            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        }
+        productMapper.realDelete(productId);
+    }
 }
