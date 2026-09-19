@@ -1,7 +1,6 @@
 package cn.hisouten.mall.controller.user;
 
 import cn.hisouten.mall.pojo.Result;
-import cn.hisouten.mall.pojo.entity.Category;
 import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
 import cn.hisouten.mall.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
