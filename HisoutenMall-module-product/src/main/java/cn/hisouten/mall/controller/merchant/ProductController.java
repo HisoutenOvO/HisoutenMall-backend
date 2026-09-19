@@ -7,6 +7,7 @@ import cn.hisouten.mall.pojo.vo.product.ProductDetailVO;
 import cn.hisouten.mall.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class ProductController {
      */
     @PostMapping
     @Operation(summary = "新增商品")
-    public Result addProduct(@RequestBody ProductAddDTO productAddDTO){
+    public Result addProduct(@Valid @RequestBody ProductAddDTO productAddDTO){
         log.info("商家{}新增商品",productAddDTO.getMerchantId());
         productService.addProduct(productAddDTO);
         return Result.success();
@@ -53,7 +54,7 @@ public class ProductController {
      */
     @PutMapping("/{productId}")
     @Operation(summary = "修改商品")
-    public Result updateProduct(@PathVariable Long productId, @RequestBody ProductUpdateDTO productUpdateDTO){
+    public Result updateProduct(@PathVariable Long productId,@Valid @RequestBody ProductUpdateDTO productUpdateDTO){
         log.info("修改商品：{}",productId);
         productService.updateProduct(productId,productUpdateDTO);
         return Result.success();
