@@ -1,5 +1,6 @@
 package cn.hisouten.mall.service.impl;
 
+import cn.hisouten.mall.exception.businessexception.ProductNotFoundException;
 import cn.hisouten.mall.mapper.ProductMapper;
 import cn.hisouten.mall.pojo.dto.product.ProductAddDTO;
 import cn.hisouten.mall.pojo.dto.product.ProductUpdateDTO;
@@ -12,6 +13,8 @@ import cn.hisouten.mall.user.service.MerchantProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+
+import static cn.hisouten.mall.exception.constant.ExceptionMessageConstant.PRODUCT_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +35,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDetailVO detailQuery(Long productId) {
         Product product = productMapper.selectById(productId);
+        //如果商品不存在或已被逻辑删除，抛出异常
+        if(product == null){
+            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        }
         ProductDetailVO productDetailVO = new ProductDetailVO();
         BeanUtils.copyProperties(product,productDetailVO);
         String categoryName = categoryService.getCategoryNameByCategoryId(product.getCategoryId());
@@ -63,6 +70,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void updateProduct(Long productId, ProductUpdateDTO productUpdateDTO) {
         Product product = productMapper.selectById(productId);
+        //如果商品不存在或已被逻辑删除，抛出异常
+        if(product == null){
+            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        }
         BeanUtils.copyProperties(productUpdateDTO,product);
         productMapper.updateById(product);
     }
