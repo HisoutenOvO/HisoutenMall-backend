@@ -3,17 +3,23 @@ package cn.hisouten.mall.service.impl;
 import cn.hisouten.mall.exception.businessexception.ProductHasNotDeletedException;
 import cn.hisouten.mall.exception.businessexception.ProductNotFoundException;
 import cn.hisouten.mall.mapper.ProductMapper;
+import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.pojo.dto.category.CategoryPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.product.ProductAddDTO;
 import cn.hisouten.mall.pojo.dto.product.ProductUpdateDTO;
 import cn.hisouten.mall.pojo.entity.Product;
+import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
 import cn.hisouten.mall.pojo.vo.product.ProductDetailVO;
 import cn.hisouten.mall.service.BrandService;
 import cn.hisouten.mall.service.CategoryService;
 import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.user.service.MerchantProfileService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static cn.hisouten.mall.exception.constant.ExceptionMessageConstant.PRODUCT_HAS_NOT_DELETED;
 import static cn.hisouten.mall.exception.constant.ExceptionMessageConstant.PRODUCT_NOT_FOUND;
@@ -136,5 +142,20 @@ public class ProductServiceImpl implements ProductService {
             throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
         }
         productMapper.realDelete(productId);
+    }
+
+    /**
+     * 分页查询商品分类
+     * @param categoryPageQueryDTO 分页查询参数
+     * @return 返回分页查询结果
+     */
+    @Override
+    public PageResult<CategoryListVO> pageQuery(CategoryPageQueryDTO categoryPageQueryDTO) {
+        Page<Product> page = new Page<>(categoryPageQueryDTO.getPage(), categoryPageQueryDTO.getPageSize());
+        String keyword = categoryPageQueryDTO.getKeyword();
+        Page<CategoryListVO> result = productMapper.pageQuery(page, keyword);
+        long total = result.getTotal();
+        List<CategoryListVO> records = result.getRecords();
+        return new PageResult<>(total, records);
     }
 }

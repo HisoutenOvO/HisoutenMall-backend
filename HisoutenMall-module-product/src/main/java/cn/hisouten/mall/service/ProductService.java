@@ -1,7 +1,10 @@
 package cn.hisouten.mall.service;
 
+import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.pojo.dto.category.CategoryPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.product.ProductAddDTO;
 import cn.hisouten.mall.pojo.dto.product.ProductUpdateDTO;
+import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
 import cn.hisouten.mall.pojo.vo.product.ProductDetailVO;
 
 public interface ProductService {
@@ -48,4 +51,11 @@ public interface ProductService {
      * @param productId 商品id
      */
     void deleteProduct(Long productId);
+
+    /**
+     * 分页查询商品分类
+     * @param categoryPageQueryDTO 分页查询参数
+     * @return 返回分页查询结果
+     */
+    PageResult<CategoryListVO> pageQuery(CategoryPageQueryDTO categoryPageQueryDTO);
 }

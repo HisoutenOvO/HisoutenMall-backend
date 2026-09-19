@@ -1,8 +1,11 @@
 package cn.hisouten.mall.controller.merchant;
 
+import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.pojo.dto.category.CategoryPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.product.ProductAddDTO;
 import cn.hisouten.mall.pojo.dto.product.ProductUpdateDTO;
+import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
 import cn.hisouten.mall.pojo.vo.product.ProductDetailVO;
 import cn.hisouten.mall.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +22,20 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "商家端——商品接口")
 public class ProductController {
     private final ProductService productService;
+
+    /**
+     * 分页查询商品分类
+     * @param categoryPageQueryDTO 分页查询参数
+     * @return 返回分页查询结果
+     */
+    @GetMapping("/page")
+    @Operation(summary = "商品分页查询")
+    public Result<PageResult<CategoryListVO>> pageQuery(CategoryPageQueryDTO categoryPageQueryDTO){
+        log.info("分页查询商品信息");
+        PageResult<CategoryListVO> pageResult = productService.pageQuery(categoryPageQueryDTO);
+        return Result.success(pageResult);
+    }
+
 
     /**
      * 新增商品

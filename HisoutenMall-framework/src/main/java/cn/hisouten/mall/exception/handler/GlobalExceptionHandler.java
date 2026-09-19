@@ -22,25 +22,25 @@ public class GlobalExceptionHandler {
         log.warn("业务异常：{}", e.getMessage());
         return Result.error(e.getMessage());
     }
-
-    /**
-     * 参数校验异常（@Valid 校验 @RequestBody 失败）
-     */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Result<String> handleValidException(MethodArgumentNotValidException e) {
-        String message = e.getBindingResult().getFieldErrors().stream()
-                .map(FieldError::getDefaultMessage)
-                .collect(Collectors.joining(", "));
-        log.warn("参数校验失败：{}", message);
-        return Result.error(400, message);
-    }
-
-    /**
-     * 兜底异常（所有未捕获的异常）
-     */
-    @ExceptionHandler(Exception.class)
-    public Result<String> handleException(Exception e) {
-        log.error("系统异常：", e);
-        return Result.error(500, "系统繁忙，请稍后再试");
-    }
+//
+//    /**
+//     * 参数校验异常（@Valid 校验 @RequestBody 失败）
+//     */
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public Result<String> handleValidException(MethodArgumentNotValidException e) {
+//        String message = e.getBindingResult().getFieldErrors().stream()
+//                .map(FieldError::getDefaultMessage)
+//                .collect(Collectors.joining(", "));
+//        log.warn("参数校验失败：{}", message);
+//        return Result.error(400, message);
+//    }
+//
+//    /**
+//     * 兜底异常（所有未捕获的异常）
+//     */
+//    @ExceptionHandler(Exception.class)
+//    public Result<String> handleException(Exception e) {
+//        log.error("系统异常：", e);
+//        return Result.error(500, "系统繁忙，请稍后再试");
+//    }
 }

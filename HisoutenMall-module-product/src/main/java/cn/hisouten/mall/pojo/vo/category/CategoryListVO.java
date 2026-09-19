@@ -15,4 +15,8 @@ public class CategoryListVO {
 
     private Integer sort;
 
+    private Integer status;
+
+    private Integer deleted;
+
 }
