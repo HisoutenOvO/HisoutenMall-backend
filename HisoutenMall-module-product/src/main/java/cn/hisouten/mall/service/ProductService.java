@@ -30,4 +30,10 @@ public interface ProductService {
      * @param productId 需要修改商品的id
      */
     void changeStatus(Long productId, Integer status);
+
+    /**
+     * 逻辑删除商品
+     * @param productId 商品id
+     */
+    void logicDeleteProduct(Long productId);
 }

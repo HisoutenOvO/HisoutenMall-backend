@@ -71,4 +71,17 @@ public class ProductController {
         productService.changeStatus(productId,status);
         return Result.success();
     }
+
+    /**
+     * 逻辑删除商品
+     * @param productId 商品id
+     * @return 返回空
+     */
+    @DeleteMapping("/{productId}")
+    @Operation(summary = "逻辑删除商品")
+    public Result logicDeleteProduct(@PathVariable Long productId){
+        log.info("逻辑删除商品：{}",productId);
+        productService.logicDeleteProduct(productId);
+        return Result.success();
+    }
 }

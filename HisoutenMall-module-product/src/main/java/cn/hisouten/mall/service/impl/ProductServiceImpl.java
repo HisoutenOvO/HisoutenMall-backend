@@ -92,4 +92,17 @@ public class ProductServiceImpl implements ProductService {
         product.setStatus(status);
         productMapper.updateById(product);
     }
+
+    /**
+     * 逻辑删除商品
+     * @param productId 商品id
+     */
+    @Override
+    public void logicDeleteProduct(Long productId) {
+        Product product = productMapper.selectById(productId);
+        if(product == null){
+            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        }
+        productMapper.deleteById(productId);
+    }
 }
