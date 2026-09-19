@@ -1,7 +1,6 @@
 package cn.hisouten.mall.controller.user;
 
 import cn.hisouten.mall.pojo.Result;
-import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.vo.product.ProductDetailVO;
 import cn.hisouten.mall.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;

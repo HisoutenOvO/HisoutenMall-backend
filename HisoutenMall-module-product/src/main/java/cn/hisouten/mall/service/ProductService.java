@@ -24,4 +24,10 @@ public interface ProductService {
      * @param productUpdateDTO 修改的数据
      */
     void updateProduct(Long productId, ProductUpdateDTO productUpdateDTO);
+
+    /**
+     * 修改商品状态
+     * @param productId 需要修改商品的id
+     */
+    void changeStatus(Long productId, Integer status);
 }

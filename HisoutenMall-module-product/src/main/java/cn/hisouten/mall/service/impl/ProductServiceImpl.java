@@ -77,4 +77,19 @@ public class ProductServiceImpl implements ProductService {
         BeanUtils.copyProperties(productUpdateDTO,product);
         productMapper.updateById(product);
     }
+
+    /**
+     * 修改商品状态
+     * @param productId 需要修改商品的id
+     */
+    @Override
+    public void changeStatus(Long productId, Integer status) {
+        Product product = productMapper.selectById(productId);
+        //如果商品不存在或已被逻辑删除，抛出异常
+        if(product == null) {
+            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        }
+        product.setStatus(status);
+        productMapper.updateById(product);
+    }
 }

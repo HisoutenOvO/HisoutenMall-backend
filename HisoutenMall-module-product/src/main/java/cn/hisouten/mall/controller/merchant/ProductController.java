@@ -58,4 +58,17 @@ public class ProductController {
         productService.updateProduct(productId,productUpdateDTO);
         return Result.success();
     }
+
+    /**
+     * 修改商品上下架状态
+     * @param productId 商品ID
+     * @return 返回空
+     */
+    @PutMapping("/{productId}/status")
+    @Operation(summary = "修改商品上下架状态")
+    public Result changeStatus(@PathVariable Long productId,@RequestParam Integer status){
+        log.info("修改商品上下架状态：{}",productId);
+        productService.changeStatus(productId,status);
+        return Result.success();
+    }
 }
