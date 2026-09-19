@@ -10,4 +10,11 @@ public interface CategoryService {
      * @return 返回分类列表
      */
     List<CategoryListVO> listQuery();
+
+    /**
+     * 通过分类id获取分类名称
+     * @param categoryId 分类id
+     * @return 分类名称
+     */
+    String getCategoryNameByCategoryId(Long categoryId);
 }

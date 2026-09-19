@@ -17,13 +17,20 @@ public class ProductDetailVO {
 
     private String subtitle;
 
-    private String categoryName;
+    private Long categoryId;
+
+    private Long merchantId;
 
     private String merchantName;
+
+    private Long brandId;
+
+    private String categoryName;
 
     private String brandName;
 
     private String mainImage;
 
     private String detail;
+
 }

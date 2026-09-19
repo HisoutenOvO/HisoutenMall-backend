@@ -1,7 +1,6 @@
 package cn.hisouten.mall.service.impl;
 
 import cn.hisouten.mall.mapper.CategoryMapper;
-import cn.hisouten.mall.pojo.entity.Category;
 import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
 import cn.hisouten.mall.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +21,15 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryListVO> listQuery() {
         return categoryMapper.getList();
+    }
+
+    /**
+     * 通过分类id获取分类名称
+     * @param categoryId 分类id
+     * @return 分类名称
+     */
+    @Override
+    public String getCategoryNameByCategoryId(Long categoryId) {
+        return categoryMapper.getCategoryNameByCategoryId(categoryId);
     }
 }

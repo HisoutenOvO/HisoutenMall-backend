@@ -18,5 +18,9 @@
             <groupId>cn.hisouten.mall</groupId>
             <artifactId>HisoutenMall-framework</artifactId>
         </dependency>
+        <dependency>
+            <groupId>cn.hisouten.mall</groupId>
+            <artifactId>HisoutenMall-module-account</artifactId>
+        </dependency>
     </dependencies>
 </project>
