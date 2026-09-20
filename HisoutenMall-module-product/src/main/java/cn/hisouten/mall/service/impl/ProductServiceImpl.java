@@ -4,11 +4,13 @@ import cn.hisouten.mall.exception.businessexception.ProductHasNotDeletedExceptio
 import cn.hisouten.mall.exception.businessexception.ProductNotFoundException;
 import cn.hisouten.mall.mapper.ProductMapper;
 import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.pojo.bo.product.ProductPageQueryBO;
 import cn.hisouten.mall.pojo.dto.product.MerchantProductAddDTO;
-import cn.hisouten.mall.pojo.dto.product.ProductPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.product.MerchantProductPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.product.MerchantProductUpdateDTO;
+import cn.hisouten.mall.pojo.dto.product.UserProductPageQueryDTO;
 import cn.hisouten.mall.pojo.entity.Product;
-import cn.hisouten.mall.pojo.bo.product.ProductListBO;
+import cn.hisouten.mall.pojo.bo.product.ProductPageResultBO;
 import cn.hisouten.mall.pojo.vo.product.MerchantProductDetailVO;
 import cn.hisouten.mall.pojo.vo.product.MerchantProductListVO;
 import cn.hisouten.mall.pojo.vo.product.UserProductDetailVO;
@@ -176,16 +178,24 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * 用户端分页查询商品分类
-     * @param productPageQueryDTO 分页查询参数
+     * @param userProductPageQueryDTO 分页查询参数
      * @return 返回分页查询结果
      */
     @Override
-    public PageResult<UserProductListVO> userPageQuery(ProductPageQueryDTO productPageQueryDTO) {
-        Page<Product> page = new Page<>(productPageQueryDTO.getPage(), productPageQueryDTO.getPageSize());
-        Page<ProductListBO> result = productMapper.pageQuery(page, productPageQueryDTO);
+    public PageResult<UserProductListVO> userPageQuery(UserProductPageQueryDTO userProductPageQueryDTO) {
+        //创建分页对象page
+        Page<ProductPageResultBO> page = new Page<>(userProductPageQueryDTO.getPage(), userProductPageQueryDTO.getPageSize());
+        //中转BO类介入，复制查询条件
+        ProductPageQueryBO productPageQueryBO = new ProductPageQueryBO();
+        BeanUtils.copyProperties(userProductPageQueryDTO,productPageQueryBO);
+        //分页查询
+        Page<ProductPageResultBO> result = productMapper.pageQuery(page, productPageQueryBO);
+        //总数
         long total = result.getTotal();
+        //记录数
         List<UserProductListVO> records = new ArrayList<>();
-        for (ProductListBO bo : result.getRecords()) {
+        //中转记录回VO
+        for (ProductPageResultBO bo : result.getRecords()) {
             UserProductListVO vo = UserProductListVO.builder()
                     .id(bo.getId())
                     .merchantId(bo.getMerchantId())
@@ -199,20 +209,23 @@ public class ProductServiceImpl implements ProductService {
                     .build();
             records.add(vo);
         }
+        //返回封装好的VO
         return new PageResult<>(total, records);
     }
     /**
      * 用户端分页查询商品分类
-     * @param productPageQueryDTO 分页查询参数
+     * @param merchantProductPageQueryDTO 分页查询参数
      * @return 返回分页查询结果
      */
     @Override
-    public PageResult<MerchantProductListVO> merchantPageQuery(ProductPageQueryDTO productPageQueryDTO) {
-        Page<Product> page = new Page<>(productPageQueryDTO.getPage(), productPageQueryDTO.getPageSize());
-        Page<ProductListBO> result = productMapper.pageQuery(page, productPageQueryDTO);
+    public PageResult<MerchantProductListVO> merchantPageQuery(MerchantProductPageQueryDTO merchantProductPageQueryDTO) {
+        Page<ProductPageResultBO> page = new Page<>(merchantProductPageQueryDTO.getPage(), merchantProductPageQueryDTO.getPageSize());
+        ProductPageQueryBO productPageQueryBO = new ProductPageQueryBO();
+        BeanUtils.copyProperties(merchantProductPageQueryDTO,productPageQueryBO);
+        Page<ProductPageResultBO> result = productMapper.pageQuery(page, productPageQueryBO);
         long total = result.getTotal();
         List<MerchantProductListVO> records = new ArrayList<>();
-        for (ProductListBO bo : result.getRecords()) {
+        for (ProductPageResultBO bo : result.getRecords()) {
             MerchantProductListVO vo = MerchantProductListVO.builder()
                     .id(bo.getId())
                     .merchantId(bo.getMerchantId())

@@ -1,8 +1,8 @@
 package cn.hisouten.mall.mapper;
 
-import cn.hisouten.mall.pojo.dto.product.ProductPageQueryDTO;
+import cn.hisouten.mall.pojo.bo.product.ProductPageQueryBO;
 import cn.hisouten.mall.pojo.entity.Product;
-import cn.hisouten.mall.pojo.bo.product.ProductListBO;
+import cn.hisouten.mall.pojo.bo.product.ProductPageResultBO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.*;
@@ -34,8 +34,8 @@ public interface ProductMapper extends BaseMapper<Product> {
     /**
      * 分页查询商品
      * @param page 分页参数
-     * @param productPageQueryDTO 查询条件
-     * @return
+     * @param productPageQueryBO 查询条件-用PageQueryBO中转
+     * @return 返回值，用PageResultBO中转
      */
-    Page<ProductListBO> pageQuery(Page<Product> page, @Param("dto") ProductPageQueryDTO productPageQueryDTO);
+    Page<ProductPageResultBO> pageQuery(Page<ProductPageResultBO> page, @Param("dto") ProductPageQueryBO productPageQueryBO);
 }

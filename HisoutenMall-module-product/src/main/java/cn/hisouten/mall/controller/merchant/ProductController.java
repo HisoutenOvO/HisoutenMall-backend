@@ -3,7 +3,7 @@ package cn.hisouten.mall.controller.merchant;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.product.MerchantProductAddDTO;
-import cn.hisouten.mall.pojo.dto.product.ProductPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.product.MerchantProductPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.product.MerchantProductUpdateDTO;
 import cn.hisouten.mall.pojo.vo.product.MerchantProductDetailVO;
 import cn.hisouten.mall.pojo.vo.product.MerchantProductListVO;
@@ -25,14 +25,14 @@ public class ProductController {
 
     /**
      * 分页查询商品
-     * @param productPageQueryDTO 分页查询参数
+     * @param merchantProductPageQueryDTO 分页查询参数
      * @return 返回分页查询结果
      */
     @GetMapping("/page")
     @Operation(summary = "商品分页查询")
-    public Result<PageResult<MerchantProductListVO>> pageQuery(ProductPageQueryDTO productPageQueryDTO){
+    public Result<PageResult<MerchantProductListVO>> pageQuery(MerchantProductPageQueryDTO merchantProductPageQueryDTO){
         log.info("分页查询商品信息");
-        PageResult<MerchantProductListVO> pageResult = productService.merchantPageQuery(productPageQueryDTO);
+        PageResult<MerchantProductListVO> pageResult = productService.merchantPageQuery(merchantProductPageQueryDTO);
         return Result.success(pageResult);
     }
 

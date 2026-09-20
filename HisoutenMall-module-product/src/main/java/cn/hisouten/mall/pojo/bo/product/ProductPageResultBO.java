@@ -3,10 +3,10 @@ package cn.hisouten.mall.pojo.bo.product;
 import lombok.Data;
 
 /**
- * 用于层间中转信息
+ * 用于product的分页查询中转VO
  */
 @Data
-public class ProductListBO {
+public class ProductPageResultBO {
 
     private Long id;
 

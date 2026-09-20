@@ -2,7 +2,8 @@ package cn.hisouten.mall.controller.user;
 
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
-import cn.hisouten.mall.pojo.dto.product.ProductPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.product.MerchantProductPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.product.UserProductPageQueryDTO;
 import cn.hisouten.mall.pojo.vo.product.UserProductDetailVO;
 import cn.hisouten.mall.pojo.vo.product.UserProductListVO;
 import cn.hisouten.mall.service.ProductService;
@@ -29,9 +30,9 @@ public class ProductController {
      */
     @GetMapping("/page")
     @Operation(summary = "分页查询商品")
-    public Result<PageResult<UserProductListVO>> pageQuery(ProductPageQueryDTO productPageQueryDTO){
+    public Result<PageResult<UserProductListVO>> pageQuery(UserProductPageQueryDTO userProductPageQueryDTO){
         log.info("分页查询商品");
-        PageResult<UserProductListVO> pageQuery = productService.userPageQuery(productPageQueryDTO);
+        PageResult<UserProductListVO> pageQuery = productService.userPageQuery(userProductPageQueryDTO);
         return Result.success(pageQuery);
     }
 
