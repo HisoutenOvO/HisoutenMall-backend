@@ -2,6 +2,9 @@ package cn.hisouten.mall.pojo.vo.category;
 
 import lombok.Data;
 
+/**
+ * 商家列表查询分类返回值
+ */
 @Data
 public class MerchantCategoryListVO {
 

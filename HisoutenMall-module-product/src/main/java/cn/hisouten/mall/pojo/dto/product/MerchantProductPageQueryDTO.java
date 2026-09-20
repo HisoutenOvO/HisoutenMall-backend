@@ -4,6 +4,9 @@ import cn.hisouten.mall.pojo.BasePageQuery;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 商家分页查询商品参数
+ */
 @Data
 @NoArgsConstructor
 public class MerchantProductPageQueryDTO extends BasePageQuery {

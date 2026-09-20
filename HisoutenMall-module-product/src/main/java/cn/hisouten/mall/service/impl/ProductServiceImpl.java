@@ -12,9 +12,9 @@ import cn.hisouten.mall.pojo.dto.product.UserProductPageQueryDTO;
 import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.bo.product.ProductPageResultBO;
 import cn.hisouten.mall.pojo.vo.product.MerchantProductDetailVO;
-import cn.hisouten.mall.pojo.vo.product.MerchantProductListVO;
+import cn.hisouten.mall.pojo.vo.product.MerchantProductPageResultVO;
 import cn.hisouten.mall.pojo.vo.product.UserProductDetailVO;
-import cn.hisouten.mall.pojo.vo.product.UserProductListVO;
+import cn.hisouten.mall.pojo.vo.product.UserProductPageResultVO;
 import cn.hisouten.mall.service.BrandService;
 import cn.hisouten.mall.service.CategoryService;
 import cn.hisouten.mall.service.ProductService;
@@ -182,7 +182,7 @@ public class ProductServiceImpl implements ProductService {
      * @return 返回分页查询结果
      */
     @Override
-    public PageResult<UserProductListVO> userPageQuery(UserProductPageQueryDTO userProductPageQueryDTO) {
+    public PageResult<UserProductPageResultVO> userPageQuery(UserProductPageQueryDTO userProductPageQueryDTO) {
         //创建分页对象page
         Page<ProductPageResultBO> page = new Page<>(userProductPageQueryDTO.getPage(), userProductPageQueryDTO.getPageSize());
         //中转BO类介入，复制查询条件
@@ -193,10 +193,10 @@ public class ProductServiceImpl implements ProductService {
         //总数
         long total = result.getTotal();
         //记录数
-        List<UserProductListVO> records = new ArrayList<>();
+        List<UserProductPageResultVO> records = new ArrayList<>();
         //中转记录回VO
         for (ProductPageResultBO bo : result.getRecords()) {
-            UserProductListVO vo = UserProductListVO.builder()
+            UserProductPageResultVO vo = UserProductPageResultVO.builder()
                     .id(bo.getId())
                     .merchantId(bo.getMerchantId())
                     .categoryId(bo.getCategoryId())
@@ -218,15 +218,15 @@ public class ProductServiceImpl implements ProductService {
      * @return 返回分页查询结果
      */
     @Override
-    public PageResult<MerchantProductListVO> merchantPageQuery(MerchantProductPageQueryDTO merchantProductPageQueryDTO) {
+    public PageResult<MerchantProductPageResultVO> merchantPageQuery(MerchantProductPageQueryDTO merchantProductPageQueryDTO) {
         Page<ProductPageResultBO> page = new Page<>(merchantProductPageQueryDTO.getPage(), merchantProductPageQueryDTO.getPageSize());
         ProductPageQueryBO productPageQueryBO = new ProductPageQueryBO();
         BeanUtils.copyProperties(merchantProductPageQueryDTO,productPageQueryBO);
         Page<ProductPageResultBO> result = productMapper.pageQuery(page, productPageQueryBO);
         long total = result.getTotal();
-        List<MerchantProductListVO> records = new ArrayList<>();
+        List<MerchantProductPageResultVO> records = new ArrayList<>();
         for (ProductPageResultBO bo : result.getRecords()) {
-            MerchantProductListVO vo = MerchantProductListVO.builder()
+            MerchantProductPageResultVO vo = MerchantProductPageResultVO.builder()
                     .id(bo.getId())
                     .merchantId(bo.getMerchantId())
                     .categoryId(bo.getCategoryId())

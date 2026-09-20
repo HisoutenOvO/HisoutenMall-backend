@@ -5,11 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 商家分页查询返回值
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserProductListVO {
+public class MerchantProductPageResultVO {
 
     private Long id;
 
@@ -21,11 +24,15 @@ public class UserProductListVO {
 
     private String name;
 
+    private Integer status;
+
     private String merchantName;
 
     private String categoryName;
 
     private String brandName;
+
+    private Integer deleted;
 
     private String mainImage;
 }

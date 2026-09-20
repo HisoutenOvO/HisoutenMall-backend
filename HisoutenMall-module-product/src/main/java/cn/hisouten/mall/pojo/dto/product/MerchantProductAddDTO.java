@@ -4,6 +4,9 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 商家更新商品参数
+ */
 @Data
 @NoArgsConstructor
 public class MerchantProductAddDTO {

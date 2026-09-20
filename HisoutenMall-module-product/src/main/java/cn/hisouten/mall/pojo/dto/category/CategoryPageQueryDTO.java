@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 通用的分页查询分类参数
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

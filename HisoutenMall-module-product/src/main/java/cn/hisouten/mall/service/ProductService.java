@@ -6,9 +6,9 @@ import cn.hisouten.mall.pojo.dto.product.MerchantProductPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.product.MerchantProductUpdateDTO;
 import cn.hisouten.mall.pojo.dto.product.UserProductPageQueryDTO;
 import cn.hisouten.mall.pojo.vo.product.MerchantProductDetailVO;
-import cn.hisouten.mall.pojo.vo.product.MerchantProductListVO;
+import cn.hisouten.mall.pojo.vo.product.MerchantProductPageResultVO;
 import cn.hisouten.mall.pojo.vo.product.UserProductDetailVO;
-import cn.hisouten.mall.pojo.vo.product.UserProductListVO;
+import cn.hisouten.mall.pojo.vo.product.UserProductPageResultVO;
 
 public interface ProductService {
     /**
@@ -67,12 +67,12 @@ public interface ProductService {
      * @param merchantProductPageQueryDTO 分页查询参数
      * @return 返回分页查询结果
      */
-    PageResult<MerchantProductListVO> merchantPageQuery(MerchantProductPageQueryDTO merchantProductPageQueryDTO);
+    PageResult<MerchantProductPageResultVO> merchantPageQuery(MerchantProductPageQueryDTO merchantProductPageQueryDTO);
 
     /**
      * 用户端分页查询商品分类
      * @param userProductPageQueryDTO 分页查询参数
      * @return 返回分页查询结果
      */
-    PageResult<UserProductListVO> userPageQuery(UserProductPageQueryDTO userProductPageQueryDTO);
+    PageResult<UserProductPageResultVO> userPageQuery(UserProductPageQueryDTO userProductPageQueryDTO);
 }

@@ -3,6 +3,9 @@ package cn.hisouten.mall.pojo.vo.product;
 
 import lombok.Data;
 
+/**
+ * 用户查询商品详情返回值
+ */
 @Data
 public class UserProductDetailVO {
 
