@@ -1,4 +1,4 @@
-package cn.hisouten.mall.pojo.dto.common;
+package cn.hisouten.mall.pojo.dto.product;
 
 import cn.hisouten.mall.pojo.BasePageQuery;
 import lombok.Data;

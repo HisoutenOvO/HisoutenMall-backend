@@ -1,7 +1,7 @@
 package cn.hisouten.mall.controller.user;
 
 import cn.hisouten.mall.pojo.Result;
-import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
+import cn.hisouten.mall.pojo.vo.category.UserCategoryListVO;
 import cn.hisouten.mall.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,9 +27,9 @@ public class CategoryController {
      */
     @GetMapping("/list")
     @Operation(summary = "用户列表查询分类")
-    public Result<List<CategoryListVO>> listQuery(){
+    public Result<List<UserCategoryListVO>> listQuery(){
         log.info("查询分类列表");
-        List<CategoryListVO> categoryList = categoryService.listQuery();
+        List<UserCategoryListVO> categoryList = categoryService.listQuery();
         return Result.success(categoryList);
     }
 }

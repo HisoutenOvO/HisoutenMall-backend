@@ -1,10 +1,10 @@
 package cn.hisouten.mall.pojo.vo.product;
 
+
 import lombok.Data;
-import java.time.LocalDateTime;
 
 @Data
-public class ProductDetailVO {
+public class UserProductDetailVO {
 
     private Long id;
 
@@ -28,12 +28,5 @@ public class ProductDetailVO {
 
     private String detail;
 
-    private LocalDateTime createTime;
-
-    private LocalDateTime updateTime;
-
-    private Integer status;
-
-    private Integer deleted;
 
 }

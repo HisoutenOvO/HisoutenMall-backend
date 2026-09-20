@@ -1,9 +1,12 @@
-package cn.hisouten.mall.pojo.vo.product;
+package cn.hisouten.mall.pojo.bo.product;
 
 import lombok.Data;
 
+/**
+ * 用于层间中转信息
+ */
 @Data
-public class ProductListVO {
+public class ProductListBO {
 
     private Long id;
 

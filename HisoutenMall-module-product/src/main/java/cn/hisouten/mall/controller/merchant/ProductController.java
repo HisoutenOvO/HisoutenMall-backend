@@ -2,11 +2,11 @@ package cn.hisouten.mall.controller.merchant;
 
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
-import cn.hisouten.mall.pojo.dto.merchant.product.ProductAddDTO;
-import cn.hisouten.mall.pojo.dto.common.ProductPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.merchant.product.ProductUpdateDTO;
-import cn.hisouten.mall.pojo.vo.product.ProductDetailVO;
-import cn.hisouten.mall.pojo.vo.product.ProductListVO;
+import cn.hisouten.mall.pojo.dto.product.MerchantProductAddDTO;
+import cn.hisouten.mall.pojo.dto.product.ProductPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.product.MerchantProductUpdateDTO;
+import cn.hisouten.mall.pojo.vo.product.MerchantProductDetailVO;
+import cn.hisouten.mall.pojo.vo.product.MerchantProductListVO;
 import cn.hisouten.mall.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,23 +30,23 @@ public class ProductController {
      */
     @GetMapping("/page")
     @Operation(summary = "商品分页查询")
-    public Result<PageResult<ProductListVO>> pageQuery(ProductPageQueryDTO productPageQueryDTO){
+    public Result<PageResult<MerchantProductListVO>> pageQuery(ProductPageQueryDTO productPageQueryDTO){
         log.info("分页查询商品信息");
-        PageResult<ProductListVO> pageResult = productService.pageQuery(productPageQueryDTO);
+        PageResult<MerchantProductListVO> pageResult = productService.merchantPageQuery(productPageQueryDTO);
         return Result.success(pageResult);
     }
 
 
     /**
      * 新增商品
-     * @param productAddDTO 商品内容
+     * @param merchantProductAddDTO 商品内容
      * @return 返回空
      */
     @PostMapping
     @Operation(summary = "新增商品")
-    public Result addProduct(@Valid @RequestBody ProductAddDTO productAddDTO){
-        log.info("商家{}新增商品",productAddDTO.getMerchantId());
-        productService.addProduct(productAddDTO);
+    public Result addProduct(@Valid @RequestBody MerchantProductAddDTO merchantProductAddDTO){
+        log.info("商家{}新增商品", merchantProductAddDTO.getMerchantId());
+        productService.addProduct(merchantProductAddDTO);
         return Result.success();
     }
 
@@ -57,23 +57,23 @@ public class ProductController {
      */
     @GetMapping("/{productId}")
     @Operation(summary = "查询商品详情")
-    public Result<ProductDetailVO> detailQuery(@PathVariable Long productId){
+    public Result<MerchantProductDetailVO> detailQuery(@PathVariable Long productId){
         log.info("查询商品详情：{}",productId);
-        ProductDetailVO productDetailVO = productService.detailQuery(productId);
-        return Result.success(productDetailVO);
+        MerchantProductDetailVO merchantProductDetailVO = productService.merchantDetailQuery(productId);
+        return Result.success(merchantProductDetailVO);
     }
 
     /**
      * 修改商品
      * @param productId 需要修改商品的id
-     * @param productUpdateDTO 修改的数据
+     * @param merchantProductUpdateDTO 修改的数据
      * @return 返回空
      */
     @PutMapping("/{productId}")
     @Operation(summary = "修改商品")
-    public Result updateProduct(@PathVariable Long productId,@Valid @RequestBody ProductUpdateDTO productUpdateDTO){
+    public Result updateProduct(@PathVariable Long productId,@Valid @RequestBody MerchantProductUpdateDTO merchantProductUpdateDTO){
         log.info("修改商品：{}",productId);
-        productService.updateProduct(productId,productUpdateDTO);
+        productService.updateProduct(productId, merchantProductUpdateDTO);
         return Result.success();
     }
 

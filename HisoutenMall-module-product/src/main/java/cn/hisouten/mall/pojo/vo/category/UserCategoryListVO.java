@@ -3,7 +3,7 @@ package cn.hisouten.mall.pojo.vo.category;
 import lombok.Data;
 
 @Data
-public class CategoryListVO {
+public class UserCategoryListVO {
 
     private Long id;
 
@@ -14,9 +14,5 @@ public class CategoryListVO {
     private Integer level;
 
     private Integer sort;
-
-    private Integer status;
-
-    private Integer deleted;
 
 }

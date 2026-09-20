@@ -4,12 +4,15 @@ import cn.hisouten.mall.exception.businessexception.ProductHasNotDeletedExceptio
 import cn.hisouten.mall.exception.businessexception.ProductNotFoundException;
 import cn.hisouten.mall.mapper.ProductMapper;
 import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.dto.merchant.product.ProductAddDTO;
-import cn.hisouten.mall.pojo.dto.common.ProductPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.merchant.product.ProductUpdateDTO;
+import cn.hisouten.mall.pojo.dto.product.MerchantProductAddDTO;
+import cn.hisouten.mall.pojo.dto.product.ProductPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.product.MerchantProductUpdateDTO;
 import cn.hisouten.mall.pojo.entity.Product;
-import cn.hisouten.mall.pojo.vo.product.ProductDetailVO;
-import cn.hisouten.mall.pojo.vo.product.ProductListVO;
+import cn.hisouten.mall.pojo.bo.product.ProductListBO;
+import cn.hisouten.mall.pojo.vo.product.MerchantProductDetailVO;
+import cn.hisouten.mall.pojo.vo.product.MerchantProductListVO;
+import cn.hisouten.mall.pojo.vo.product.UserProductDetailVO;
+import cn.hisouten.mall.pojo.vo.product.UserProductListVO;
 import cn.hisouten.mall.service.BrandService;
 import cn.hisouten.mall.service.CategoryService;
 import cn.hisouten.mall.service.ProductService;
@@ -19,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static cn.hisouten.mall.exception.constant.ExceptionMessageConstant.PRODUCT_HAS_NOT_DELETED;
@@ -36,53 +40,79 @@ public class ProductServiceImpl implements ProductService {
 
 
     /**
-     * 双端查询商品详情
+     * 商家端查询商品详情
      * @param productId 商品ID
      * @return 返回商品详情信息
      */
     @Override
-    public ProductDetailVO detailQuery(Long productId) {
+    public MerchantProductDetailVO merchantDetailQuery(Long productId) {
         Product product = productMapper.selectById(productId);
         //如果商品不存在或已被逻辑删除，抛出异常
         if(product == null){
             throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
         }
-        ProductDetailVO productDetailVO = new ProductDetailVO();
-        BeanUtils.copyProperties(product,productDetailVO);
+        MerchantProductDetailVO merchantProductDetailVO = new MerchantProductDetailVO();
+        BeanUtils.copyProperties(product, merchantProductDetailVO);
         String categoryName = categoryService.getCategoryNameByCategoryId(product.getCategoryId());
         String merchantName = merchantProfileService.getMerchantNameByMerchantId(product.getMerchantId());
         String brandName = brandService.getBrandNameByBrandId(product.getBrandId());
-        productDetailVO.setBrandName(brandName);
-        productDetailVO.setCategoryName(categoryName);
-        productDetailVO.setMerchantName(merchantName);
+        merchantProductDetailVO.setBrandName(brandName);
+        merchantProductDetailVO.setCategoryName(categoryName);
+        merchantProductDetailVO.setMerchantName(merchantName);
 
-        return productDetailVO;
+        return merchantProductDetailVO;
     }
+
+
+    /**
+     * 用户端查询商品详情
+     * @param productId 商品ID
+     * @return 返回商品详情信息
+     */
+    @Override
+    public UserProductDetailVO userDetailQuery(Long productId) {
+        Product product = productMapper.selectById(productId);
+        //如果商品不存在或已被逻辑删除，抛出异常
+        if(product == null){
+            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        }
+        UserProductDetailVO userProductDetailVO = new UserProductDetailVO();
+        BeanUtils.copyProperties(product, userProductDetailVO);
+        String categoryName = categoryService.getCategoryNameByCategoryId(product.getCategoryId());
+        String merchantName = merchantProfileService.getMerchantNameByMerchantId(product.getMerchantId());
+        String brandName = brandService.getBrandNameByBrandId(product.getBrandId());
+        userProductDetailVO.setBrandName(brandName);
+        userProductDetailVO.setCategoryName(categoryName);
+        userProductDetailVO.setMerchantName(merchantName);
+
+        return userProductDetailVO;
+    }
+
 
     /**
      * 商家端新增商品
-     * @param productAddDTO 商品内容
+     * @param merchantProductAddDTO 商品内容
      */
     @Override
-    public void addProduct(ProductAddDTO productAddDTO) {
+    public void addProduct(MerchantProductAddDTO merchantProductAddDTO) {
         Product product = new Product();
-        BeanUtils.copyProperties(productAddDTO,product);
+        BeanUtils.copyProperties(merchantProductAddDTO,product);
         productMapper.insert(product);
     }
 
     /**
      * 修改商品
      * @param productId 需要修改商品的id
-     * @param productUpdateDTO 修改的数据
+     * @param merchantProductUpdateDTO 修改的数据
      */
     @Override
-    public void updateProduct(Long productId, ProductUpdateDTO productUpdateDTO) {
+    public void updateProduct(Long productId, MerchantProductUpdateDTO merchantProductUpdateDTO) {
         Product product = productMapper.selectById(productId);
         //如果商品不存在或已被逻辑删除，抛出异常
         if(product == null){
             throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
         }
-        BeanUtils.copyProperties(productUpdateDTO,product);
+        BeanUtils.copyProperties(merchantProductUpdateDTO,product);
         productMapper.updateById(product);
     }
 
@@ -145,17 +175,59 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
-     * 分页查询商品分类
+     * 用户端分页查询商品分类
      * @param productPageQueryDTO 分页查询参数
      * @return 返回分页查询结果
      */
     @Override
-    public PageResult<ProductListVO> pageQuery(ProductPageQueryDTO productPageQueryDTO) {
+    public PageResult<UserProductListVO> userPageQuery(ProductPageQueryDTO productPageQueryDTO) {
         Page<Product> page = new Page<>(productPageQueryDTO.getPage(), productPageQueryDTO.getPageSize());
-        String keyword = productPageQueryDTO.getKeyword();
-        Page<ProductListVO> result = productMapper.pageQuery(page, productPageQueryDTO);
+        Page<ProductListBO> result = productMapper.pageQuery(page, productPageQueryDTO);
         long total = result.getTotal();
-        List<ProductListVO> records = result.getRecords();
+        List<UserProductListVO> records = new ArrayList<>();
+        for (ProductListBO bo : result.getRecords()) {
+            UserProductListVO vo = UserProductListVO.builder()
+                    .id(bo.getId())
+                    .merchantId(bo.getMerchantId())
+                    .categoryId(bo.getCategoryId())
+                    .brandId(bo.getBrandId())
+                    .name(bo.getName())
+                    .merchantName(bo.getMerchantName())
+                    .categoryName(bo.getCategoryName())
+                    .brandName(bo.getBrandName())
+                    .mainImage(bo.getMainImage())
+                    .build();
+            records.add(vo);
+        }
+        return new PageResult<>(total, records);
+    }
+    /**
+     * 用户端分页查询商品分类
+     * @param productPageQueryDTO 分页查询参数
+     * @return 返回分页查询结果
+     */
+    @Override
+    public PageResult<MerchantProductListVO> merchantPageQuery(ProductPageQueryDTO productPageQueryDTO) {
+        Page<Product> page = new Page<>(productPageQueryDTO.getPage(), productPageQueryDTO.getPageSize());
+        Page<ProductListBO> result = productMapper.pageQuery(page, productPageQueryDTO);
+        long total = result.getTotal();
+        List<MerchantProductListVO> records = new ArrayList<>();
+        for (ProductListBO bo : result.getRecords()) {
+            MerchantProductListVO vo = MerchantProductListVO.builder()
+                    .id(bo.getId())
+                    .merchantId(bo.getMerchantId())
+                    .categoryId(bo.getCategoryId())
+                    .brandId(bo.getBrandId())
+                    .name(bo.getName())
+                    .merchantName(bo.getMerchantName())
+                    .categoryName(bo.getCategoryName())
+                    .brandName(bo.getBrandName())
+                    .mainImage(bo.getMainImage())
+                    .status(bo.getStatus())
+                    .deleted(bo.getDeleted())
+                    .build();
+            records.add(vo);
+        }
         return new PageResult<>(total, records);
     }
 }

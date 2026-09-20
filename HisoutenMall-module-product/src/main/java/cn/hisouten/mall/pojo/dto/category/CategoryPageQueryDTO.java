@@ -1,4 +1,4 @@
-package cn.hisouten.mall.pojo.dto.user.category;
+package cn.hisouten.mall.pojo.dto.category;
 
 import cn.hisouten.mall.pojo.BasePageQuery;
 import lombok.AllArgsConstructor;

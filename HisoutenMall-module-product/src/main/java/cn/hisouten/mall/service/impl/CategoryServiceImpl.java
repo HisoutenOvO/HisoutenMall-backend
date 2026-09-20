@@ -1,7 +1,7 @@
 package cn.hisouten.mall.service.impl;
 
 import cn.hisouten.mall.mapper.CategoryMapper;
-import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
+import cn.hisouten.mall.pojo.vo.category.UserCategoryListVO;
 import cn.hisouten.mall.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @return 返回分类列表
      */
     @Override
-    public List<CategoryListVO> listQuery() {
+    public List<UserCategoryListVO> listQuery() {
         return categoryMapper.getList();
     }
 

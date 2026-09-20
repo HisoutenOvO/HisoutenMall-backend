@@ -2,9 +2,9 @@ package cn.hisouten.mall.controller.user;
 
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
-import cn.hisouten.mall.pojo.dto.common.ProductPageQueryDTO;
-import cn.hisouten.mall.pojo.vo.product.ProductDetailVO;
-import cn.hisouten.mall.pojo.vo.product.ProductListVO;
+import cn.hisouten.mall.pojo.dto.product.ProductPageQueryDTO;
+import cn.hisouten.mall.pojo.vo.product.UserProductDetailVO;
+import cn.hisouten.mall.pojo.vo.product.UserProductListVO;
 import cn.hisouten.mall.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,9 +29,9 @@ public class ProductController {
      */
     @GetMapping("/page")
     @Operation(summary = "分页查询商品")
-    public Result<PageResult<ProductListVO>> pageQuery(ProductPageQueryDTO productPageQueryDTO){
+    public Result<PageResult<UserProductListVO>> pageQuery(ProductPageQueryDTO productPageQueryDTO){
         log.info("分页查询商品");
-        PageResult<ProductListVO> pageQuery = productService.pageQuery(productPageQueryDTO);
+        PageResult<UserProductListVO> pageQuery = productService.userPageQuery(productPageQueryDTO);
         return Result.success(pageQuery);
     }
 
@@ -42,10 +42,10 @@ public class ProductController {
      */
     @GetMapping("/{productId}")
     @Operation(summary = "查询商品详情")
-    public Result<ProductDetailVO> detailQuery(@PathVariable Long productId){
+    public Result<UserProductDetailVO> detailQuery(@PathVariable Long productId){
         log.info("查询商品详情：{}",productId);
-        ProductDetailVO productDetailVO = productService.detailQuery(productId);
-        return Result.success(productDetailVO);
+        UserProductDetailVO userProductDetailVO = productService.userDetailQuery(productId);
+        return Result.success(userProductDetailVO);
     }
 
 }

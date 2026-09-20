@@ -1,8 +1,8 @@
 package cn.hisouten.mall.mapper;
 
-import cn.hisouten.mall.pojo.dto.common.ProductPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.product.ProductPageQueryDTO;
 import cn.hisouten.mall.pojo.entity.Product;
-import cn.hisouten.mall.pojo.vo.product.ProductListVO;
+import cn.hisouten.mall.pojo.bo.product.ProductListBO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.*;
@@ -32,10 +32,10 @@ public interface ProductMapper extends BaseMapper<Product> {
     void realDelete(Long productId);
 
     /**
-     * 分页查询商品分类
+     * 分页查询商品
      * @param page 分页参数
      * @param productPageQueryDTO 查询条件
      * @return
      */
-    Page<ProductListVO> pageQuery(Page<Product> page,@Param("dto") ProductPageQueryDTO productPageQueryDTO);
+    Page<ProductListBO> pageQuery(Page<Product> page, @Param("dto") ProductPageQueryDTO productPageQueryDTO);
 }

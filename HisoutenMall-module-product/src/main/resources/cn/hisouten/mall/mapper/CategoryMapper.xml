@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.hisouten.mall.mapper.CategoryMapper">
-    <select id="getList" resultType="cn.hisouten.mall.pojo.vo.category.CategoryListVO">
+    <select id="getList" resultType="cn.hisouten.mall.pojo.vo.category.UserCategoryListVO">
         select id,parent_id,name,level,sort from category
     </select>
 </mapper>
