@@ -5,7 +5,9 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.exception.businessexception.UserNotMatchException;
 import cn.hisouten.mall.exception.businessexception.UserStatusErrorException;
 import cn.hisouten.mall.user.mapper.AuthMapper;
+import cn.hisouten.mall.user.pojo.dto.admin.AdminLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.merchant.MerchantLoginDTO;
+import cn.hisouten.mall.user.pojo.dto.user.UserLoginDTO;
 import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.vo.LoginVO;
 import cn.hisouten.mall.user.service.AuthService;
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Service;
 
 import static cn.hisouten.mall.exception.constant.ExceptionMessageConstant.USER_NOT_MATCH;
 import static cn.hisouten.mall.exception.constant.ExceptionMessageConstant.USER_STATUS_ERROR;
-import static cn.hisouten.mall.exception.constant.RoleConstant.MERCHANT_ROLE;
+import static cn.hisouten.mall.exception.constant.RoleConstant.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +35,30 @@ public class AuthServiceImpl implements AuthService {
         String password = merchantLoginDTO.getPassword();
         //调用内部统一登录方法
         return doLogin(username,password,MERCHANT_ROLE);
+    }
+
+    /**
+     * 用户登录
+     * @param userLoginDTO 用户登录参数
+     * @return 返回值
+     */
+    @Override
+    public LoginVO userLogin(UserLoginDTO userLoginDTO) {
+        String username = userLoginDTO.getUsername();
+        String password = userLoginDTO.getPassword();
+        return doLogin(username,password,USER_ROLE);
+    }
+
+    /**
+     * 管理员登录
+     * @param adminLoginDTO 管理员登录参数
+     * @return 返回值
+     */
+    @Override
+    public LoginVO adminLogin(AdminLoginDTO adminLoginDTO) {
+        String username = adminLoginDTO.getUsername();
+        String password = adminLoginDTO.getPassword();
+        return doLogin(username,password,ADMIN_ROLE);
     }
 
     /**
