@@ -2,27 +2,33 @@ package cn.hisouten.mall.user.service.impl;
 
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.exception.businessexception.UserAlreadyExist;
 import cn.hisouten.mall.exception.businessexception.UserNotMatchException;
 import cn.hisouten.mall.exception.businessexception.UserStatusErrorException;
 import cn.hisouten.mall.user.mapper.AuthMapper;
+import cn.hisouten.mall.user.mapper.UserProfileMapper;
 import cn.hisouten.mall.user.pojo.dto.admin.AdminLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.merchant.MerchantLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.user.UserLoginDTO;
+import cn.hisouten.mall.user.pojo.dto.user.UserRegisterDTO;
 import cn.hisouten.mall.user.pojo.entity.User;
+import cn.hisouten.mall.user.pojo.entity.UserProfile;
 import cn.hisouten.mall.user.pojo.vo.LoginVO;
 import cn.hisouten.mall.user.service.AuthService;
 import cn.hutool.crypto.digest.BCrypt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import static cn.hisouten.mall.exception.constant.ExceptionMessageConstant.USER_NOT_MATCH;
-import static cn.hisouten.mall.exception.constant.ExceptionMessageConstant.USER_STATUS_ERROR;
+import static cn.hisouten.mall.exception.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.exception.constant.RoleConstant.*;
+import static cn.hisouten.mall.exception.constant.StatusConstant.ENABLED;
 
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final AuthMapper authMapper;
+    private final UserProfileMapper userProfileMapper;
 
     /**
      * 商家登录
@@ -50,6 +56,32 @@ public class AuthServiceImpl implements AuthService {
     }
 
     /**
+     * 用户注册
+     * @param userRegisterDTO 用户注册参数
+     */
+    @Override
+    @Transactional
+    public void userRegister(UserRegisterDTO userRegisterDTO) {
+        //查询是否重名
+        String expectedUsername = authMapper.selectUserNameExist(userRegisterDTO.getUsername());
+        if(expectedUsername != null){
+            throw new UserAlreadyExist(USER_ALREADY_EXIST);
+        }
+        //插入user表
+        User user = new User();
+        user.setUsername(userRegisterDTO.getUsername());
+        user.setPassword(BCrypt.hashpw(userRegisterDTO.getPassword()));
+        user.setRole(USER_ROLE);
+        user.setStatus(ENABLED);
+        authMapper.insert(user);
+        //插入user_profile表
+        UserProfile profile = new UserProfile();
+        profile.setUserId(user.getId());
+        profile.setNickname(userRegisterDTO.getNickname());
+        userProfileMapper.insert(profile);
+    }
+
+    /**
      * 管理员登录
      * @param adminLoginDTO 管理员登录参数
      * @return 返回值
@@ -60,6 +92,8 @@ public class AuthServiceImpl implements AuthService {
         String password = adminLoginDTO.getPassword();
         return doLogin(username,password,ADMIN_ROLE);
     }
+
+
 
     /**
      * 统一登录方法抽离

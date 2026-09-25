@@ -19,9 +19,7 @@ public class SaTokenConfig implements WebMvcConfigurer {
 
             // 全局登录校验：放行登录、注册、文档、错误页
             SaRouter.match("/**")
-                    .notMatch("/login", "/register",
-                            "/user/login", "/merchant/login", "/admin/login",
-                            "/user/register", "/merchant/register",
+                    .notMatch("/user/register", "/merchant/register",
                             "/error", "/doc.html", "/webjars/**")
                     .notMatch("/user/product/**", "/user/category/**")
                     .check(r -> StpUtil.checkLogin());

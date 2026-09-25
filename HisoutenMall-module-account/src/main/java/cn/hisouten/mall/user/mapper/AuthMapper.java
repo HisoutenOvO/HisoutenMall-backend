@@ -14,4 +14,12 @@ public interface AuthMapper extends BaseMapper<User> {
      */
     @Select("select * from user where username = #{username}")
     User getUserByUserName(String username);
+
+    /**
+     * 查询用户名是否存在
+     * @param username 注册的用户名
+     * @return 返回可能存在用户名
+     */
+    @Select("select username from user where username = #{username}")
+    String selectUserNameExist(String username);
 }

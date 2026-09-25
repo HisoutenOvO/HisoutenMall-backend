@@ -1,7 +1,7 @@
 package cn.hisouten.mall.exception.constant;
 
 /**
- * 系统角色类，用于记录系统角色值
+ * 系统角色常量类
  */
 public class RoleConstant {
 

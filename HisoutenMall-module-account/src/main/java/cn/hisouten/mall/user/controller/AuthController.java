@@ -5,6 +5,7 @@ import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.admin.AdminLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.merchant.MerchantLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.user.UserLoginDTO;
+import cn.hisouten.mall.user.pojo.dto.user.UserRegisterDTO;
 import cn.hisouten.mall.user.pojo.vo.LoginVO;
 import cn.hisouten.mall.user.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,6 +52,20 @@ public class AuthController {
     }
 
     /**
+     * 用户注册
+     * @param userRegisterDTO 用户注册参数
+     * @return 返回值
+     */
+    @SaIgnore
+    @PostMapping("/user/register")
+    @Operation(summary = "用户注册")
+    public Result userRegister(@RequestBody UserRegisterDTO userRegisterDTO){
+        log.info("用户登录：{}",userRegisterDTO.getUsername());
+        authService.userRegister(userRegisterDTO);
+        return Result.success();
+    }
+
+    /**
      * 用户登录
      * @param adminLoginDTO 管理员登录参数
      * @return 返回值
@@ -63,4 +78,5 @@ public class AuthController {
         LoginVO loginVO = authService.adminLogin(adminLoginDTO);
         return Result.success(loginVO);
     }
+
 }
