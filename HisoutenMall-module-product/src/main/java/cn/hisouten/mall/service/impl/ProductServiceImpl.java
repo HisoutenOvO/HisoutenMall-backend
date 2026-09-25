@@ -4,15 +4,15 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.exception.businessexception.NoPermissionException;
 import cn.hisouten.mall.exception.businessexception.ProductHasNotDeletedException;
 import cn.hisouten.mall.exception.businessexception.ProductNotFoundException;
+import cn.hisouten.mall.exception.businessexception.SpecsAlreadyExistException;
 import cn.hisouten.mall.mapper.ProductMapper;
+import cn.hisouten.mall.mapper.ProductSkuMapper;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.product.ProductPageQueryBO;
-import cn.hisouten.mall.pojo.dto.product.MerchantProductAddDTO;
-import cn.hisouten.mall.pojo.dto.product.MerchantProductPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.product.MerchantProductUpdateDTO;
-import cn.hisouten.mall.pojo.dto.product.UserProductPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.product.*;
 import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.bo.product.ProductPageResultBO;
+import cn.hisouten.mall.pojo.entity.ProductSKU;
 import cn.hisouten.mall.pojo.vo.product.MerchantProductDetailVO;
 import cn.hisouten.mall.pojo.vo.product.MerchantProductPageResultVO;
 import cn.hisouten.mall.pojo.vo.product.UserProductDetailVO;
@@ -25,19 +25,23 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import static cn.hisouten.mall.exception.constant.ExceptionMessageConstant.*;
-import static cn.hisouten.mall.exception.constant.StatusConstant.DISABLED;
-import static cn.hisouten.mall.exception.constant.StatusConstant.ENABLED;
+import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
+import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
+import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
 
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
     //注入自己的mapper
     private final ProductMapper productMapper;
+    private final ProductSkuMapper productSkuMapper;
     //注入别人的service
     private final MerchantProfileService merchantProfileService;
     private final CategoryService categoryService;
@@ -103,11 +107,34 @@ public class ProductServiceImpl implements ProductService {
      * @param merchantProductAddDTO 商品内容
      */
     @Override
+    @Transactional
     public void addProduct(MerchantProductAddDTO merchantProductAddDTO) {
         Product product = new Product();
         BeanUtils.copyProperties(merchantProductAddDTO,product);
         product.setMerchantId(StpUtil.getLoginIdAsLong());
         productMapper.insert(product);
+
+        //增加新的sku
+        List<ProductSKU> productSkuList = new ArrayList<>();
+        List<ProductSkuItemDTO> skuList = merchantProductAddDTO.getSkuList();
+        //借用set集合的add实现去重逻辑——set中已存在的话再调用add方法就会返回false
+        Set<String> specSet = new HashSet<>();
+        for (ProductSkuItemDTO skuItem : skuList) {
+            //检查specs，同一个产品不能有相同规格
+            if (skuItem.getSpecs() != null && !specSet.add(skuItem.getSpecs())) {
+                throw new SpecsAlreadyExistException(SPECS_ALREADY_EXIST);
+            }
+            ProductSKU productSKU = ProductSKU.builder()
+                    .productId(product.getId())
+                    .price(skuItem.getPrice())
+                    .stock(skuItem.getStock())
+                    .specs(skuItem.getSpecs())
+                    .image(skuItem.getImage())
+                    .status(ENABLED)
+                    .build();
+            productSkuList.add(productSKU);
+        }
+        productSkuMapper.insertBatch(productSkuList);
     }
 
     /**

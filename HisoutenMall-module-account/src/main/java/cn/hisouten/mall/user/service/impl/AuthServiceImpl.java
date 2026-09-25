@@ -21,9 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static cn.hisouten.mall.exception.constant.ExceptionMessageConstant.*;
-import static cn.hisouten.mall.exception.constant.RoleConstant.*;
-import static cn.hisouten.mall.exception.constant.StatusConstant.ENABLED;
+import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
+import static cn.hisouten.mall.constant.RoleConstant.*;
+import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
 
 @Service
 @RequiredArgsConstructor

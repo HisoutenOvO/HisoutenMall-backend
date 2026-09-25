@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collections;
 import java.util.List;
 
-import static cn.hisouten.mall.exception.constant.RoleConstant.*;
+import static cn.hisouten.mall.constant.RoleConstant.*;
 
 /**
  * 角色/权限数据源

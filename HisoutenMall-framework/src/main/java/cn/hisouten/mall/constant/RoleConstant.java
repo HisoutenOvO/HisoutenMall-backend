@@ -1,4 +1,4 @@
-package cn.hisouten.mall.exception.constant;
+package cn.hisouten.mall.constant;
 
 /**
  * 系统角色常量类

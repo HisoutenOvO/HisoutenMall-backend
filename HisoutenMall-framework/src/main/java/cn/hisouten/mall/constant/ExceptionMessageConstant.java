@@ -1,4 +1,4 @@
-package cn.hisouten.mall.exception.constant;
+package cn.hisouten.mall.constant;
 
 /**
  * 异常信息常量类
@@ -12,5 +12,6 @@ public class ExceptionMessageConstant {
     public static final String USER_ALREADY_EXIST = "该用户名已存在！";
     public static final String SHOP_NAME_ALREADY_EXIST = "该店铺名已存在！";
     public static final String CONTACT_PHONE_ALREADY_EXIST = "该联系电话已存在！";
+    public static final String SPECS_ALREADY_EXIST = "该商品规格已存在！";
     public static final String USER_NOT_MATCH = "帐号或密码错误！";
 }
