@@ -8,6 +8,7 @@
         left join brand b on p.brand_id = b.id
         left join category c on p.category_id = c.id
         <where>
+            p.deleted = 0
             <if test="dto.keyword != null and dto.keyword != ''">
                 and p.name like concat('%',#{dto.keyword},'%')
             </if>

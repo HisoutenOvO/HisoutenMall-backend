@@ -8,4 +8,7 @@
             (#{sku.productId}, #{sku.price}, #{sku.stock}, #{sku.specs}, #{sku.image}, #{sku.status})
         </foreach>
     </insert>
+    <select id="selectExistSkuList" resultType="cn.hisouten.mall.pojo.entity.ProductSku">
+        select * from product_sku where product_id = #{productId} and deleted = 0
+    </select>
 </mapper>

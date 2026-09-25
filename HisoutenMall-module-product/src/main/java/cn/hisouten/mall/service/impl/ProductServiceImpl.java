@@ -1,10 +1,7 @@
 package cn.hisouten.mall.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hisouten.mall.exception.businessexception.NoPermissionException;
-import cn.hisouten.mall.exception.businessexception.ProductHasNotDeletedException;
-import cn.hisouten.mall.exception.businessexception.ProductNotFoundException;
-import cn.hisouten.mall.exception.businessexception.SpecsAlreadyExistException;
+import cn.hisouten.mall.exception.businessexception.*;
 import cn.hisouten.mall.mapper.ProductMapper;
 import cn.hisouten.mall.mapper.ProductSkuMapper;
 import cn.hisouten.mall.pojo.PageResult;
@@ -12,7 +9,7 @@ import cn.hisouten.mall.pojo.bo.product.ProductPageQueryBO;
 import cn.hisouten.mall.pojo.dto.product.*;
 import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.bo.product.ProductPageResultBO;
-import cn.hisouten.mall.pojo.entity.ProductSKU;
+import cn.hisouten.mall.pojo.entity.ProductSku;
 import cn.hisouten.mall.pojo.vo.product.MerchantProductDetailVO;
 import cn.hisouten.mall.pojo.vo.product.MerchantProductPageResultVO;
 import cn.hisouten.mall.pojo.vo.product.UserProductDetailVO;
@@ -110,12 +107,17 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void addProduct(MerchantProductAddDTO merchantProductAddDTO) {
         Product product = new Product();
+        //判断同一商家下商品是否同名
+        String existedProductName = productMapper.selectExistedProductName(merchantProductAddDTO.getName(),StpUtil.getLoginIdAsLong());
+        if(existedProductName != null){
+            throw new ProductNameAlreadyExistException(PRODUCT_NAME_ALREADY_EXIST);
+        }
         BeanUtils.copyProperties(merchantProductAddDTO,product);
         product.setMerchantId(StpUtil.getLoginIdAsLong());
         productMapper.insert(product);
 
         //增加新的sku
-        List<ProductSKU> productSkuList = new ArrayList<>();
+        List<ProductSku> productSkuList = new ArrayList<>();
         List<ProductSkuItemDTO> skuList = merchantProductAddDTO.getSkuList();
         //借用set集合的add实现去重逻辑——set中已存在的话再调用add方法就会返回false
         Set<String> specSet = new HashSet<>();
@@ -124,7 +126,7 @@ public class ProductServiceImpl implements ProductService {
             if (skuItem.getSpecs() != null && !specSet.add(skuItem.getSpecs())) {
                 throw new SpecsAlreadyExistException(SPECS_ALREADY_EXIST);
             }
-            ProductSKU productSKU = ProductSKU.builder()
+            ProductSku productSKU = ProductSku.builder()
                     .productId(product.getId())
                     .price(skuItem.getPrice())
                     .stock(skuItem.getStock())
@@ -143,6 +145,7 @@ public class ProductServiceImpl implements ProductService {
      * @param merchantProductUpdateDTO 修改的数据
      */
     @Override
+    @Transactional
     public void updateProduct(Long productId, MerchantProductUpdateDTO merchantProductUpdateDTO) {
         Product product = productMapper.selectById(productId);
         //如果商品不存在或已被逻辑删除，抛出异常
@@ -153,8 +156,52 @@ public class ProductServiceImpl implements ProductService {
         if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
             throw new NoPermissionException(NO_PERMISSION);
         }
+        //判断同一商家下商品是否同名
+        String existedProductName = productMapper.selectExistedProductName(merchantProductUpdateDTO.getName(),StpUtil.getLoginIdAsLong());
+        if(existedProductName != null){
+            throw new ProductNameAlreadyExistException(PRODUCT_NAME_ALREADY_EXIST);
+        }
         BeanUtils.copyProperties(merchantProductUpdateDTO,product);
         productMapper.updateById(product);
+
+        //更新对应的SKU，使用对比更新的方式
+        //1. 查询该商品现有的SKU
+        List<ProductSku> existedSkuList = productSkuMapper.selectExistSkuList(product.getId());
+
+        //2. 用一个list记录前端传过来的skuId
+        List<Long> submittedIds = new ArrayList<>();
+
+        //3.遍历前端传的sku列表
+        for (ProductSkuItemDTO item : merchantProductUpdateDTO.getSkuList()) {
+            if (item.getSkuId() != null) {
+                // 有skuId的就不是前端新增的，即数据库里已有的，更新
+                ProductSku sku = productSkuMapper.selectById(item.getSkuId());
+                if (sku != null) {
+                    sku.setSpecs(item.getSpecs());
+                    sku.setPrice(item.getPrice());
+                    sku.setStock(item.getStock());
+                    sku.setImage(item.getImage());
+                    productSkuMapper.updateById(sku);
+                    submittedIds.add(item.getSkuId());
+                }
+            } else {
+                // 无skuId则为新增的
+                ProductSku sku = new ProductSku();
+                sku.setProductId(productId);
+                sku.setSpecs(item.getSpecs());
+                sku.setPrice(item.getPrice());
+                sku.setStock(item.getStock());
+                sku.setImage(item.getImage());
+                sku.setStatus(ENABLED);
+                productSkuMapper.insert(sku);
+            }
+        }
+        //4.数据库里有，但前端没传skuId的就意味着前端删除了，后端也删除（逻辑删除）
+        for (ProductSku sku : existedSkuList) {
+            if (!submittedIds.contains(sku.getId())) {
+                productSkuMapper.deleteById(sku.getId());
+            }
+        }
     }
 
     /**
@@ -203,13 +250,13 @@ public class ProductServiceImpl implements ProductService {
         if(product == null){
             throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
         }
-        //若本就未被删除就提示
-        if(product.getDeleted() == DISABLED){
-            throw new ProductHasNotDeletedException(PRODUCT_HAS_NOT_DELETED);
-        }
         //权限审查
         if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
             throw new NoPermissionException(NO_PERMISSION);
+        }
+        //若本就未被删除就提示
+        if(product.getDeleted() == DISABLED){
+            throw new ProductHasNotDeletedException(PRODUCT_HAS_NOT_DELETED);
         }
         productMapper.recoveryProduct(productId);
     }

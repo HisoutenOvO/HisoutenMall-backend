@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProductSKU {
+public class ProductSku {
 
     @TableId(type = IdType.AUTO)
     private Long id;

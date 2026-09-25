@@ -11,7 +11,9 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 public class ProductSkuItemDTO {
-    //规格，用json字段存储
+
+    private Long skuId;
+
     private String specs;
 
     private BigDecimal price;

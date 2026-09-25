@@ -5,6 +5,8 @@ import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.bo.product.ProductPageResultBO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.apache.ibatis.annotations.*;
 
 @Mapper
@@ -38,4 +40,13 @@ public interface ProductMapper extends BaseMapper<Product> {
      * @return 返回值，用PageResultBO中转
      */
     Page<ProductPageResultBO> pageQuery(Page<ProductPageResultBO> page, @Param("dto") ProductPageQueryBO productPageQueryBO);
+
+    /**
+     * 检查同一商家下是否有同名的商品
+     * @param name 商品名
+     * @param merchantId 商家id
+     * @return 可能存在的名字
+     */
+    @Select("select name from product where name = #{name} and merchant_id = #{merchantId} and deleted = 0")
+    String selectExistedProductName(String name,Long merchantId);
 }

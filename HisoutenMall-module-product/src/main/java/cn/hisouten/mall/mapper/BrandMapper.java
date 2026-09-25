@@ -13,6 +13,6 @@ public interface BrandMapper extends BaseMapper<Brand> {
      * @param brandId 品牌id
      * @return 品牌名称
      */
-    @Select("select name from brand where id = #{brandId}")
+    @Select("select name from brand where id = #{brandId} and deleted = 0")
     String getBrandNameByBrandId(Long brandId);
 }
