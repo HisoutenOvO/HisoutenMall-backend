@@ -2,6 +2,7 @@ package cn.hisouten.mall.pojo.vo.product;
 
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 商家查询商品详情返回值
@@ -38,5 +39,7 @@ public class MerchantProductDetailVO {
     private Integer status;
 
     private Integer deleted;
+
+    private List<MerchantProductSkuVO> skuList;
 
 }

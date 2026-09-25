@@ -4,18 +4,21 @@
     <select id="pageQuery" resultType="cn.hisouten.mall.pojo.bo.product.ProductPageResultBO">
         select p.id,p.name,p.merchant_id,p.category_id,p.brand_id,p.main_image,p.status,p.update_time,b.name as brandName,c.name as categoryName,mp.shop_name as merchantName
         from product p
-        left join merchant_profile mp on p.merchant_id = mp.id
+        left join merchant_profile mp on p.merchant_id = mp.user_id
         left join brand b on p.brand_id = b.id
         left join category c on p.category_id = c.id
         <where>
             <if test="dto.keyword != null and dto.keyword != ''">
                 and p.name like concat('%',#{dto.keyword},'%')
             </if>
-            <if test="dto.categoryId != null and dto.categoryId != ''">
+            <if test="dto.categoryId != null">
                 and p.category_id = #{dto.categoryId}
             </if>
             <if test="dto.status != null">
                 and p.status = #{dto.status}
+            </if>
+            <if test="dto.merchantId != null">
+                and p.merchant_id = #{dto.merchantId}
             </if>
         </where>
         order by p.create_time desc

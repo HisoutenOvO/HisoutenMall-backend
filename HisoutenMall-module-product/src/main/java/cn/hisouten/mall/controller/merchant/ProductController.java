@@ -1,5 +1,6 @@
 package cn.hisouten.mall.controller.merchant;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.product.MerchantProductAddDTO;
@@ -45,7 +46,7 @@ public class ProductController {
     @PostMapping
     @Operation(summary = "新增商品")
     public Result addProduct(@Valid @RequestBody MerchantProductAddDTO merchantProductAddDTO){
-        log.info("商家{}新增商品", merchantProductAddDTO.getMerchantId());
+        log.info("商家{}新增商品", StpUtil.getLoginIdAsLong());
         productService.addProduct(merchantProductAddDTO);
         return Result.success();
     }

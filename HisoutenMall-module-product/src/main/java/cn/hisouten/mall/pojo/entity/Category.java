@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * 商品分类实体类
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

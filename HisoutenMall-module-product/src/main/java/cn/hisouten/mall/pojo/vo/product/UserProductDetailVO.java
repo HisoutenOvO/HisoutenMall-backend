@@ -3,6 +3,8 @@ package cn.hisouten.mall.pojo.vo.product;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 用户查询商品详情返回值
  */
@@ -31,5 +33,6 @@ public class UserProductDetailVO {
 
     private String detail;
 
+    private List<UserProductSkuVO> skuList;
 
 }

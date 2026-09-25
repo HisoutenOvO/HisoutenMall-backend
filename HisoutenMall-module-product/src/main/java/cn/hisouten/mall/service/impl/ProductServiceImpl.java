@@ -1,5 +1,7 @@
 package cn.hisouten.mall.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.exception.businessexception.NoPermissionException;
 import cn.hisouten.mall.exception.businessexception.ProductHasNotDeletedException;
 import cn.hisouten.mall.exception.businessexception.ProductNotFoundException;
 import cn.hisouten.mall.mapper.ProductMapper;
@@ -27,8 +29,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static cn.hisouten.mall.exception.constant.ExceptionMessageConstant.PRODUCT_HAS_NOT_DELETED;
-import static cn.hisouten.mall.exception.constant.ExceptionMessageConstant.PRODUCT_NOT_FOUND;
+import static cn.hisouten.mall.exception.constant.ExceptionMessageConstant.*;
+import static cn.hisouten.mall.exception.constant.StatusConstant.DISABLED;
+import static cn.hisouten.mall.exception.constant.StatusConstant.ENABLED;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +55,10 @@ public class ProductServiceImpl implements ProductService {
         //如果商品不存在或已被逻辑删除，抛出异常
         if(product == null){
             throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        }
+        //权限审查
+        if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
+            throw new NoPermissionException(NO_PERMISSION);
         }
         MerchantProductDetailVO merchantProductDetailVO = new MerchantProductDetailVO();
         BeanUtils.copyProperties(product, merchantProductDetailVO);
@@ -99,6 +106,7 @@ public class ProductServiceImpl implements ProductService {
     public void addProduct(MerchantProductAddDTO merchantProductAddDTO) {
         Product product = new Product();
         BeanUtils.copyProperties(merchantProductAddDTO,product);
+        product.setMerchantId(StpUtil.getLoginIdAsLong());
         productMapper.insert(product);
     }
 
@@ -113,6 +121,10 @@ public class ProductServiceImpl implements ProductService {
         //如果商品不存在或已被逻辑删除，抛出异常
         if(product == null){
             throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        }
+        //权限审查
+        if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
+            throw new NoPermissionException(NO_PERMISSION);
         }
         BeanUtils.copyProperties(merchantProductUpdateDTO,product);
         productMapper.updateById(product);
@@ -129,6 +141,10 @@ public class ProductServiceImpl implements ProductService {
         if(product == null) {
             throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
         }
+        //权限审查
+        if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
+            throw new NoPermissionException(NO_PERMISSION);
+        }
         product.setStatus(status);
         productMapper.updateById(product);
     }
@@ -143,11 +159,15 @@ public class ProductServiceImpl implements ProductService {
         if(product == null){
             throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
         }
+        //权限审查
+        if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
+            throw new NoPermissionException(NO_PERMISSION);
+        }
         productMapper.deleteById(productId);
     }
 
     /**
-     * f复原逻辑删除的商品
+     * 复原逻辑删除的商品
      * @param productId 复原商品id
      */
     @Override
@@ -157,8 +177,12 @@ public class ProductServiceImpl implements ProductService {
             throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
         }
         //若本就未被删除就提示
-        if(product.getDeleted() == 0){
+        if(product.getDeleted() == DISABLED){
             throw new ProductHasNotDeletedException(PRODUCT_HAS_NOT_DELETED);
+        }
+        //权限审查
+        if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
+            throw new NoPermissionException(NO_PERMISSION);
         }
         productMapper.recoveryProduct(productId);
     }
@@ -172,6 +196,10 @@ public class ProductServiceImpl implements ProductService {
         Product product = productMapper.selectByIdIgnoreLogic(productId);
         if(product == null){
             throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        }
+        //权限审查
+        if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
+            throw new NoPermissionException(NO_PERMISSION);
         }
         productMapper.realDelete(productId);
     }
@@ -188,6 +216,7 @@ public class ProductServiceImpl implements ProductService {
         //中转BO类介入，复制查询条件
         ProductPageQueryBO productPageQueryBO = new ProductPageQueryBO();
         BeanUtils.copyProperties(userProductPageQueryDTO,productPageQueryBO);
+        productPageQueryBO.setStatus(ENABLED); //强制用户只能看到上架商品
         //分页查询
         Page<ProductPageResultBO> result = productMapper.pageQuery(page, productPageQueryBO);
         //总数
@@ -213,7 +242,7 @@ public class ProductServiceImpl implements ProductService {
         return new PageResult<>(total, records);
     }
     /**
-     * 用户端分页查询商品分类
+     * 商家端分页查询商品分类
      * @param merchantProductPageQueryDTO 分页查询参数
      * @return 返回分页查询结果
      */
@@ -222,6 +251,8 @@ public class ProductServiceImpl implements ProductService {
         Page<ProductPageResultBO> page = new Page<>(merchantProductPageQueryDTO.getPage(), merchantProductPageQueryDTO.getPageSize());
         ProductPageQueryBO productPageQueryBO = new ProductPageQueryBO();
         BeanUtils.copyProperties(merchantProductPageQueryDTO,productPageQueryBO);
+        //给BO里加入当前商家id，便于让商家查询自家商品
+        productPageQueryBO.setMerchantId(StpUtil.getLoginIdAsLong());
         Page<ProductPageResultBO> result = productMapper.pageQuery(page, productPageQueryBO);
         long total = result.getTotal();
         List<MerchantProductPageResultVO> records = new ArrayList<>();

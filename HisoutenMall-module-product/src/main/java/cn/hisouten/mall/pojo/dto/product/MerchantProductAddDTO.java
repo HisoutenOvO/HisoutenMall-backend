@@ -4,6 +4,8 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * 商家更新商品参数
  */
@@ -14,9 +16,6 @@ public class MerchantProductAddDTO {
     @NotBlank(message = "商品名称不能为空")
     @Size(max = 100, message = "商品名称不能超过100字")
     private String name;
-
-    @NotNull(message = "商家ID不能为空")
-    private Long merchantId;
 
     @Size(max = 200, message = "副标题不能超过200字")
     private String subtitle;
@@ -32,4 +31,6 @@ public class MerchantProductAddDTO {
     private String detail;
 
     private Integer status;
+
+    private List<ProductSkuItemDTO> skuList;
 }

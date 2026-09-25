@@ -4,6 +4,8 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * 商家更新商品参数
  */
@@ -27,5 +29,7 @@ public class MerchantProductUpdateDTO {
 
     @Size(max = 5000, message = "详情不能超过5000字")
     private String detail;
+
+    private List<ProductSkuItemDTO> skuList;
 
 }

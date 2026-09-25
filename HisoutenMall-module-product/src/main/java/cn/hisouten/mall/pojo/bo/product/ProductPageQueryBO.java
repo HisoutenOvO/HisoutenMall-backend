@@ -15,4 +15,6 @@ public class ProductPageQueryBO extends BasePageQuery {
 
     private Integer status;
 
+    private Long merchantId;
+
 }
