@@ -9,5 +9,7 @@ public class ExceptionMessageConstant {
     public static final String PRODUCT_HAS_NOT_DELETED = "商品未被删除！";
     public static final String USER_STATUS_ERROR = "该用户状态异常，无法进行此操作！";
     public static final String USER_ALREADY_EXIST = "该用户名已存在！";
+    public static final String SHOP_NAME_ALREADY_EXIST = "该店铺名已存在！";
+    public static final String CONTACT_PHONE_ALREADY_EXIST = "该联系电话已存在！";
     public static final String USER_NOT_MATCH = "帐号或密码错误！";
 }

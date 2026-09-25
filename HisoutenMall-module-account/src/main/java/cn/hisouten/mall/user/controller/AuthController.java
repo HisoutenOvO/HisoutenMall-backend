@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.admin.AdminLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.merchant.MerchantLoginDTO;
+import cn.hisouten.mall.user.pojo.dto.merchant.MerchantRegisterDTO;
 import cn.hisouten.mall.user.pojo.dto.user.UserLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.user.UserRegisterDTO;
 import cn.hisouten.mall.user.pojo.vo.LoginVO;
@@ -38,6 +39,20 @@ public class AuthController {
     }
 
     /**
+     * 商家注册
+     * @param merchantRegisterDTO 商家注册参数
+     * @return 返回值
+     */
+    @SaIgnore
+    @PostMapping("/merchant/register")
+    @Operation(summary = "商家注册")
+    public Result merchantRegister(@RequestBody MerchantRegisterDTO merchantRegisterDTO){
+        log.info("商家注册：{}",merchantRegisterDTO.getUsername());
+        authService.merchantRegister(merchantRegisterDTO);
+        return Result.success();
+    }
+
+    /**
      * 用户登录
      * @param userLoginDTO 用户登录参数
      * @return 返回值
@@ -48,6 +63,20 @@ public class AuthController {
     public Result<LoginVO> userLogin(@RequestBody UserLoginDTO userLoginDTO){
         log.info("用户:{}登录",userLoginDTO.getUsername());
         LoginVO loginVO = authService.userLogin(userLoginDTO);
+        return Result.success(loginVO);
+    }
+
+    /**
+     * 用户登录
+     * @param adminLoginDTO 管理员登录参数
+     * @return 返回值
+     */
+    @SaIgnore
+    @PostMapping("/admin/login")
+    @Operation(summary = "管理员登录")
+    public Result<LoginVO> adminLogin(@RequestBody AdminLoginDTO adminLoginDTO){
+        log.info("管理员：{}登录",adminLoginDTO.getUsername());
+        LoginVO loginVO = authService.adminLogin(adminLoginDTO);
         return Result.success(loginVO);
     }
 
@@ -63,20 +92,6 @@ public class AuthController {
         log.info("用户登录：{}",userRegisterDTO.getUsername());
         authService.userRegister(userRegisterDTO);
         return Result.success();
-    }
-
-    /**
-     * 用户登录
-     * @param adminLoginDTO 管理员登录参数
-     * @return 返回值
-     */
-    @SaIgnore
-    @PostMapping("/admin/login")
-    @Operation(summary = "管理员登录")
-    public Result<LoginVO> adminLogin(@RequestBody AdminLoginDTO adminLoginDTO){
-        log.info("管理员：{}登录",adminLoginDTO.getUsername());
-        LoginVO loginVO = authService.adminLogin(adminLoginDTO);
-        return Result.success(loginVO);
     }
 
 }

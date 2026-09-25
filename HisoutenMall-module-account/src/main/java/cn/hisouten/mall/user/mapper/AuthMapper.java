@@ -21,5 +21,5 @@ public interface AuthMapper extends BaseMapper<User> {
      * @return 返回可能存在用户名
      */
     @Select("select username from user where username = #{username}")
-    String selectUserNameExist(String username);
+    String selectExistedUserName(String username);
 }

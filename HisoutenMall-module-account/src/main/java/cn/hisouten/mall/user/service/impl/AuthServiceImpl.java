@@ -2,15 +2,16 @@ package cn.hisouten.mall.user.service.impl;
 
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hisouten.mall.exception.businessexception.UserAlreadyExist;
-import cn.hisouten.mall.exception.businessexception.UserNotMatchException;
-import cn.hisouten.mall.exception.businessexception.UserStatusErrorException;
+import cn.hisouten.mall.exception.businessexception.*;
 import cn.hisouten.mall.user.mapper.AuthMapper;
+import cn.hisouten.mall.user.mapper.MerchantProfileMapper;
 import cn.hisouten.mall.user.mapper.UserProfileMapper;
 import cn.hisouten.mall.user.pojo.dto.admin.AdminLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.merchant.MerchantLoginDTO;
+import cn.hisouten.mall.user.pojo.dto.merchant.MerchantRegisterDTO;
 import cn.hisouten.mall.user.pojo.dto.user.UserLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.user.UserRegisterDTO;
+import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
 import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.entity.UserProfile;
 import cn.hisouten.mall.user.pojo.vo.LoginVO;
@@ -29,6 +30,7 @@ import static cn.hisouten.mall.exception.constant.StatusConstant.ENABLED;
 public class AuthServiceImpl implements AuthService {
     private final AuthMapper authMapper;
     private final UserProfileMapper userProfileMapper;
+    private final MerchantProfileMapper merchantProfileMapper;
 
     /**
      * 商家登录
@@ -41,6 +43,45 @@ public class AuthServiceImpl implements AuthService {
         String password = merchantLoginDTO.getPassword();
         //调用内部统一登录方法
         return doLogin(username,password,MERCHANT_ROLE);
+    }
+
+    /**
+     * 商家注册
+     * @param merchantRegisterDTO 商家注册参数
+     */
+    @Override
+    @Transactional
+    public void merchantRegister(MerchantRegisterDTO merchantRegisterDTO) {
+        //查询是否重名
+        String existedUsername = authMapper.selectExistedUserName(merchantRegisterDTO.getUsername());
+        if(existedUsername != null){
+            throw new UserAlreadyExistException(USER_ALREADY_EXIST);
+        }
+
+        //插入user表
+        User user = new User();
+        user.setUsername(merchantRegisterDTO.getUsername());
+        user.setPassword(BCrypt.hashpw(merchantRegisterDTO.getPassword()));
+        user.setRole(MERCHANT_ROLE);
+        user.setStatus(ENABLED);
+        authMapper.insert(user);
+
+        //插入merchant_profile表
+        //查询店名和联系电话是否重复
+        String existedShopName = merchantProfileMapper.selectExistedShopName(merchantRegisterDTO.getShopName());
+        if(existedShopName != null){
+            throw new ShopNameAlreadyExistException(SHOP_NAME_ALREADY_EXIST);
+        }
+        String existedContactPhone = merchantProfileMapper.selectExistedContactPhone(merchantRegisterDTO.getContactPhone());
+        if(existedContactPhone != null){
+            throw new ContactPhoneAlreadyExistException(CONTACT_PHONE_ALREADY_EXIST);
+        }
+        MerchantProfile profile = new MerchantProfile();
+        profile.setUserId(user.getId());
+        profile.setShopName(merchantRegisterDTO.getShopName());
+        profile.setContactPhone(merchantRegisterDTO.getContactPhone());
+        profile.setAuditStatus(ENABLED); //默认通过，后期改成管理员审核
+        merchantProfileMapper.insert(profile);
     }
 
     /**
@@ -63,9 +104,9 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void userRegister(UserRegisterDTO userRegisterDTO) {
         //查询是否重名
-        String expectedUsername = authMapper.selectUserNameExist(userRegisterDTO.getUsername());
-        if(expectedUsername != null){
-            throw new UserAlreadyExist(USER_ALREADY_EXIST);
+        String existedUsername = authMapper.selectExistedUserName(userRegisterDTO.getUsername());
+        if(existedUsername != null){
+            throw new UserAlreadyExistException(USER_ALREADY_EXIST);
         }
         //插入user表
         User user = new User();
