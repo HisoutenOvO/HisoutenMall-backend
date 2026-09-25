@@ -1,4 +1,4 @@
-package cn.hisouten.mall.controller.user;
+package cn.hisouten.mall.controller.merchant;
 
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
@@ -13,23 +13,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController("userCategoryController")
-@RequestMapping("/user/category")
+@RestController("merchantCategoryController")
+@RequestMapping("/merchant/category")
 @Slf4j
-@Tag(name = "用户端——分类接口")
+@Tag(name = "商家端——分类接口")
 @RequiredArgsConstructor
 public class CategoryController {
     private final CategoryService categoryService;
 
     /**
-     * 用户列表查询分类，用于实现屏幕左侧分类列表
-     * @return 返回分类列表
+     * 分类列表查询
+     * @return 返回值
      */
     @GetMapping("/list")
-    @Operation(summary = "用户列表查询分类")
+    @Operation(summary = "分类列表查询")
     public Result<List<CategoryListVO>> listQuery(){
-        log.info("查询分类列表");
-        List<CategoryListVO> categoryList = categoryService.listQuery();
-        return Result.success(categoryList);
+        log.info("分类列表查询");
+        List<CategoryListVO> categoryListVOList = categoryService.listQuery();
+        return Result.success(categoryListVOList);
     }
 }

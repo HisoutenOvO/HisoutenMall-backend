@@ -3,10 +3,10 @@ package cn.hisouten.mall.pojo.vo.category;
 import lombok.Data;
 
 /**
- * 用户列表查询分类返回值
+ * 通用的列表查询分类返回值
  */
 @Data
-public class UserCategoryListVO {
+public class CategoryListVO {
 
     private Long id;
 

@@ -1,5 +1,7 @@
 package cn.hisouten.mall.exception.handler;
 
+import cn.dev33.satoken.exception.NotLoginException;
+import cn.dev33.satoken.exception.NotRoleException;
 import cn.hisouten.mall.exception.BaseException;
 import cn.hisouten.mall.pojo.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,24 @@ public class GlobalExceptionHandler {
     public Result<String> handleBaseException(BaseException e) {
         log.warn("业务异常：{}", e.getMessage());
         return Result.error(e.getMessage());
+    }
+
+    /**
+     * 登录异常
+     */
+    @ExceptionHandler(NotLoginException.class)
+    public Result<Void> handleNotLogin(NotLoginException e) {
+        log.warn("未登录访问：{}", e.getMessage());
+        return Result.error(401, "未登录或登录已过期");
+    }
+
+    /**
+     * 角色权限不足
+     */
+    @ExceptionHandler(NotRoleException.class)
+    public Result<Void> handleNotRole(NotRoleException e) {
+        log.warn("角色权限不足：{}", e.getMessage());
+        return Result.error(403, "权限不足");
     }
 //
 //    /**

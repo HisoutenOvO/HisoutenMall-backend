@@ -237,7 +237,7 @@ public class ProductServiceImpl implements ProductService {
                     .brandName(bo.getBrandName())
                     .mainImage(bo.getMainImage())
                     .status(bo.getStatus())
-                    .deleted(bo.getDeleted())
+                    .updateTime(bo.getUpdateTime())
                     .build();
             records.add(vo);
         }

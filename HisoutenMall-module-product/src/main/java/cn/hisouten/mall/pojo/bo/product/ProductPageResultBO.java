@@ -2,6 +2,8 @@ package cn.hisouten.mall.pojo.bo.product;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 /**
  * 用于product的分页查询中转VO
  */
@@ -29,4 +31,6 @@ public class ProductPageResultBO {
     private Integer deleted;
 
     private String mainImage;
+
+    private LocalDateTime updateTime;
 }

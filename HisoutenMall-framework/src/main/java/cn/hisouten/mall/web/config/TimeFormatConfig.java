@@ -13,6 +13,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.format.DateTimeFormatter;
 
+/**
+ * 配置日期注解，不用手动添加@LocalDateFormat和@JsonFormat之类的东西了
+ */
 @Configuration
 public class TimeFormatConfig implements WebMvcConfigurer {
 

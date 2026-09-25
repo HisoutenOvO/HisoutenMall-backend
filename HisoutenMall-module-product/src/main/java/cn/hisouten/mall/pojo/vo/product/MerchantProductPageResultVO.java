@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 /**
  * 商家分页查询返回值
  */
@@ -32,7 +34,7 @@ public class MerchantProductPageResultVO {
 
     private String brandName;
 
-    private Integer deleted;
-
     private String mainImage;
+
+    private LocalDateTime updateTime;
 }
