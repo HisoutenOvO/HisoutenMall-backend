@@ -133,7 +133,7 @@ public class ProductServiceImpl implements ProductService {
     public void addProduct(MerchantProductAddDTO merchantProductAddDTO) {
         Product product = new Product();
         //判断同一商家下商品是否同名
-        String existedProductName = productMapper.selectExistedProductName(merchantProductAddDTO.getName(),StpUtil.getLoginIdAsLong());
+        String existedProductName = productMapper.selectExistedProductName(merchantProductAddDTO.getName(),StpUtil.getLoginIdAsLong(),null);
         if(existedProductName != null){
             throw new ProductNameAlreadyExistException(PRODUCT_NAME_ALREADY_EXIST);
         }
@@ -165,7 +165,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
-     * 修改商品
+     * 商家端修改商品
      * @param productId 需要修改商品的id
      * @param merchantProductUpdateDTO 修改的数据
      */
@@ -182,10 +182,11 @@ public class ProductServiceImpl implements ProductService {
             throw new NoPermissionException(NO_PERMISSION);
         }
         //判断同一商家下商品是否同名
-        String existedProductName = productMapper.selectExistedProductName(merchantProductUpdateDTO.getName(),StpUtil.getLoginIdAsLong());
+        String existedProductName = productMapper.selectExistedProductName(merchantProductUpdateDTO.getName(),StpUtil.getLoginIdAsLong(),productId);
         if(existedProductName != null){
             throw new ProductNameAlreadyExistException(PRODUCT_NAME_ALREADY_EXIST);
         }
+
         BeanUtils.copyProperties(merchantProductUpdateDTO,product);
         productMapper.updateById(product);
 
@@ -197,20 +198,33 @@ public class ProductServiceImpl implements ProductService {
         List<Long> submittedIds = new ArrayList<>();
 
         //3.遍历前端传的sku列表
+        //如果前端没传任何sku则报错，因为一个sku也没有会导致出现业务异常
+        if(merchantProductUpdateDTO.getSkuList() == null || merchantProductUpdateDTO.getSkuList().isEmpty()){
+            throw new NoSkuExistException(NO_SKU_EXIST);
+        }
+
+        //借用set集合的add实现去重逻辑——set中已存在的话再调用add方法就会返回false
+        Set<String> specSet = new HashSet<>();
         for (ProductSkuItemDTO item : merchantProductUpdateDTO.getSkuList()) {
+            //检查specs，同一个产品不能有相同规格
+            if (item.getSpecs() != null && !specSet.add(item.getSpecs())) {
+                throw new SpecsAlreadyExistException(SPECS_ALREADY_EXIST);
+            }
             if (item.getSkuId() != null) {
-                // 有skuId的就不是前端新增的，即数据库里已有的，更新
+                // 有 skuId 说明是数据库里已有的，更新
                 ProductSku sku = productSkuMapper.selectById(item.getSkuId());
-                if (sku != null) {
-                    sku.setSpecs(item.getSpecs());
-                    sku.setPrice(item.getPrice());
-                    sku.setStock(item.getStock());
-                    sku.setImage(item.getImage());
-                    productSkuMapper.updateById(sku);
-                    submittedIds.add(item.getSkuId());
+                // 检查 skuId 是否有效，不存在或不属于当前商品都报错
+                if (sku == null || !sku.getProductId().equals(productId)) {
+                    throw new SkuNotValidException(SKU_NOT_VALID);
                 }
+                sku.setSpecs(item.getSpecs());
+                sku.setPrice(item.getPrice());
+                sku.setStock(item.getStock());
+                sku.setImage(item.getImage());
+                productSkuMapper.updateById(sku);
+                submittedIds.add(item.getSkuId());
             } else {
-                // 无skuId则为新增的
+                // 无 skuId 说明是新增的
                 ProductSku sku = new ProductSku();
                 sku.setProductId(productId);
                 sku.setSpecs(item.getSpecs());
@@ -356,7 +370,7 @@ public class ProductServiceImpl implements ProductService {
     public UserProductDetailVO userDetailQuery(Long productId) {
         Product product = productMapper.selectById(productId);
         //如果商品不存在或已被逻辑删除，抛出异常
-        if(product == null){
+        if(product == null || product.getStatus() != ENABLED){
             throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
         }
         UserProductDetailVO userProductDetailVO = new UserProductDetailVO();
@@ -369,7 +383,7 @@ public class ProductServiceImpl implements ProductService {
         userProductDetailVO.setMerchantName(merchantName);
 
         //拼装skuList
-        List<ProductSku> skuList = productSkuMapper.selectByProductId(productId);
+        List<ProductSku> skuList = productSkuMapper.selectEnabledByProductId(productId);
         List<UserProductSkuVO> skuVOList = new ArrayList<>();
         for (ProductSku sku : skuList) {
             UserProductSkuVO skuVO = new UserProductSkuVO();
@@ -379,6 +393,7 @@ public class ProductServiceImpl implements ProductService {
             skuVO.setStock(sku.getStock());
             skuVO.setImage(sku.getImage());
             skuVOList.add(skuVO);
+
         }
         userProductDetailVO.setSkuList(skuVOList);
 

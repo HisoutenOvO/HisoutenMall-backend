@@ -29,4 +29,14 @@
         </where>
         order by p.create_time desc
     </select>
+    <select id="selectExistedProductName" resultType="java.lang.String">
+        select name from product
+        where name = #{name}
+          and merchant_id = #{merchantId}
+          and deleted = 0
+        <if test="productId != null ">
+            AND id != #{productId}
+        </if>
+        limit 1
+    </select>
 </mapper>

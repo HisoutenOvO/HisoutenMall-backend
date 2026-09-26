@@ -32,6 +32,14 @@ public interface ProductSkuMapper extends BaseMapper<ProductSku> {
     void realDeleteByProductId(Long productId);
 
     /**
+     * 根据商品id查找商品sku列表，不包括逻辑删除的和下架的
+     * @param productId 商品id
+     * @return 返回商品列表
+     */
+    @Select("select * from product_sku where product_id = #{productId} and status = 1 and deleted = 0")
+    List<ProductSku> selectEnabledByProductId(Long productId);
+
+    /**
      * 根据商品id查找商品sku列表，不包括逻辑删除的
      * @param productId 商品id
      * @return 返回商品列表

@@ -45,8 +45,8 @@ public interface ProductMapper extends BaseMapper<Product> {
      * 检查同一商家下是否有同名的商品
      * @param name 商品名
      * @param merchantId 商家id
+     * @param productId 商品id，用于排除自己
      * @return 可能存在的名字
      */
-    @Select("select name from product where name = #{name} and merchant_id = #{merchantId} and deleted = 0")
-    String selectExistedProductName(String name,Long merchantId);
+    String selectExistedProductName(String name,Long merchantId,Long productId);
 }
