@@ -50,4 +50,11 @@ public interface BrandService {
      * @param adminBrandUpdateDTO 修改参数
      */
     void updateBrand(Long brandId, AdminBrandUpdateDTO adminBrandUpdateDTO);
+
+    /**
+     * 修改品牌上下架状态
+     * @param brandId 品牌id
+     * @param status 状态
+     */
+    void changeStatus(Long brandId,Integer status);
 }

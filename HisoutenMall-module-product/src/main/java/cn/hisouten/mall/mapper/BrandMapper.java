@@ -31,8 +31,9 @@ public interface BrandMapper extends BaseMapper<Brand> {
     /**
      * 查找可能重复的品牌名
      * @param name 新增品牌名
+     * @param brandId 排除自己的品牌id
      * @return 可能存在的品牌名
      */
-    @Select("select name from brand where name = #{name}")
-    String getExistName(String name);
+
+    String getExistName(String name,Long brandId);
 }

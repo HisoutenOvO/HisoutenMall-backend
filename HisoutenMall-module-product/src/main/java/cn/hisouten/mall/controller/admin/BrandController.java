@@ -73,4 +73,18 @@ public class BrandController {
         brandService.updateBrand(brandId,adminBrandUpdateDTO);
         return Result.success();
     }
+
+    /**
+     * 修改品牌上下架状态
+     * @param brandId 品牌id
+     * @param status 状态
+     * @return 返回值
+     */
+    @PutMapping("/{brandId}/status")
+    @Operation(summary = "修改品牌上下架状态")
+    public Result changeStatus(@PathVariable Long brandId,@RequestParam Integer status){
+        log.info("修改品牌状态：{}",brandId);
+        brandService.changeStatus(brandId,status);
+        return Result.success();
+    }
 }

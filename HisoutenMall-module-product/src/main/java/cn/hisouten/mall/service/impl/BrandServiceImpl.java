@@ -116,7 +116,7 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public void addBrand(AdminBrandAddDTO adminBrandAddDTO) {
         Brand brand = new Brand();
-        String existedName = brandMapper.getExistName(adminBrandAddDTO.getName());
+        String existedName = brandMapper.getExistName(adminBrandAddDTO.getName(),null);
         if(existedName != null){
             throw new BrandNameAlreadyExist(BRAND_NAME_ALREADY_EXIST);
         }
@@ -134,11 +134,26 @@ public class BrandServiceImpl implements BrandService {
         if(brand == null){
             throw new BrandNotFoundException(BRAND_NOT_FOUND);
         }
-        String existedName = brandMapper.getExistName(adminBrandUpdateDTO.getName());
+        String existedName = brandMapper.getExistName(adminBrandUpdateDTO.getName(),brandId);
         if(existedName != null){
             throw new BrandNameAlreadyExist(BRAND_NAME_ALREADY_EXIST);
         }
         BeanUtils.copyProperties(adminBrandUpdateDTO,brand);
+        brandMapper.updateById(brand);
+    }
+
+    /**
+     * 修改品牌上下架状态
+     * @param brandId 品牌id
+     * @param status 状态
+     */
+    @Override
+    public void changeStatus(Long brandId,Integer status) {
+        Brand brand = brandMapper.selectById(brandId);
+        if(brand == null){
+            throw new BrandNotFoundException(BRAND_NOT_FOUND);
+        }
+        brand.setStatus(status);
         brandMapper.updateById(brand);
     }
 
