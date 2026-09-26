@@ -119,10 +119,4 @@ public interface ProductService {
      */
     void deleteSku(Long skuId);
 
-    /**
-     * 根据品牌id查询商品数量
-     * @param brandId 品牌id
-     * @return 返回商品数量
-     */
-    Long getProductCountByBrandId(Long brandId);
 }

@@ -1,6 +1,5 @@
 package cn.hisouten.mall.controller.admin;
 
-import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandAddDTO;
@@ -94,7 +93,7 @@ public class BrandController {
      * @param brandId 品牌id
      * @return 返回值
      */
-    @DeleteMapping("{/brandId}/deleted")
+    @DeleteMapping("{brandId}/deleted")
     @Operation(summary = "逻辑删除品牌")
     public Result logicDelete(@PathVariable Long brandId){
         log.info("逻辑删除品牌：{}",brandId);

@@ -54,5 +54,5 @@ public interface ProductMapper extends BaseMapper<Product> {
      * @return 返回值
      */
     @Select("select count(0) from product where brand_id = #{brandId} and deleted = 0")
-    Long getCountByBrandId(Long brandId);
+    Long getProductCountByBrandId(Long brandId);
 }

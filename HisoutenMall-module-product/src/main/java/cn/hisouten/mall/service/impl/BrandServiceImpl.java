@@ -4,6 +4,7 @@ import cn.hisouten.mall.exception.businessexception.BrandNameAlreadyExist;
 import cn.hisouten.mall.exception.businessexception.BrandNotFoundException;
 import cn.hisouten.mall.exception.businessexception.BrandRelatedProductException;
 import cn.hisouten.mall.mapper.BrandMapper;
+import cn.hisouten.mall.mapper.ProductMapper;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.brand.BrandPageQueryBO;
 import cn.hisouten.mall.pojo.bo.brand.BrandPageResultBO;
@@ -31,7 +32,7 @@ import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
 @RequiredArgsConstructor
 public class BrandServiceImpl implements BrandService {
     private final BrandMapper brandMapper;
-    private final ProductService productService;
+    private final ProductMapper productMapper;
 
     /**
      * 通过品牌id获取品牌名称
@@ -170,7 +171,7 @@ public class BrandServiceImpl implements BrandService {
             throw new BrandNotFoundException(BRAND_NOT_FOUND);
         }
         //若有相关产品则不可删除
-        Long count = productService.getProductCountByBrandId(brandId);
+        Long count = productMapper.getProductCountByBrandId(brandId);
         if(count > 0){
             throw new BrandRelatedProductException(BRAND_RELATED_PRODUCT);
         }
