@@ -2,17 +2,16 @@ package cn.hisouten.mall.controller.admin;
 
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.pojo.dto.brand.AdminBrandAddDTO;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandPageQueryDTO;
+import cn.hisouten.mall.pojo.vo.brand.AdminBrandDetailVO;
 import cn.hisouten.mall.pojo.vo.brand.AdminBrandPageResultVO;
 import cn.hisouten.mall.service.BrandService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController("adminBrandController")
 @RequiredArgsConstructor
@@ -33,5 +32,31 @@ public class BrandController {
         log.info("品牌分页查询");
         PageResult<AdminBrandPageResultVO> pageResult = brandService.pageQuery(adminBrandPageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    /**
+     * 查询品牌详情
+     * @param brandId 品牌id
+     * @return 返回值
+     */
+    @GetMapping("/{brandId}")
+    @Operation(summary = "查询品牌详情")
+    public Result<AdminBrandDetailVO> detailQuery(@PathVariable Long brandId){
+        log.info("查询品牌详情：{}",brandId);
+        AdminBrandDetailVO adminBrandDetailVO = brandService.detailQuery(brandId);
+        return Result.success(adminBrandDetailVO);
+    }
+
+    /**
+     * 新增品牌
+     * @param adminBrandAddDTO 新增品牌参数
+     * @return 返回值
+     */
+    @PostMapping
+    @Operation(summary = "新增商品")
+    public Result addBrand(@RequestBody AdminBrandAddDTO adminBrandAddDTO){
+        log.info("新增品牌");
+        brandService.addBrand(adminBrandAddDTO);
+        return Result.success();
     }
 }

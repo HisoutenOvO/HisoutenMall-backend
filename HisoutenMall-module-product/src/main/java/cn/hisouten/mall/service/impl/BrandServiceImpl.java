@@ -1,11 +1,15 @@
 package cn.hisouten.mall.service.impl;
 
+import cn.hisouten.mall.exception.businessexception.BrandNameAlreadyExist;
+import cn.hisouten.mall.exception.businessexception.BrandNotFoundException;
 import cn.hisouten.mall.mapper.BrandMapper;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.brand.BrandPageQueryBO;
 import cn.hisouten.mall.pojo.bo.brand.BrandPageResultBO;
+import cn.hisouten.mall.pojo.dto.brand.AdminBrandAddDTO;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandPageQueryDTO;
 import cn.hisouten.mall.pojo.entity.Brand;
+import cn.hisouten.mall.pojo.vo.brand.AdminBrandDetailVO;
 import cn.hisouten.mall.pojo.vo.brand.AdminBrandPageResultVO;
 import cn.hisouten.mall.pojo.vo.brand.BrandListVO;
 import cn.hisouten.mall.service.BrandService;
@@ -17,6 +21,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static cn.hisouten.mall.constant.ExceptionMessageConstant.BRAND_NAME_ALREADY_EXIST;
+import static cn.hisouten.mall.constant.ExceptionMessageConstant.BRAND_NOT_FOUND;
 import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
 
 @Service
@@ -85,4 +91,38 @@ public class BrandServiceImpl implements BrandService {
         }
         return new PageResult<>(total,records);
     }
+
+    /**
+     * 查询品牌详情
+     * @param brandId 品牌id
+     * @return 返回值
+     */
+    @Override
+    public AdminBrandDetailVO detailQuery(Long brandId) {
+        Brand brand = brandMapper.selectById(brandId);
+        if(brand == null){
+            throw new BrandNotFoundException(BRAND_NOT_FOUND);
+        }
+        AdminBrandDetailVO adminBrandDetailVO = new AdminBrandDetailVO();
+        BeanUtils.copyProperties(brand,adminBrandDetailVO);
+        return adminBrandDetailVO;
+    }
+
+    /**
+     * 新增品牌
+     * @param adminBrandAddDTO 新增品牌参数
+     */
+    @Override
+    public void addBrand(AdminBrandAddDTO adminBrandAddDTO) {
+        Brand brand = new Brand();
+        String existedName = brandMapper.getExistName(adminBrandAddDTO.getName());
+        if(existedName != null){
+            throw new BrandNameAlreadyExist(BRAND_NAME_ALREADY_EXIST);
+        }
+        BeanUtils.copyProperties(adminBrandAddDTO,brand);
+        brandMapper.insert(brand);
+    }
+
+
+
 }

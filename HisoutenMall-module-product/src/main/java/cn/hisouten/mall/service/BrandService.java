@@ -1,7 +1,9 @@
 package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.pojo.dto.brand.AdminBrandAddDTO;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandPageQueryDTO;
+import cn.hisouten.mall.pojo.vo.brand.AdminBrandDetailVO;
 import cn.hisouten.mall.pojo.vo.brand.AdminBrandPageResultVO;
 import cn.hisouten.mall.pojo.vo.brand.BrandListVO;
 
@@ -28,4 +30,17 @@ public interface BrandService {
      * @return 返回值
      */
     PageResult<AdminBrandPageResultVO> pageQuery(AdminBrandPageQueryDTO adminBrandPageQueryDTO);
+
+    /**
+     * 查询品牌详情
+     * @param brandId 品牌id
+     * @return 返回值
+     */
+    AdminBrandDetailVO detailQuery(Long brandId);
+
+    /**
+     * 新增品牌
+     * @param adminBrandAddDTO 新增品牌参数
+     */
+    void addBrand(AdminBrandAddDTO adminBrandAddDTO);
 }
