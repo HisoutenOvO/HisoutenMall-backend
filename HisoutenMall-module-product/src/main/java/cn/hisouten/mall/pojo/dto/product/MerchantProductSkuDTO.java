@@ -1,18 +1,14 @@
 package cn.hisouten.mall.pojo.dto.product;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 /**
- * 商品SKU主要项参数，用于作其他类成员变量
+ * 商家修改sku参数
  */
 @Data
-@NoArgsConstructor
-public class ProductSkuItemDTO {
-
-    private Long skuId;
+public class MerchantProductSkuDTO {
 
     private String specs;
 
@@ -21,4 +17,5 @@ public class ProductSkuItemDTO {
     private Integer stock;
 
     private String image;
+
 }

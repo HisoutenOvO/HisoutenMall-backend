@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -54,4 +55,36 @@ public interface ProductSkuMapper extends BaseMapper<ProductSku> {
      */
     @Select("select * from product_sku where product_id = #{productId}")
     List<ProductSku> selectAllByProductId(Long productId);
+
+    /**
+     * 绕过MybatisPlus实现查找sku
+     * @param skuId 查找的skuId
+     * @return 返回真正的sku
+     */
+    @Select("select * from product_sku where id = #{skuId}")
+    ProductSku selectByIdIgnoreLogic(Long skuId);
+
+    /**
+     * 恢复删除的sku记录
+     * @param skuId skuId
+     */
+    @Update("update product_sku set deleted = 0 where id = #{skuId}")
+    void recoverySku(Long skuId);
+
+    /**
+     * 彻底删除sku
+     * @param skuId skuId
+     */
+    @Delete("delete from product_sku where id = #{skuId}")
+    void realDeleteById(Long skuId);
+
+    /**
+     * 根据商品id寻找同一商品下是否有相同规格
+     * @param productId 商品id
+     * @param skuId 排除自己
+     * @param specs 查找相同的specs
+     * @return
+     */
+    @Select("select specs from product_sku where product_id = #{productId} and id != #{skuId} and specs = #{specs} and deleted = 0")
+    String selectExistSpecsByProductId(Long productId,Long skuId,String specs);
 }

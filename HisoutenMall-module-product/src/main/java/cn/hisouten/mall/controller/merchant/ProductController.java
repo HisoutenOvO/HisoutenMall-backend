@@ -3,11 +3,10 @@ package cn.hisouten.mall.controller.merchant;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
-import cn.hisouten.mall.pojo.dto.product.MerchantProductAddDTO;
-import cn.hisouten.mall.pojo.dto.product.MerchantProductPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.product.MerchantProductUpdateDTO;
+import cn.hisouten.mall.pojo.dto.product.*;
 import cn.hisouten.mall.pojo.vo.product.MerchantProductDetailVO;
 import cn.hisouten.mall.pojo.vo.product.MerchantProductPageResultVO;
+import cn.hisouten.mall.pojo.vo.product.MerchantProductSkuVO;
 import cn.hisouten.mall.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,6 +14,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController("merchantProductController")
 @RequiredArgsConstructor
@@ -128,6 +129,99 @@ public class ProductController {
     public Result deleteProduct(@PathVariable Long productId){
         log.info("删除商品数据:{}",productId);
         productService.deleteProduct(productId);
+        return Result.success();
+    }
+
+    /**
+     * 查询某个商品全部sku
+     * @param productId 查询sku的商品id
+     * @return 返回值
+     */
+    @GetMapping("/{productId}/sku")
+    @Operation(summary = "查询某个商品全部sku")
+    public Result<List<MerchantProductSkuVO>> listQuerySku(@PathVariable Long productId){
+        log.info("查询:{} 的全部sku",productId);
+        List<MerchantProductSkuVO> list = productService.listQuerySku(productId);
+        return Result.success(list);
+    }
+
+    /**
+     * 查询某个sku详情
+     * @param skuId skuId
+     * @return 返回值
+     */
+    @GetMapping("/sku/{skuId}")
+    @Operation(summary = "查询某个sku详情")
+    public Result<MerchantProductSkuVO> skuDetailQuery(@PathVariable Long skuId){
+        log.info("查询:{}的详情",skuId);
+        MerchantProductSkuVO merchantProductSkuVO = productService.skuDetailQuery(skuId);
+        return Result.success(merchantProductSkuVO);
+    }
+
+    /**
+     * 修改sku
+     * @param skuId skuId
+     * @param productSkuDTO 修改sku的参数
+     * @return 返回值
+     */
+    @PutMapping("/sku/{skuId}")@
+    Operation(summary = "修改sku")
+    public Result updateSku(@PathVariable Long skuId, @RequestBody MerchantProductSkuDTO productSkuDTO){
+        log.info("修改：{}",skuId);
+        productService.updateSku(skuId,productSkuDTO);
+        return Result.success();
+    }
+
+    /**
+     * 修改sku上下架状态
+     * @param skuId skuId
+     * @param status 状态
+     * @return 返回值
+     */
+    @PutMapping("/sku/{skuId}/status")
+    @Operation(summary = "修改sku上下架状态")
+    public Result changeSkuStatus(@PathVariable Long skuId,@RequestParam Integer status){
+        log.info("修改sku：{}上下架状态",skuId);
+        productService.changeSkuStatus(skuId,status);
+        return Result.success();
+    }
+
+    /**
+     * 逻辑删除sku
+     * @param skuId skuId
+     * @return 返回值
+     */
+    @DeleteMapping("/sku/{skuId}/deleted")
+    @Operation(summary = "逻辑删除sku")
+    public Result logicDeleteSku(@PathVariable Long skuId){
+        log.info("逻辑删除sku：{}",skuId);
+        productService.logicDeleteSku(skuId);
+        return Result.success();
+    }
+
+    /**
+     * 恢复删除掉的sku
+     * @param skuId skuId
+     * @return
+     */
+    @PutMapping("/sku/{skuId}/deleted")
+    @Operation(summary = "恢复删除的sku")
+    public Result RecoverySku(@PathVariable Long skuId){
+        log.info("恢复删除sku：{}",skuId);
+        productService.recoverySku(skuId);
+        return Result.success();
+    }
+
+    /**
+     * 彻底删除sku
+     * @param skuId skuId
+     * @return
+     */
+    @DeleteMapping("/sku/{skuId}")
+    @Operation(summary = "彻底删除sku")
+    public Result deleteSku(@PathVariable Long skuId){
+        log.info("彻底删除sku：{}",skuId);
+        productService.deleteSku(skuId);
         return Result.success();
     }
 }

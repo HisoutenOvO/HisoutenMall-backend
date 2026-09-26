@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 /**
  * 用户分页查询返回值
  */
@@ -31,4 +33,8 @@ public class UserProductPageResultVO {
     private String brandName;
 
     private String mainImage;
+
+    private BigDecimal minPrice;
+
+    private Integer totalStock;
 }

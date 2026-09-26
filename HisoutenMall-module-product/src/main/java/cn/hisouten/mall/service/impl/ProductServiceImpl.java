@@ -1,6 +1,7 @@
 package cn.hisouten.mall.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.exception.RemoveSkuBeforeDeleteException;
 import cn.hisouten.mall.exception.businessexception.*;
 import cn.hisouten.mall.mapper.ProductMapper;
 import cn.hisouten.mall.mapper.ProductSkuMapper;
@@ -75,6 +76,8 @@ public class ProductServiceImpl implements ProductService {
                     .mainImage(bo.getMainImage())
                     .status(bo.getStatus())
                     .updateTime(bo.getUpdateTime())
+                    .minPrice(bo.getMinPrice()).
+                    totalStock(bo.getTotalStock())
                     .build();
             records.add(vo);
         }
@@ -88,15 +91,7 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public MerchantProductDetailVO merchantDetailQuery(Long productId) {
-        Product product = productMapper.selectById(productId);
-        //如果商品不存在或已被逻辑删除，抛出异常
-        if(product == null){
-            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
-        }
-        //权限审查
-        if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
-            throw new NoPermissionException(NO_PERMISSION);
-        }
+        Product product = checkProductOwnership(productId);
         MerchantProductDetailVO merchantProductDetailVO = new MerchantProductDetailVO();
         BeanUtils.copyProperties(product, merchantProductDetailVO);
         String categoryName = categoryService.getCategoryNameByCategoryId(product.getCategoryId());
@@ -172,15 +167,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public void updateProduct(Long productId, MerchantProductUpdateDTO merchantProductUpdateDTO) {
-        Product product = productMapper.selectById(productId);
-        //如果商品不存在或已被逻辑删除，抛出异常
-        if(product == null){
-            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
-        }
-        //权限审查
-        if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
-            throw new NoPermissionException(NO_PERMISSION);
-        }
+        Product product = checkProductOwnership(productId);
         //判断同一商家下商品是否同名
         String existedProductName = productMapper.selectExistedProductName(merchantProductUpdateDTO.getName(),StpUtil.getLoginIdAsLong(),productId);
         if(existedProductName != null){
@@ -249,15 +236,7 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public void changeStatus(Long productId, Integer status) {
-        Product product = productMapper.selectById(productId);
-        //如果商品不存在或已被逻辑删除，抛出异常
-        if(product == null) {
-            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
-        }
-        //权限审查
-        if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
-            throw new NoPermissionException(NO_PERMISSION);
-        }
+        Product product = checkProductOwnership(productId);
         product.setStatus(status);
         productMapper.updateById(product);
     }
@@ -268,13 +247,10 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public void logicDeleteProduct(Long productId) {
-        Product product = productMapper.selectById(productId);
-        if(product == null){
-            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
-        }
-        //权限审查
-        if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
-            throw new NoPermissionException(NO_PERMISSION);
+        Product product = checkProductOwnership(productId);
+        //只允许下架的商品被逻辑删除
+        if(product.getStatus() != DISABLED){
+        throw new RemoveProductBeforeDeleteException(REMOVE_PRODUCT_BEFORE_DELETE);
         }
         productMapper.deleteById(productId);
     }
@@ -286,11 +262,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void recoveryProduct(Long productId) {
         Product product = productMapper.selectByIdIgnoreLogic(productId);
-        if(product == null){
+        if (product == null) {
             throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
         }
-        //权限审查
-        if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
+        if (!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
             throw new NoPermissionException(NO_PERMISSION);
         }
         //若本就未被删除就提示
@@ -308,18 +283,38 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void deleteProduct(Long productId) {
         Product product = productMapper.selectByIdIgnoreLogic(productId);
-        if(product == null){
+        if (product == null) {
+            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        }
+        if (!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
+            throw new NoPermissionException(NO_PERMISSION);
+        }
+        //若未被逻辑删除则不可物理删除
+        if(product.getDeleted() != ENABLED){
+            throw new LogicDeleteProductBeforePhysicalException(LOGIC_DELETE_PRODUCT_BEFORE_PHYSICAL);
+        }
+        //连着删除商品的sku数据
+        productSkuMapper.realDeleteByProductId(productId);
+        productMapper.realDeleteById(productId);
+    }
+
+    /**
+     * 私有方法，提取校验product的方法并封装
+     * @param productId
+     * @return
+     */
+    private Product checkProductOwnership(Long productId){
+        Product product = productMapper.selectById(productId);
+        //如果商品不存在或已被逻辑删除，抛出异常
+        if(product == null) {
             throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
         }
         //权限审查
         if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
             throw new NoPermissionException(NO_PERMISSION);
         }
-        //连着删除商品的sku数据
-        productSkuMapper.realDeleteByProductId(productId);
-        productMapper.realDelete(productId);
+        return product;
     }
-
     //=======================================用户端逻辑================================================
 
     /**
@@ -354,6 +349,8 @@ public class ProductServiceImpl implements ProductService {
                     .categoryName(bo.getCategoryName())
                     .brandName(bo.getBrandName())
                     .mainImage(bo.getMainImage())
+                    .minPrice(bo.getMinPrice())
+                    .totalStock(bo.getTotalStock())
                     .build();
             records.add(vo);
         }
@@ -402,5 +399,186 @@ public class ProductServiceImpl implements ProductService {
 
     //=======================================商品SKU逻辑================================================
 
+    /**
+     * 查询某个商品全部sku
+     * @param productId 查询sku的商品id
+     * @return 返回值
+     */
+    @Override
+    public List<MerchantProductSkuVO> listQuerySku(Long productId) {
+        Product product = checkProductOwnership(productId);
+        //拼装skuList
+        List<ProductSku> skuList = productSkuMapper.selectAllByProductId(productId);
+        List<MerchantProductSkuVO> skuVOList = new ArrayList<>();
+        for (ProductSku sku : skuList) {
+            MerchantProductSkuVO skuVO = new MerchantProductSkuVO();
+            skuVO.setId(sku.getId());
+            skuVO.setSpecs(sku.getSpecs());
+            skuVO.setPrice(sku.getPrice());
+            skuVO.setStock(sku.getStock());
+            skuVO.setImage(sku.getImage());
+            skuVO.setStatus(sku.getStatus());
+            skuVO.setDeleted(sku.getDeleted());
+            skuVOList.add(skuVO);
+        }
+        return skuVOList;
+    }
+
+    /**
+     * 查询某个sku详情
+     * @param skuId skuId
+     * @return 返回值
+     */
+    @Override
+    public MerchantProductSkuVO skuDetailQuery(Long skuId) {
+        ProductSku productSku = checkSkuOwnership(skuId);
+        MerchantProductSkuVO merchantProductSkuVO = new MerchantProductSkuVO();
+        BeanUtils.copyProperties(productSku,merchantProductSkuVO);
+        return merchantProductSkuVO;
+    }
+
+    /**
+     * 修改sku
+     * @param skuId skuId
+     * @param merchantProductSkuDTO 修改参数
+     */
+    @Override
+    public void updateSku(Long skuId,MerchantProductSkuDTO merchantProductSkuDTO) {
+        ProductSku productSku = checkSkuOwnership(skuId);
+        //如果修改了规格，检查和别的规格是否重复
+        if(merchantProductSkuDTO.getSpecs() != null && !merchantProductSkuDTO.getSpecs().equals(productSku.getSpecs())){
+            String expectedSpecs = productSkuMapper.selectExistSpecsByProductId(productSku.getProductId(),skuId, merchantProductSkuDTO.getSpecs());
+            if(expectedSpecs != null){
+                throw new SpecsAlreadyExistException(SPECS_ALREADY_EXIST);
+            }
+        }
+        BeanUtils.copyProperties(merchantProductSkuDTO,productSku);
+        productSkuMapper.updateById(productSku);
+    }
+
+    /**
+     * 修改sku上下架状态
+     * @param skuId skuId
+     * @param status 状态
+     * @return 返回值
+     */
+    @Override
+    public void changeSkuStatus(Long skuId, Integer status) {
+        ProductSku sku = productSkuMapper.selectById(skuId);
+        if (sku == null) {
+            throw new SkuNotFoundException(SKU_NOT_FOUND);
+        }
+        Product product = productMapper.selectById(sku.getProductId());
+        if(product == null){
+            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        }
+        if (!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
+            throw new NoPermissionException(NO_PERMISSION);
+        }
+        //如果商品未上架，则不可以上架sku
+        if(status == ENABLED && product.getStatus() != ENABLED){
+            throw new ProductHasRemovedException(PRODUCT_HAS_REMOVED);
+        }
+        sku.setStatus(status);
+        productSkuMapper.updateById(sku);
+    }
+
+    /**
+     * 逻辑删除sku
+     * @param skuId skuId
+     */
+    @Override
+    @Transactional
+    public void logicDeleteSku(Long skuId) {
+        ProductSku sku = productSkuMapper.selectById(skuId);
+        if (sku == null) {
+            throw new SkuNotFoundException(SKU_NOT_FOUND);
+        }
+        Product product = productMapper.selectById(sku.getProductId());
+        if(product == null){
+            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        }
+        if (!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
+            throw new NoPermissionException(NO_PERMISSION);
+        }
+        //只允许下架的sku被逻辑删除
+        if(sku.getStatus() != DISABLED){
+            throw new RemoveSkuBeforeDeleteException(REMOVE_SKU_BEFORE_DELETE);
+        }
+        productSkuMapper.deleteById(sku);
+        //查询该商品现有的sku，若删除了最后一个sku则报错
+        List<ProductSku> existedSkuList = productSkuMapper.selectExistSkuList(product.getId());
+        if(existedSkuList == null || existedSkuList.isEmpty()){
+            throw new NoSkuExistException(NO_SKU_EXIST);
+        }
+    }
+
+    /**
+     * 恢复删除掉的sku
+     * @param skuId skuId
+     */
+    @Override
+    public void recoverySku(Long skuId) {
+        ProductSku sku = productSkuMapper.selectByIdIgnoreLogic(skuId);
+        if (sku == null) {
+            throw new SkuNotFoundException(SKU_NOT_FOUND);
+        }
+        Product product = productMapper.selectById(sku.getProductId());
+        if(product == null){
+            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        }
+        if (!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
+            throw new NoPermissionException(NO_PERMISSION);
+        }
+        //若本就未被删除就提示
+        if(sku.getDeleted() == DISABLED){
+            throw new SkuHasNotDeletedException(SKU_HAS_NOT_DELETED);
+        }
+        productSkuMapper.recoverySku(skuId);
+    }
+
+    /**
+     * 彻底删除sku
+     * @param skuId skuId
+     */
+    @Override
+    public void deleteSku(Long skuId) {
+        ProductSku sku = productSkuMapper.selectByIdIgnoreLogic(skuId);
+        if (sku == null) {
+            throw new SkuNotFoundException(SKU_NOT_FOUND);
+        }
+        Product product = productMapper.selectById(sku.getProductId());
+        if(product == null){
+            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        }
+        if (!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
+            throw new NoPermissionException(NO_PERMISSION);
+        }
+        //若未被逻辑删除则不可物理删除
+        if(sku.getDeleted() != ENABLED){
+            throw new LogicDeleteSkuBeforePhysicalException(LOGIC_DELETE_SKU_BEFORE_PHYSICAL);
+        }
+        productSkuMapper.realDeleteById(skuId);
+    }
+
+    /**
+     * 私有方法，提取校验sku的方法并封装
+     * @param skuId
+     * @return
+     */
+    private ProductSku checkSkuOwnership(Long skuId) {
+        ProductSku sku = productSkuMapper.selectById(skuId);
+        if (sku == null) {
+            throw new SkuNotFoundException(SKU_NOT_FOUND);
+        }
+        Product product = productMapper.selectById(sku.getProductId());
+        if(product == null){
+            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        }
+        if (!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
+            throw new NoPermissionException(NO_PERMISSION);
+        }
+        return sku;
+    }
 
 }

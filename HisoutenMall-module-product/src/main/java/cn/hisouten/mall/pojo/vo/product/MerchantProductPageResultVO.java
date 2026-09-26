@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -35,6 +36,10 @@ public class MerchantProductPageResultVO {
     private String brandName;
 
     private String mainImage;
+
+    private BigDecimal minPrice;
+
+    private Integer totalStock;
 
     private LocalDateTime updateTime;
 }

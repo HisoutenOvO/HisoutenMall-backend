@@ -2,6 +2,7 @@ package cn.hisouten.mall.pojo.bo.product;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -31,6 +32,10 @@ public class ProductPageResultBO {
     private Integer deleted;
 
     private String mainImage;
+
+    private BigDecimal minPrice;
+
+    private Integer totalStock;
 
     private LocalDateTime updateTime;
 }

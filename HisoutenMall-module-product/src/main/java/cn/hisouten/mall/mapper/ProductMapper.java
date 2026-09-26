@@ -5,8 +5,6 @@ import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.bo.product.ProductPageResultBO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import org.apache.ibatis.annotations.*;
 
 @Mapper
@@ -31,7 +29,7 @@ public interface ProductMapper extends BaseMapper<Product> {
      * @param productId 商品id
      */
     @Delete("delete from product where id = #{productId}")
-    void realDelete(Long productId);
+    void realDeleteById(Long productId);
 
     /**
      * 分页查询商品

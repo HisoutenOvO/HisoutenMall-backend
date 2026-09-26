@@ -1,14 +1,10 @@
 package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.dto.product.MerchantProductAddDTO;
-import cn.hisouten.mall.pojo.dto.product.MerchantProductPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.product.MerchantProductUpdateDTO;
-import cn.hisouten.mall.pojo.dto.product.UserProductPageQueryDTO;
-import cn.hisouten.mall.pojo.vo.product.MerchantProductDetailVO;
-import cn.hisouten.mall.pojo.vo.product.MerchantProductPageResultVO;
-import cn.hisouten.mall.pojo.vo.product.UserProductDetailVO;
-import cn.hisouten.mall.pojo.vo.product.UserProductPageResultVO;
+import cn.hisouten.mall.pojo.dto.product.*;
+import cn.hisouten.mall.pojo.vo.product.*;
+
+import java.util.List;
 
 public interface ProductService {
     /**
@@ -75,4 +71,51 @@ public interface ProductService {
      * @return 返回分页查询结果
      */
     PageResult<UserProductPageResultVO> userPageQuery(UserProductPageQueryDTO userProductPageQueryDTO);
+
+    /**
+     * 查询某个商品全部sku
+     * @param productId 查询sku的商品id
+     * @return 返回值
+     */
+    List<MerchantProductSkuVO> listQuerySku(Long productId);
+
+    /**
+     * 查询某个sku详情
+     * @param skuId skuId
+     * @return 返回值
+     */
+    MerchantProductSkuVO skuDetailQuery(Long skuId);
+
+    /**
+     * 修改sku
+     * @param skuId skuId
+     * @param merchantProductSkuDTO 修改参数
+     */
+    void updateSku(Long skuId, MerchantProductSkuDTO merchantProductSkuDTO);
+
+    /**
+     * 修改sku上下架状态
+     * @param skuId skuId
+     * @param status 状态
+     * @return 返回值
+     */
+    void changeSkuStatus(Long skuId, Integer status);
+
+    /**
+     * 逻辑删除sku
+     * @param skuId skuId
+     */
+    void logicDeleteSku(Long skuId);
+
+    /**
+     * 恢复删除掉的sku
+     * @param skuId skuId
+     */
+    void recoverySku(Long skuId);
+
+    /**
+     * 彻底删除sku
+     * @param skuId skuId
+     */
+    void deleteSku(Long skuId);
 }
