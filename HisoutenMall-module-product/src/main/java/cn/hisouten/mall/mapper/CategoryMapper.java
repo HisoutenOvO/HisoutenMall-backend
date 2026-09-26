@@ -10,11 +10,6 @@ import java.util.List;
 
 @Mapper
 public interface CategoryMapper extends BaseMapper<Category> {
-    /**
-     * 获取分类列表基础信息
-     * @return 返回分类列表
-     */
-    List<CategoryListVO> getList();
 
     /**
      * 通过分类id查询分类名称

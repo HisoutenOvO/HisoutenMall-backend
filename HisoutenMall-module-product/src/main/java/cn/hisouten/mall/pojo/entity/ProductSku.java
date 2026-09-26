@@ -23,7 +23,7 @@ public class ProductSku {
 
     private Long productId;
 
-    private Long skuCode;
+    private String skuCode;
 
     private BigDecimal price;
 

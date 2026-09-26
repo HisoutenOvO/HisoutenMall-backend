@@ -8,12 +8,17 @@
         left join brand b on p.brand_id = b.id
         left join category c on p.category_id = c.id
         <where>
-            p.deleted = 0
+            <if test="dto.deleted != null">
+                and p.deleted = #{dto.deleted}
+            </if>
             <if test="dto.keyword != null and dto.keyword != ''">
                 and p.name like concat('%',#{dto.keyword},'%')
             </if>
             <if test="dto.categoryId != null">
                 and p.category_id = #{dto.categoryId}
+            </if>
+            <if test="dto.brandId != null">
+                and p.brand_id = #{dto.brandId}
             </if>
             <if test="dto.status != null">
                 and p.status = #{dto.status}

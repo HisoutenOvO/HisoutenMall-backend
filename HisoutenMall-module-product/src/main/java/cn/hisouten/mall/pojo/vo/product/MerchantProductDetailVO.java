@@ -32,10 +32,6 @@ public class MerchantProductDetailVO {
 
     private String detail;
 
-    private LocalDateTime createTime;
-
-    private LocalDateTime updateTime;
-
     private Integer status;
 
     private Integer deleted;

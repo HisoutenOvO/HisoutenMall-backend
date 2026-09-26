@@ -10,10 +10,7 @@ import cn.hisouten.mall.pojo.dto.product.*;
 import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.bo.product.ProductPageResultBO;
 import cn.hisouten.mall.pojo.entity.ProductSku;
-import cn.hisouten.mall.pojo.vo.product.MerchantProductDetailVO;
-import cn.hisouten.mall.pojo.vo.product.MerchantProductPageResultVO;
-import cn.hisouten.mall.pojo.vo.product.UserProductDetailVO;
-import cn.hisouten.mall.pojo.vo.product.UserProductPageResultVO;
+import cn.hisouten.mall.pojo.vo.product.*;
 import cn.hisouten.mall.service.BrandService;
 import cn.hisouten.mall.service.CategoryService;
 import cn.hisouten.mall.service.ProductService;
@@ -44,6 +41,45 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryService categoryService;
     private final BrandService brandService;
 
+    //=======================================商家端逻辑================================================
+
+    /**
+     * 商家端分页查询商品分类
+     * @param merchantProductPageQueryDTO 分页查询参数
+     * @return 返回分页查询结果
+     */
+    @Override
+    public PageResult<MerchantProductPageResultVO> merchantPageQuery(MerchantProductPageQueryDTO merchantProductPageQueryDTO) {
+        Page<ProductPageResultBO> page = new Page<>(merchantProductPageQueryDTO.getPage(), merchantProductPageQueryDTO.getPageSize());
+        ProductPageQueryBO productPageQueryBO = new ProductPageQueryBO();
+        BeanUtils.copyProperties(merchantProductPageQueryDTO,productPageQueryBO);
+        //给BO里加入当前商家id，便于让商家查询自家商品
+        productPageQueryBO.setMerchantId(StpUtil.getLoginIdAsLong());
+        // 如果前端没传deleted条件，默认查未删除的
+        if (productPageQueryBO.getDeleted() == null) {
+            productPageQueryBO.setDeleted(DISABLED);
+        }
+        Page<ProductPageResultBO> result = productMapper.pageQuery(page, productPageQueryBO);
+        long total = result.getTotal();
+        List<MerchantProductPageResultVO> records = new ArrayList<>();
+        for (ProductPageResultBO bo : result.getRecords()) {
+            MerchantProductPageResultVO vo = MerchantProductPageResultVO.builder()
+                    .id(bo.getId())
+                    .merchantId(bo.getMerchantId())
+                    .categoryId(bo.getCategoryId())
+                    .brandId(bo.getBrandId())
+                    .name(bo.getName())
+                    .merchantName(bo.getMerchantName())
+                    .categoryName(bo.getCategoryName())
+                    .brandName(bo.getBrandName())
+                    .mainImage(bo.getMainImage())
+                    .status(bo.getStatus())
+                    .updateTime(bo.getUpdateTime())
+                    .build();
+            records.add(vo);
+        }
+        return new PageResult<>(total, records);
+    }
 
     /**
      * 商家端查询商品详情
@@ -70,34 +106,23 @@ public class ProductServiceImpl implements ProductService {
         merchantProductDetailVO.setCategoryName(categoryName);
         merchantProductDetailVO.setMerchantName(merchantName);
 
+        //拼装skuList
+        List<ProductSku> skuList = productSkuMapper.selectByProductId(productId);
+        List<MerchantProductSkuVO> skuVOList = new ArrayList<>();
+        for (ProductSku sku : skuList) {
+            MerchantProductSkuVO skuVO = new MerchantProductSkuVO();
+            skuVO.setId(sku.getId());
+            skuVO.setSpecs(sku.getSpecs());
+            skuVO.setPrice(sku.getPrice());
+            skuVO.setStock(sku.getStock());
+            skuVO.setImage(sku.getImage());
+            skuVO.setStatus(sku.getStatus());
+            skuVO.setDeleted(sku.getDeleted());
+            skuVOList.add(skuVO);
+        }
+        merchantProductDetailVO.setSkuList(skuVOList);
         return merchantProductDetailVO;
     }
-
-
-    /**
-     * 用户端查询商品详情
-     * @param productId 商品ID
-     * @return 返回商品详情信息
-     */
-    @Override
-    public UserProductDetailVO userDetailQuery(Long productId) {
-        Product product = productMapper.selectById(productId);
-        //如果商品不存在或已被逻辑删除，抛出异常
-        if(product == null){
-            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
-        }
-        UserProductDetailVO userProductDetailVO = new UserProductDetailVO();
-        BeanUtils.copyProperties(product, userProductDetailVO);
-        String categoryName = categoryService.getCategoryNameByCategoryId(product.getCategoryId());
-        String merchantName = merchantProfileService.getMerchantNameByMerchantId(product.getMerchantId());
-        String brandName = brandService.getBrandNameByBrandId(product.getBrandId());
-        userProductDetailVO.setBrandName(brandName);
-        userProductDetailVO.setCategoryName(categoryName);
-        userProductDetailVO.setMerchantName(merchantName);
-
-        return userProductDetailVO;
-    }
-
 
     /**
      * 商家端新增商品
@@ -266,6 +291,7 @@ public class ProductServiceImpl implements ProductService {
      * @param productId 商品id
      */
     @Override
+    @Transactional
     public void deleteProduct(Long productId) {
         Product product = productMapper.selectByIdIgnoreLogic(productId);
         if(product == null){
@@ -275,8 +301,12 @@ public class ProductServiceImpl implements ProductService {
         if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
             throw new NoPermissionException(NO_PERMISSION);
         }
+        //连着删除商品的sku数据
+        productSkuMapper.realDeleteByProductId(productId);
         productMapper.realDelete(productId);
     }
+
+    //=======================================用户端逻辑================================================
 
     /**
      * 用户端分页查询商品分类
@@ -291,6 +321,7 @@ public class ProductServiceImpl implements ProductService {
         ProductPageQueryBO productPageQueryBO = new ProductPageQueryBO();
         BeanUtils.copyProperties(userProductPageQueryDTO,productPageQueryBO);
         productPageQueryBO.setStatus(ENABLED); //强制用户只能看到上架商品
+        productPageQueryBO.setDeleted(DISABLED); //强制用户只能看到未删除的
         //分页查询
         Page<ProductPageResultBO> result = productMapper.pageQuery(page, productPageQueryBO);
         //总数
@@ -315,37 +346,46 @@ public class ProductServiceImpl implements ProductService {
         //返回封装好的VO
         return new PageResult<>(total, records);
     }
+
     /**
-     * 商家端分页查询商品分类
-     * @param merchantProductPageQueryDTO 分页查询参数
-     * @return 返回分页查询结果
+     * 用户端查询商品详情
+     * @param productId 商品ID
+     * @return 返回商品详情信息
      */
     @Override
-    public PageResult<MerchantProductPageResultVO> merchantPageQuery(MerchantProductPageQueryDTO merchantProductPageQueryDTO) {
-        Page<ProductPageResultBO> page = new Page<>(merchantProductPageQueryDTO.getPage(), merchantProductPageQueryDTO.getPageSize());
-        ProductPageQueryBO productPageQueryBO = new ProductPageQueryBO();
-        BeanUtils.copyProperties(merchantProductPageQueryDTO,productPageQueryBO);
-        //给BO里加入当前商家id，便于让商家查询自家商品
-        productPageQueryBO.setMerchantId(StpUtil.getLoginIdAsLong());
-        Page<ProductPageResultBO> result = productMapper.pageQuery(page, productPageQueryBO);
-        long total = result.getTotal();
-        List<MerchantProductPageResultVO> records = new ArrayList<>();
-        for (ProductPageResultBO bo : result.getRecords()) {
-            MerchantProductPageResultVO vo = MerchantProductPageResultVO.builder()
-                    .id(bo.getId())
-                    .merchantId(bo.getMerchantId())
-                    .categoryId(bo.getCategoryId())
-                    .brandId(bo.getBrandId())
-                    .name(bo.getName())
-                    .merchantName(bo.getMerchantName())
-                    .categoryName(bo.getCategoryName())
-                    .brandName(bo.getBrandName())
-                    .mainImage(bo.getMainImage())
-                    .status(bo.getStatus())
-                    .updateTime(bo.getUpdateTime())
-                    .build();
-            records.add(vo);
+    public UserProductDetailVO userDetailQuery(Long productId) {
+        Product product = productMapper.selectById(productId);
+        //如果商品不存在或已被逻辑删除，抛出异常
+        if(product == null){
+            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
         }
-        return new PageResult<>(total, records);
+        UserProductDetailVO userProductDetailVO = new UserProductDetailVO();
+        BeanUtils.copyProperties(product, userProductDetailVO);
+        String categoryName = categoryService.getCategoryNameByCategoryId(product.getCategoryId());
+        String merchantName = merchantProfileService.getMerchantNameByMerchantId(product.getMerchantId());
+        String brandName = brandService.getBrandNameByBrandId(product.getBrandId());
+        userProductDetailVO.setBrandName(brandName);
+        userProductDetailVO.setCategoryName(categoryName);
+        userProductDetailVO.setMerchantName(merchantName);
+
+        //拼装skuList
+        List<ProductSku> skuList = productSkuMapper.selectByProductId(productId);
+        List<UserProductSkuVO> skuVOList = new ArrayList<>();
+        for (ProductSku sku : skuList) {
+            UserProductSkuVO skuVO = new UserProductSkuVO();
+            skuVO.setId(sku.getId());
+            skuVO.setSpecs(sku.getSpecs());
+            skuVO.setPrice(sku.getPrice());
+            skuVO.setStock(sku.getStock());
+            skuVO.setImage(sku.getImage());
+            skuVOList.add(skuVO);
+        }
+        userProductDetailVO.setSkuList(skuVOList);
+
+        return userProductDetailVO;
     }
+
+    //=======================================商品SKU逻辑================================================
+
+
 }

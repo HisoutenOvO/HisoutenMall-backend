@@ -13,8 +13,11 @@ public class ProductPageQueryBO extends BasePageQuery {
 
     private Long categoryId;
 
+    private Long brandId;
+
     private Integer status;
 
     private Long merchantId;
 
+    private Integer deleted;
 }

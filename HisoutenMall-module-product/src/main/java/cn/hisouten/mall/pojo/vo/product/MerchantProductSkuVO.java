@@ -23,10 +23,6 @@ public class MerchantProductSkuVO {
 
     private Integer status;
 
-    private LocalDateTime createTime;
-
-    private LocalDateTime updateTime;
-
     private Integer deleted;
 
 }

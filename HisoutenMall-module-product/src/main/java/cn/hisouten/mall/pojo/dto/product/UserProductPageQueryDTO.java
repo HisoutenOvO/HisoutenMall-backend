@@ -13,4 +13,6 @@ public class UserProductPageQueryDTO extends BasePageQuery {
 
     private Long categoryId;
 
+    private Long brandId;
+
 }
