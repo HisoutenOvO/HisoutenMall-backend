@@ -4,6 +4,7 @@ import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandAddDTO;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.brand.AdminBrandUpdateDTO;
 import cn.hisouten.mall.pojo.vo.brand.AdminBrandDetailVO;
 import cn.hisouten.mall.pojo.vo.brand.AdminBrandPageResultVO;
 import cn.hisouten.mall.service.BrandService;
@@ -57,6 +58,19 @@ public class BrandController {
     public Result addBrand(@RequestBody AdminBrandAddDTO adminBrandAddDTO){
         log.info("新增品牌");
         brandService.addBrand(adminBrandAddDTO);
+        return Result.success();
+    }
+
+    /**
+     * 修改品牌
+     * @param adminBrandUpdateDTO 修改参数
+     * @return 返回值
+     */
+    @PutMapping("/{brandId}")
+    @Operation(summary = "修改品牌")
+    public Result updateBrand(@PathVariable Long brandId ,@RequestBody AdminBrandUpdateDTO adminBrandUpdateDTO){
+        log.info("修改品牌：{}",brandId);
+        brandService.updateBrand(brandId,adminBrandUpdateDTO);
         return Result.success();
     }
 }

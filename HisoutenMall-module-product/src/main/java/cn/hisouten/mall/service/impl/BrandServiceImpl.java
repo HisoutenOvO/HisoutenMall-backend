@@ -8,6 +8,7 @@ import cn.hisouten.mall.pojo.bo.brand.BrandPageQueryBO;
 import cn.hisouten.mall.pojo.bo.brand.BrandPageResultBO;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandAddDTO;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.brand.AdminBrandUpdateDTO;
 import cn.hisouten.mall.pojo.entity.Brand;
 import cn.hisouten.mall.pojo.vo.brand.AdminBrandDetailVO;
 import cn.hisouten.mall.pojo.vo.brand.AdminBrandPageResultVO;
@@ -123,6 +124,23 @@ public class BrandServiceImpl implements BrandService {
         brandMapper.insert(brand);
     }
 
+    /**
+     * 修改品牌
+     * @param adminBrandUpdateDTO 修改参数
+     */
+    @Override
+    public void updateBrand(Long brandId, AdminBrandUpdateDTO adminBrandUpdateDTO) {
+        Brand brand = brandMapper.selectById(brandId);
+        if(brand == null){
+            throw new BrandNotFoundException(BRAND_NOT_FOUND);
+        }
+        String existedName = brandMapper.getExistName(adminBrandUpdateDTO.getName());
+        if(existedName != null){
+            throw new BrandNameAlreadyExist(BRAND_NAME_ALREADY_EXIST);
+        }
+        BeanUtils.copyProperties(adminBrandUpdateDTO,brand);
+        brandMapper.updateById(brand);
+    }
 
 
 }
