@@ -4,7 +4,7 @@
     <select id="pageQuery" resultType="cn.hisouten.mall.pojo.bo.brand.BrandPageResultBO">
         select * from brand
         <where>
-            <if test="dto.getKeyword() != null and dto.getKeyword() != ''">
+            <if test="dto.keyword != null and dto.keyword != ''">
                 and name like concat('%', #{dto.keyword}, '%')
             </if>
             <if test="dto.status != null">

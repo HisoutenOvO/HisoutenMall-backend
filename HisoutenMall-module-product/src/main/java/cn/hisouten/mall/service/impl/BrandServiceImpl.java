@@ -49,7 +49,7 @@ public class BrandServiceImpl implements BrandService {
      */
     @Override
     public List<BrandListVO> listQuery() {
-        List<Brand> brandList = brandMapper.selectList(null);
+        List<Brand> brandList = brandMapper.selectBrandList();
         List<BrandListVO> brandVOList = new ArrayList<>();
         for (Brand brand : brandList) {
             BrandListVO brandListVO = new BrandListVO();

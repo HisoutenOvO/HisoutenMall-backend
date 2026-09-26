@@ -9,6 +9,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+
 @Mapper
 public interface BrandMapper extends BaseMapper<Brand> {
 
@@ -36,4 +38,11 @@ public interface BrandMapper extends BaseMapper<Brand> {
      */
 
     String getExistName(String name,Long brandId);
+
+    /**
+     * 查询品牌列表
+     * @return 返回值
+     */
+    @Select("select * from brand where deleted = 0 and status = 1")
+    List<Brand> selectBrandList();
 }
