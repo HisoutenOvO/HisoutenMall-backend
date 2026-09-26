@@ -1,5 +1,8 @@
 package cn.hisouten.mall.service;
 
+import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.pojo.dto.brand.AdminBrandPageQueryDTO;
+import cn.hisouten.mall.pojo.vo.brand.AdminBrandPageResultVO;
 import cn.hisouten.mall.pojo.vo.brand.BrandListVO;
 
 import java.util.List;
@@ -18,4 +21,11 @@ public interface BrandService {
      * @return 返回值
      */
     List<BrandListVO> listQuery();
+
+    /**
+     * 品牌分页查询
+     * @param adminBrandPageQueryDTO 分页查询参数
+     * @return 返回值
+     */
+    PageResult<AdminBrandPageResultVO> pageQuery(AdminBrandPageQueryDTO adminBrandPageQueryDTO);
 }
