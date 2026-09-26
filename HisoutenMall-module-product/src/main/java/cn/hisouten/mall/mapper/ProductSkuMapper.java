@@ -85,6 +85,6 @@ public interface ProductSkuMapper extends BaseMapper<ProductSku> {
      * @param specs 查找相同的specs
      * @return
      */
-    @Select("select specs from product_sku where product_id = #{productId} and id != #{skuId} and specs = #{specs} and deleted = 0")
+    @Select("select specs from product_sku where product_id = #{productId} and id != #{skuId} and specs = #{specs}")
     String selectExistSpecsByProductId(Long productId,Long skuId,String specs);
 }

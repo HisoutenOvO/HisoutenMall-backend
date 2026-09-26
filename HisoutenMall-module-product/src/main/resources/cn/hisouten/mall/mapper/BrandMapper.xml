@@ -18,7 +18,8 @@
     <select id="getExistName" resultType="java.lang.String">
         select name from brand where name = #{name}
         <if test="brandId != null">
-            select name from brand where name = #{name} and id != #{brandId}
+            and id != #{brandId}
         </if>
+        limit 1
     </select>
 </mapper>

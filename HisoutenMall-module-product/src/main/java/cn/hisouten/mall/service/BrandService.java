@@ -57,4 +57,10 @@ public interface BrandService {
      * @param status 状态
      */
     void changeStatus(Long brandId,Integer status);
+
+    /**
+     * 逻辑删除品牌
+     * @param brandId 品牌id
+     */
+    void logicDelete(Long brandId);
 }

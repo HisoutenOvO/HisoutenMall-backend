@@ -1,5 +1,6 @@
 package cn.hisouten.mall.controller.admin;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandAddDTO;
@@ -85,6 +86,19 @@ public class BrandController {
     public Result changeStatus(@PathVariable Long brandId,@RequestParam Integer status){
         log.info("修改品牌状态：{}",brandId);
         brandService.changeStatus(brandId,status);
+        return Result.success();
+    }
+
+    /**
+     * 逻辑删除品牌
+     * @param brandId 品牌id
+     * @return 返回值
+     */
+    @DeleteMapping("{/brandId}/deleted")
+    @Operation(summary = "逻辑删除品牌")
+    public Result logicDelete(@PathVariable Long brandId){
+        log.info("逻辑删除品牌：{}",brandId);
+        brandService.logicDelete(brandId);
         return Result.success();
     }
 }

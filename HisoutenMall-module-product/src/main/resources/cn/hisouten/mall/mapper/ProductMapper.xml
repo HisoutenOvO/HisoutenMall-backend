@@ -47,7 +47,6 @@
         select name from product
         where name = #{name}
         and merchant_id = #{merchantId}
-        and deleted = 0
         <if test="productId != null">
             and id != #{productId}
         </if>

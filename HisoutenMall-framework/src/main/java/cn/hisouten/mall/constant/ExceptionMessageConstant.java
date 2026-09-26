@@ -26,4 +26,5 @@ public class ExceptionMessageConstant {
     public static final String REMOVE_SKU_BEFORE_DELETE = "若需要删除商品款式请先下架该款式！";
     public static final String LOGIC_DELETE_PRODUCT_BEFORE_PHYSICAL = "若需要彻底删除商品请先删除该商品！";
     public static final String LOGIC_DELETE_SKU_BEFORE_PHYSICAL = "若需要彻底删除商品款式请先删除该款式！";
+    public static final String BRAND_RELATED_PRODUCT = "该品牌关联着商品，暂不可删除";
 }

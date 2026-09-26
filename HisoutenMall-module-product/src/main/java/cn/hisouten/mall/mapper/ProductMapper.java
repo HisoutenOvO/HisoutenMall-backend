@@ -47,4 +47,12 @@ public interface ProductMapper extends BaseMapper<Product> {
      * @return 可能存在的名字
      */
     String selectExistedProductName(String name,Long merchantId,Long productId);
+
+    /**
+     * 根据品牌id查询商品数量
+     * @param brandId 品牌id
+     * @return 返回值
+     */
+    @Select("select count(0) from product where brand_id = #{brandId} ")
+    Long getCountByBrandId(Long brandId);
 }

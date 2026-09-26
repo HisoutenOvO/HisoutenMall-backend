@@ -561,6 +561,11 @@ public class ProductServiceImpl implements ProductService {
         productSkuMapper.realDeleteById(skuId);
     }
 
+    @Override
+    public Long getProductCountByBrandId(Long brandId) {
+        return productMapper.getCountByBrandId(brandId);
+    }
+
     /**
      * 私有方法，提取校验sku的方法并封装
      * @param skuId

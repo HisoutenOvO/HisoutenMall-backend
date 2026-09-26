@@ -2,6 +2,7 @@ package cn.hisouten.mall.service.impl;
 
 import cn.hisouten.mall.exception.businessexception.BrandNameAlreadyExist;
 import cn.hisouten.mall.exception.businessexception.BrandNotFoundException;
+import cn.hisouten.mall.exception.businessexception.BrandRelatedProductException;
 import cn.hisouten.mall.mapper.BrandMapper;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.brand.BrandPageQueryBO;
@@ -14,6 +15,7 @@ import cn.hisouten.mall.pojo.vo.brand.AdminBrandDetailVO;
 import cn.hisouten.mall.pojo.vo.brand.AdminBrandPageResultVO;
 import cn.hisouten.mall.pojo.vo.brand.BrandListVO;
 import cn.hisouten.mall.service.BrandService;
+import cn.hisouten.mall.service.ProductService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -22,14 +24,14 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static cn.hisouten.mall.constant.ExceptionMessageConstant.BRAND_NAME_ALREADY_EXIST;
-import static cn.hisouten.mall.constant.ExceptionMessageConstant.BRAND_NOT_FOUND;
+import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
 
 @Service
 @RequiredArgsConstructor
 public class BrandServiceImpl implements BrandService {
     private final BrandMapper brandMapper;
+    private final ProductService productService;
 
     /**
      * 通过品牌id获取品牌名称
@@ -155,6 +157,24 @@ public class BrandServiceImpl implements BrandService {
         }
         brand.setStatus(status);
         brandMapper.updateById(brand);
+    }
+
+    /**
+     * 逻辑删除品牌
+     * @param brandId 品牌id
+     */
+    @Override
+    public void logicDelete(Long brandId) {
+        Brand brand = brandMapper.selectById(brandId);
+        if(brand == null){
+            throw new BrandNotFoundException(BRAND_NOT_FOUND);
+        }
+        //若有相关产品则不可删除
+        Long count = productService.getProductCountByBrandId(brandId);
+        if(count > 0){
+            throw new BrandRelatedProductException(BRAND_RELATED_PRODUCT);
+        }
+        brandMapper.deleteById(brandId);
     }
 
 
