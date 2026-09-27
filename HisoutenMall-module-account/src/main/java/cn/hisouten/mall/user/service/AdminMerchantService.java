@@ -2,6 +2,7 @@ package cn.hisouten.mall.user.service;
 
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.user.pojo.dto.AdminMerchantPageQueryDTO;
+import cn.hisouten.mall.user.pojo.vo.AdminMerchantDetailVO;
 import cn.hisouten.mall.user.pojo.vo.AdminMerchantPageResultVO;
 
 public interface AdminMerchantService {
@@ -12,4 +13,11 @@ public interface AdminMerchantService {
      * @return 返回值
      */
     PageResult<AdminMerchantPageResultVO> pageQuery(AdminMerchantPageQueryDTO adminMerchantPageQueryDTO);
+
+    /**
+     * 查询商家详情
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    AdminMerchantDetailVO detailQuery(Long merchantId);
 }

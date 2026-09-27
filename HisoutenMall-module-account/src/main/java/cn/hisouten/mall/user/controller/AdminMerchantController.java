@@ -3,6 +3,7 @@ package cn.hisouten.mall.user.controller;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.AdminMerchantPageQueryDTO;
+import cn.hisouten.mall.user.pojo.vo.AdminMerchantDetailVO;
 import cn.hisouten.mall.user.pojo.vo.AdminMerchantPageResultVO;
 import cn.hisouten.mall.user.service.AdminMerchantService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,5 +34,18 @@ public class AdminMerchantController {
         log.info("商家分页查询");
         PageResult<AdminMerchantPageResultVO> pageResult = adminMerchantService.pageQuery(adminMerchantPageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    /**
+     * 查询商家详情
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    @GetMapping("/{merchantId}")
+    @Operation(summary = "查询商家详情")
+    public Result<AdminMerchantDetailVO> detailQuery(@PathVariable Long merchantId){
+        log.info("查询商家详情：{}",merchantId);
+        AdminMerchantDetailVO adminMerchantDetailVO = adminMerchantService.detailQuery(merchantId);
+        return Result.success(adminMerchantDetailVO);
     }
 }

@@ -20,4 +20,13 @@
             order by u.create_time desc
         </where>
     </select>
+    <select id="getMerchantById" resultType="cn.hisouten.mall.user.pojo.vo.AdminMerchantDetailVO">
+        select u.id,u.username,u.status,
+               mp.shop_name,mp.shop_logo,mp.shop_description,mp.contact_phone,mp.business_license,
+               mp.audit_status,mp.audit_reason
+        from user u
+        left join merchant_profile mp
+        on u.id = mp.user_id
+        where u.id = #{merchantId}
+    </select>
 </mapper>

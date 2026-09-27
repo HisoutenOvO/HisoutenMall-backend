@@ -2,6 +2,7 @@ package cn.hisouten.mall.user.mapper;
 
 import cn.hisouten.mall.user.pojo.dto.AdminMerchantPageQueryDTO;
 import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
+import cn.hisouten.mall.user.pojo.vo.AdminMerchantDetailVO;
 import cn.hisouten.mall.user.pojo.vo.AdminMerchantPageResultVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -43,4 +44,11 @@ public interface MerchantProfileMapper extends BaseMapper<MerchantProfile> {
      * @return 返回值
      */
     Page<AdminMerchantPageResultVO> pageQuery(Page<AdminMerchantPageResultVO> page,@Param("dto") AdminMerchantPageQueryDTO adminMerchantPageQueryDTO);
+
+    /**
+     * 根据商家的userId查询商家详情
+     * @param merchantId 商家id——对应商家user表主键
+     * @return 返回值
+     */
+    AdminMerchantDetailVO getMerchantById(Long merchantId);
 }
