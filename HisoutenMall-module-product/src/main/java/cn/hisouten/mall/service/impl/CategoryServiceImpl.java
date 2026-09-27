@@ -1,6 +1,6 @@
 package cn.hisouten.mall.service.impl;
 
-import cn.hisouten.mall.exception.businessexception.*;
+import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.CategoryMapper;
 import cn.hisouten.mall.mapper.ProductMapper;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryAddDTO;
@@ -101,7 +101,7 @@ public class CategoryServiceImpl implements CategoryService {
     public AdminCategoryDetailVO detailQuery(Long categoryId) {
         Category category = categoryMapper.selectById(categoryId);
         if(category == null){
-            throw new CategoryNotFoundException(CATEGORY_NOT_FOUND);
+            throw new BizException(CATEGORY_NOT_FOUND);
         }
         AdminCategoryDetailVO vo = new AdminCategoryDetailVO();
         BeanUtils.copyProperties(category, vo);
@@ -117,7 +117,7 @@ public class CategoryServiceImpl implements CategoryService {
         //同级同名校验
         String existedName = categoryMapper.selectExistCategoryName(adminCategoryAddDTO.getName(),adminCategoryAddDTO.getParentId(),null);
         if(existedName != null){
-            throw new CategoryNameAlreadyExistException(CATEGORY_NAME_ALREADY_EXIST);
+            throw new BizException(CATEGORY_NAME_ALREADY_EXIST);
         }
         //设置层级属性level
         Integer level;
@@ -126,10 +126,10 @@ public class CategoryServiceImpl implements CategoryService {
         } else {
             Category parent = categoryMapper.selectById(adminCategoryAddDTO.getParentId());
             if (parent == null) {
-                throw new CategoryNotFoundException(CATEGORY_NOT_FOUND);
+                throw new BizException(CATEGORY_NOT_FOUND);
             }
             if (parent.getLevel() >= 3) {
-                throw new LevelOverflowException(LEVEL_OVERFLOW);
+                throw new BizException(LEVEL_OVERFLOW);
             }
             level = parent.getLevel() + 1;
         }
@@ -149,12 +149,12 @@ public class CategoryServiceImpl implements CategoryService {
     public void updateCategory(Long categoryId, AdminCategoryUpdateDTO adminCategoryUpdateDTO) {
         Category category = categoryMapper.selectById(categoryId);
         if(category == null){
-            throw new CategoryNotFoundException(CATEGORY_NOT_FOUND);
+            throw new BizException(CATEGORY_NOT_FOUND);
         }
         // 同级同名检查，排除自己
         String existed = categoryMapper.selectExistCategoryName(adminCategoryUpdateDTO.getName(),category.getParentId(), categoryId);
         if (existed != null) {
-            throw new CategoryNameAlreadyExistException(CATEGORY_NAME_ALREADY_EXIST);
+            throw new BizException(CATEGORY_NAME_ALREADY_EXIST);
         }
         category.setName(adminCategoryUpdateDTO.getName());
         category.setSort(adminCategoryUpdateDTO.getSort());
@@ -170,7 +170,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void changeStatus(Long categoryId, Integer status) {
         Category category = categoryMapper.selectById(categoryId);
         if(category == null){
-            throw new CategoryNotFoundException(CATEGORY_NOT_FOUND);
+            throw new BizException(CATEGORY_NOT_FOUND);
         }
         category.setStatus(status);
         categoryMapper.updateById(category);
@@ -184,17 +184,17 @@ public class CategoryServiceImpl implements CategoryService {
     public void logicDelete(Long categoryId) {
         Category category = categoryMapper.selectById(categoryId);
         if(category == null){
-            throw new CategoryNotFoundException(CATEGORY_NOT_FOUND);
+            throw new BizException(CATEGORY_NOT_FOUND);
         }
         //查询是否有子分类
         Integer categoryCount = categoryMapper.getChildCategoryCount(categoryId);
         if(categoryCount > 0){
-            throw new CategoryRelatedChildrenException(CATEGORY_RELATED_CHILDREN);
+            throw new BizException(CATEGORY_RELATED_CHILDREN);
         }
         //查询分类下是否有商品数据
         Integer productCount = productMapper.getProductCountByCategoryId(categoryId);
         if(productCount != 0){
-            throw new CategoryRelatedProductException(CATEGORY_RELATED_PRODUCT);
+            throw new BizException(CATEGORY_RELATED_PRODUCT);
         }
         categoryMapper.deleteById(categoryId);
     }
@@ -246,7 +246,7 @@ public class CategoryServiceImpl implements CategoryService {
     public String getCategoryNameByCategoryId(Long categoryId) {
         Category category = categoryMapper.selectById(categoryId);
         if(category == null){
-            throw new CategoryNotFoundException(CATEGORY_NOT_FOUND);
+            throw new BizException(CATEGORY_NOT_FOUND);
         }
         return categoryMapper.getCategoryNameByCategoryId(categoryId);
     }

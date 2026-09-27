@@ -1,10 +1,10 @@
 package cn.hisouten.mall.user.service;
 
-import cn.hisouten.mall.user.pojo.dto.admin.AdminLoginDTO;
-import cn.hisouten.mall.user.pojo.dto.merchant.MerchantLoginDTO;
-import cn.hisouten.mall.user.pojo.dto.merchant.MerchantRegisterDTO;
-import cn.hisouten.mall.user.pojo.dto.user.UserLoginDTO;
-import cn.hisouten.mall.user.pojo.dto.user.UserRegisterDTO;
+import cn.hisouten.mall.user.pojo.dto.AdminLoginDTO;
+import cn.hisouten.mall.user.pojo.dto.MerchantLoginDTO;
+import cn.hisouten.mall.user.pojo.dto.MerchantRegisterDTO;
+import cn.hisouten.mall.user.pojo.dto.UserLoginDTO;
+import cn.hisouten.mall.user.pojo.dto.UserRegisterDTO;
 import cn.hisouten.mall.user.pojo.vo.LoginVO;
 
 public interface AuthService {

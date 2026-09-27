@@ -1,8 +1,7 @@
 package cn.hisouten.mall.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hisouten.mall.exception.RemoveSkuBeforeDeleteException;
-import cn.hisouten.mall.exception.businessexception.*;
+import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.ProductMapper;
 import cn.hisouten.mall.mapper.ProductSkuMapper;
 import cn.hisouten.mall.pojo.PageResult;
@@ -97,11 +96,11 @@ public class ProductServiceImpl implements ProductService {
         Product product = productMapper.selectByIdIgnoreLogic(productId);
         //如果商品不存在或已被逻辑删除，抛出异常
         if(product == null) {
-            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+            throw new BizException(PRODUCT_NOT_FOUND);
         }
         //权限审查
         if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
-            throw new NoPermissionException(NO_PERMISSION);
+            throw new BizException(NO_PERMISSION);
         }
         MerchantProductDetailVO merchantProductDetailVO = new MerchantProductDetailVO();
         BeanUtils.copyProperties(product, merchantProductDetailVO);
@@ -141,7 +140,7 @@ public class ProductServiceImpl implements ProductService {
         //判断同一商家下商品是否同名
         String existedProductName = productMapper.selectExistedProductName(merchantProductAddDTO.getName(),StpUtil.getLoginIdAsLong(),null);
         if(existedProductName != null){
-            throw new ProductNameAlreadyExistException(PRODUCT_NAME_ALREADY_EXIST);
+            throw new BizException(PRODUCT_NAME_ALREADY_EXIST);
         }
         BeanUtils.copyProperties(merchantProductAddDTO,product);
         product.setMerchantId(StpUtil.getLoginIdAsLong());
@@ -155,7 +154,7 @@ public class ProductServiceImpl implements ProductService {
         for (ProductSkuItemDTO skuItem : skuList) {
             //检查specs，同一个产品不能有相同规格
             if (skuItem.getSpecs() != null && !specSet.add(skuItem.getSpecs())) {
-                throw new SpecsAlreadyExistException(SPECS_ALREADY_EXIST);
+                throw new BizException(SPECS_ALREADY_EXIST);
             }
             ProductSku productSKU = ProductSku.builder()
                     .productId(product.getId())
@@ -182,7 +181,7 @@ public class ProductServiceImpl implements ProductService {
         //判断同一商家下商品是否同名
         String existedProductName = productMapper.selectExistedProductName(merchantProductUpdateDTO.getName(),StpUtil.getLoginIdAsLong(),productId);
         if(existedProductName != null){
-            throw new ProductNameAlreadyExistException(PRODUCT_NAME_ALREADY_EXIST);
+            throw new BizException(PRODUCT_NAME_ALREADY_EXIST);
         }
 
         BeanUtils.copyProperties(merchantProductUpdateDTO,product);
@@ -198,7 +197,7 @@ public class ProductServiceImpl implements ProductService {
         //3.遍历前端传的sku列表
         //如果前端没传任何sku则报错，因为一个sku也没有会导致出现业务异常
         if(merchantProductUpdateDTO.getSkuList() == null || merchantProductUpdateDTO.getSkuList().isEmpty()){
-            throw new NoSkuExistException(NO_SKU_EXIST);
+            throw new BizException(NO_SKU_EXIST);
         }
 
         //借用set集合的add实现去重逻辑——set中已存在的话再调用add方法就会返回false
@@ -206,14 +205,14 @@ public class ProductServiceImpl implements ProductService {
         for (ProductSkuItemDTO item : merchantProductUpdateDTO.getSkuList()) {
             //检查specs，同一个产品不能有相同规格
             if (item.getSpecs() != null && !specSet.add(item.getSpecs())) {
-                throw new SpecsAlreadyExistException(SPECS_ALREADY_EXIST);
+                throw new BizException(SPECS_ALREADY_EXIST);
             }
             if (item.getSkuId() != null) {
                 // 有 skuId 说明是数据库里已有的，更新
                 ProductSku sku = productSkuMapper.selectById(item.getSkuId());
                 // 检查 skuId 是否有效，不存在或不属于当前商品都报错
                 if (sku == null || !sku.getProductId().equals(productId)) {
-                    throw new SkuNotValidException(SKU_NOT_VALID);
+                    throw new BizException(SKU_NOT_VALID);
                 }
                 sku.setSpecs(item.getSpecs());
                 sku.setPrice(item.getPrice());
@@ -252,11 +251,11 @@ public class ProductServiceImpl implements ProductService {
         if(status == ENABLED){
             Brand brand = productMapper.getBrandByProductId(productId);
             if(brand == null || brand.getStatus() == DISABLED || brand.getDeleted() == ENABLED){
-                throw new BrandInvalidException(BRAND_INVALID);
+                throw new BizException(BRAND_INVALID);
             }
             Category category = productMapper.getCategoryByProductId(productId);
             if(category == null || category.getStatus() == DISABLED || category.getDeleted() == ENABLED){
-                throw new CategoryInvalidException(CATEGORY_INVALID);
+                throw new BizException(CATEGORY_INVALID);
             }
         }
         product.setStatus(status);
@@ -272,7 +271,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = checkProductOwnership(productId);
         //只允许下架的商品被逻辑删除
         if(product.getStatus() != DISABLED){
-        throw new RemoveProductBeforeDeleteException(REMOVE_PRODUCT_BEFORE_DELETE);
+        throw new BizException(REMOVE_PRODUCT_BEFORE_DELETE);
         }
         productMapper.deleteById(productId);
     }
@@ -285,23 +284,23 @@ public class ProductServiceImpl implements ProductService {
     public void recoveryProduct(Long productId) {
         Product product = productMapper.selectByIdIgnoreLogic(productId);
         if (product == null) {
-            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+            throw new BizException(PRODUCT_NOT_FOUND);
         }
         if (!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
-            throw new NoPermissionException(NO_PERMISSION);
+            throw new BizException(NO_PERMISSION);
         }
         //判断恢复后的品牌或分类是否还存在，不存在则报错
         Brand brand = productMapper.getBrandByProductId(productId);
         if(brand == null || brand.getStatus() == DISABLED || brand.getDeleted() == ENABLED){
-            throw new BrandInvalidException(BRAND_INVALID);
+            throw new BizException(BRAND_INVALID);
         }
         Category category = productMapper.getCategoryByProductId(productId);
         if(category == null || category.getStatus() == DISABLED || category.getDeleted() == ENABLED){
-            throw new CategoryInvalidException(CATEGORY_INVALID);
+            throw new BizException(CATEGORY_INVALID);
         }
         //若本就未被删除就提示
         if(product.getDeleted() == DISABLED){
-            throw new ProductHasNotDeletedException(PRODUCT_HAS_NOT_DELETED);
+            throw new BizException(PRODUCT_HAS_NOT_DELETED);
         }
         productMapper.recoveryProduct(productId);
     }
@@ -315,14 +314,14 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProduct(Long productId) {
         Product product = productMapper.selectByIdIgnoreLogic(productId);
         if (product == null) {
-            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+            throw new BizException(PRODUCT_NOT_FOUND);
         }
         if (!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
-            throw new NoPermissionException(NO_PERMISSION);
+            throw new BizException(NO_PERMISSION);
         }
         //若未被逻辑删除则不可物理删除
         if(product.getDeleted() != ENABLED){
-            throw new LogicDeleteProductBeforePhysicalException(LOGIC_DELETE_PRODUCT_BEFORE_PHYSICAL);
+            throw new BizException(LOGIC_DELETE_PRODUCT_BEFORE_PHYSICAL);
         }
         //连着删除商品的sku数据
         productSkuMapper.realDeleteByProductId(productId);
@@ -338,11 +337,11 @@ public class ProductServiceImpl implements ProductService {
         Product product = productMapper.selectById(productId);
         //如果商品不存在或已被逻辑删除，抛出异常
         if(product == null) {
-            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+            throw new BizException(PRODUCT_NOT_FOUND);
         }
         //权限审查
         if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
-            throw new NoPermissionException(NO_PERMISSION);
+            throw new BizException(NO_PERMISSION);
         }
         return product;
     }
@@ -399,7 +398,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productMapper.selectById(productId);
         //如果商品不存在或已被逻辑删除，抛出异常
         if(product == null || product.getStatus() != ENABLED){
-            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+            throw new BizException(PRODUCT_NOT_FOUND);
         }
         UserProductDetailVO userProductDetailVO = new UserProductDetailVO();
         BeanUtils.copyProperties(product, userProductDetailVO);
@@ -480,7 +479,7 @@ public class ProductServiceImpl implements ProductService {
         if(merchantProductSkuDTO.getSpecs() != null && !merchantProductSkuDTO.getSpecs().equals(productSku.getSpecs())){
             String expectedSpecs = productSkuMapper.selectExistSpecsByProductId(productSku.getProductId(),skuId, merchantProductSkuDTO.getSpecs());
             if(expectedSpecs != null){
-                throw new SpecsAlreadyExistException(SPECS_ALREADY_EXIST);
+                throw new BizException(SPECS_ALREADY_EXIST);
             }
         }
         BeanUtils.copyProperties(merchantProductSkuDTO,productSku);
@@ -497,18 +496,18 @@ public class ProductServiceImpl implements ProductService {
     public void changeSkuStatus(Long skuId, Integer status) {
         ProductSku sku = productSkuMapper.selectById(skuId);
         if (sku == null) {
-            throw new SkuNotFoundException(SKU_NOT_FOUND);
+            throw new BizException(SKU_NOT_FOUND);
         }
         Product product = productMapper.selectById(sku.getProductId());
         if(product == null){
-            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+            throw new BizException(PRODUCT_NOT_FOUND);
         }
         if (!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
-            throw new NoPermissionException(NO_PERMISSION);
+            throw new BizException(NO_PERMISSION);
         }
         //如果商品未上架，则不可以上架sku
         if(status == ENABLED && product.getStatus() != ENABLED){
-            throw new ProductHasRemovedException(PRODUCT_HAS_REMOVED);
+            throw new BizException(PRODUCT_HAS_REMOVED);
         }
         sku.setStatus(status);
         productSkuMapper.updateById(sku);
@@ -523,24 +522,24 @@ public class ProductServiceImpl implements ProductService {
     public void logicDeleteSku(Long skuId) {
         ProductSku sku = productSkuMapper.selectById(skuId);
         if (sku == null) {
-            throw new SkuNotFoundException(SKU_NOT_FOUND);
+            throw new BizException(SKU_NOT_FOUND);
         }
         Product product = productMapper.selectById(sku.getProductId());
         if(product == null){
-            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+            throw new BizException(PRODUCT_NOT_FOUND);
         }
         if (!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
-            throw new NoPermissionException(NO_PERMISSION);
+            throw new BizException(NO_PERMISSION);
         }
         //只允许下架的sku被逻辑删除
         if(sku.getStatus() != DISABLED){
-            throw new RemoveSkuBeforeDeleteException(REMOVE_SKU_BEFORE_DELETE);
+            throw new BizException(REMOVE_SKU_BEFORE_DELETE);
         }
         productSkuMapper.deleteById(sku);
         //查询该商品现有的sku，若删除了最后一个sku则报错
         List<ProductSku> existedSkuList = productSkuMapper.selectExistSkuList(product.getId());
         if(existedSkuList == null || existedSkuList.isEmpty()){
-            throw new NoSkuExistException(NO_SKU_EXIST);
+            throw new BizException(NO_SKU_EXIST);
         }
     }
 
@@ -552,18 +551,18 @@ public class ProductServiceImpl implements ProductService {
     public void recoverySku(Long skuId) {
         ProductSku sku = productSkuMapper.selectByIdIgnoreLogic(skuId);
         if (sku == null) {
-            throw new SkuNotFoundException(SKU_NOT_FOUND);
+            throw new BizException(SKU_NOT_FOUND);
         }
         Product product = productMapper.selectById(sku.getProductId());
         if(product == null){
-            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+            throw new BizException(PRODUCT_NOT_FOUND);
         }
         if (!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
-            throw new NoPermissionException(NO_PERMISSION);
+            throw new BizException(NO_PERMISSION);
         }
         //若本就未被删除就提示
         if(sku.getDeleted() == DISABLED){
-            throw new SkuHasNotDeletedException(SKU_HAS_NOT_DELETED);
+            throw new BizException(SKU_HAS_NOT_DELETED);
         }
         productSkuMapper.recoverySku(skuId);
     }
@@ -576,18 +575,18 @@ public class ProductServiceImpl implements ProductService {
     public void deleteSku(Long skuId) {
         ProductSku sku = productSkuMapper.selectByIdIgnoreLogic(skuId);
         if (sku == null) {
-            throw new SkuNotFoundException(SKU_NOT_FOUND);
+                throw new BizException(SKU_NOT_FOUND);
         }
         Product product = productMapper.selectById(sku.getProductId());
         if(product == null){
-            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+            throw new BizException(PRODUCT_NOT_FOUND);
         }
         if (!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
-            throw new NoPermissionException(NO_PERMISSION);
+            throw new BizException(NO_PERMISSION);
         }
         //若未被逻辑删除则不可物理删除
         if(sku.getDeleted() != ENABLED){
-            throw new LogicDeleteSkuBeforePhysicalException(LOGIC_DELETE_SKU_BEFORE_PHYSICAL);
+            throw new BizException(LOGIC_DELETE_SKU_BEFORE_PHYSICAL);
         }
         productSkuMapper.realDeleteById(skuId);
     }
@@ -600,14 +599,14 @@ public class ProductServiceImpl implements ProductService {
     private ProductSku checkSkuOwnership(Long skuId) {
         ProductSku sku = productSkuMapper.selectById(skuId);
         if (sku == null) {
-            throw new SkuNotFoundException(SKU_NOT_FOUND);
+            throw new BizException(SKU_NOT_FOUND);
         }
         Product product = productMapper.selectById(sku.getProductId());
         if(product == null){
-            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+            throw new BizException(PRODUCT_NOT_FOUND);
         }
         if (!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
-            throw new NoPermissionException(NO_PERMISSION);
+            throw new BizException(NO_PERMISSION);
         }
         return sku;
     }

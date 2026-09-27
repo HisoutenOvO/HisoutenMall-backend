@@ -2,11 +2,11 @@ package cn.hisouten.mall.user.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hisouten.mall.pojo.Result;
-import cn.hisouten.mall.user.pojo.dto.admin.AdminLoginDTO;
-import cn.hisouten.mall.user.pojo.dto.merchant.MerchantLoginDTO;
-import cn.hisouten.mall.user.pojo.dto.merchant.MerchantRegisterDTO;
-import cn.hisouten.mall.user.pojo.dto.user.UserLoginDTO;
-import cn.hisouten.mall.user.pojo.dto.user.UserRegisterDTO;
+import cn.hisouten.mall.user.pojo.dto.AdminLoginDTO;
+import cn.hisouten.mall.user.pojo.dto.MerchantLoginDTO;
+import cn.hisouten.mall.user.pojo.dto.MerchantRegisterDTO;
+import cn.hisouten.mall.user.pojo.dto.UserLoginDTO;
+import cn.hisouten.mall.user.pojo.dto.UserRegisterDTO;
 import cn.hisouten.mall.user.pojo.vo.LoginVO;
 import cn.hisouten.mall.user.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,24 +1,27 @@
 package cn.hisouten.mall.user.service.impl;
 
+import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.user.mapper.AuthMapper;
 import cn.hisouten.mall.user.mapper.UserProfileMapper;
-import cn.hisouten.mall.user.pojo.dto.user.AdminUserPageQueryDTO;
+import cn.hisouten.mall.user.pojo.dto.AdminUserPageQueryDTO;
+import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.vo.AdminUserPageResultVO;
 import cn.hisouten.mall.user.service.AdminUserService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import static cn.hisouten.mall.constant.ExceptionMessageConstant.USER_NOT_FOUND;
 import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
 
 @Service
 @RequiredArgsConstructor
 public class AdminUserServiceImpl implements AdminUserService {
     private final UserProfileMapper userProfileMapper;
+    private final AuthMapper authMapper;
 
     /**
      * 用户分页查询
@@ -35,5 +38,20 @@ public class AdminUserServiceImpl implements AdminUserService {
         long total = result.getTotal();
         List<AdminUserPageResultVO> records = result.getRecords();
         return new PageResult<>(total,records);
+    }
+
+    /**
+     * 改变用户状态
+     * @param userId 用户id
+     * @param status 状态
+     */
+    @Override
+    public void changeStatus(Long userId, Integer status) {
+        User user = authMapper.selectById(userId);
+        if(user == null){
+            throw new BizException(USER_NOT_FOUND);
+        }
+        user.setStatus(status);
+        authMapper.updateById(user);
     }
 }

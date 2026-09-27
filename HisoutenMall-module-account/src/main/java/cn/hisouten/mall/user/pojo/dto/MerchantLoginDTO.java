@@ -1,4 +1,4 @@
-package cn.hisouten.mall.user.pojo.dto.merchant;
+package cn.hisouten.mall.user.pojo.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

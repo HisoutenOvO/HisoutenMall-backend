@@ -1,8 +1,6 @@
 package cn.hisouten.mall.service.impl;
 
-import cn.hisouten.mall.exception.businessexception.BrandNameAlreadyExist;
-import cn.hisouten.mall.exception.businessexception.BrandNotFoundException;
-import cn.hisouten.mall.exception.businessexception.BrandRelatedProductException;
+import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.BrandMapper;
 import cn.hisouten.mall.mapper.ProductMapper;
 import cn.hisouten.mall.pojo.PageResult;
@@ -16,7 +14,6 @@ import cn.hisouten.mall.pojo.vo.brand.AdminBrandDetailVO;
 import cn.hisouten.mall.pojo.vo.brand.AdminBrandPageResultVO;
 import cn.hisouten.mall.pojo.vo.brand.BrandListVO;
 import cn.hisouten.mall.service.BrandService;
-import cn.hisouten.mall.service.ProductService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -109,7 +106,7 @@ public class BrandServiceImpl implements BrandService {
     public AdminBrandDetailVO detailQuery(Long brandId) {
         Brand brand = brandMapper.selectById(brandId);
         if(brand == null){
-            throw new BrandNotFoundException(BRAND_NOT_FOUND);
+            throw new BizException(BRAND_NOT_FOUND);
         }
         AdminBrandDetailVO adminBrandDetailVO = new AdminBrandDetailVO();
         BeanUtils.copyProperties(brand,adminBrandDetailVO);
@@ -125,7 +122,7 @@ public class BrandServiceImpl implements BrandService {
         Brand brand = new Brand();
         String existedName = brandMapper.getExistName(adminBrandAddDTO.getName(),null);
         if(existedName != null){
-            throw new BrandNameAlreadyExist(BRAND_NAME_ALREADY_EXIST);
+            throw new BizException(BRAND_NAME_ALREADY_EXIST);
         }
         BeanUtils.copyProperties(adminBrandAddDTO,brand);
         brandMapper.insert(brand);
@@ -139,11 +136,11 @@ public class BrandServiceImpl implements BrandService {
     public void updateBrand(Long brandId, AdminBrandUpdateDTO adminBrandUpdateDTO) {
         Brand brand = brandMapper.selectById(brandId);
         if(brand == null){
-            throw new BrandNotFoundException(BRAND_NOT_FOUND);
+            throw new BizException(BRAND_NOT_FOUND);
         }
         String existedName = brandMapper.getExistName(adminBrandUpdateDTO.getName(),brandId);
         if(existedName != null){
-            throw new BrandNameAlreadyExist(BRAND_NAME_ALREADY_EXIST);
+            throw new BizException(BRAND_NAME_ALREADY_EXIST);
         }
         BeanUtils.copyProperties(adminBrandUpdateDTO,brand);
         brandMapper.updateById(brand);
@@ -158,7 +155,7 @@ public class BrandServiceImpl implements BrandService {
     public void changeStatus(Long brandId,Integer status) {
         Brand brand = brandMapper.selectById(brandId);
         if(brand == null){
-            throw new BrandNotFoundException(BRAND_NOT_FOUND);
+            throw new BizException(BRAND_NOT_FOUND);
         }
         brand.setStatus(status);
         brandMapper.updateById(brand);
@@ -172,12 +169,12 @@ public class BrandServiceImpl implements BrandService {
     public void logicDelete(Long brandId) {
         Brand brand = brandMapper.selectById(brandId);
         if(brand == null){
-            throw new BrandNotFoundException(BRAND_NOT_FOUND);
+            throw new BizException(BRAND_NOT_FOUND);
         }
         //若有相关产品则不可删除
         Long count = productMapper.getProductCountByBrandId(brandId);
         if(count > 0){
-            throw new BrandRelatedProductException(BRAND_RELATED_PRODUCT);
+            throw new BizException(BRAND_RELATED_PRODUCT);
         }
         brandMapper.deleteById(brandId);
     }

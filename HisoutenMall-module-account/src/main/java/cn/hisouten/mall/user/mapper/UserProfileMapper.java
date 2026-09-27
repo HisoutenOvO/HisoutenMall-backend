@@ -1,6 +1,6 @@
 package cn.hisouten.mall.user.mapper;
 
-import cn.hisouten.mall.user.pojo.dto.user.AdminUserPageQueryDTO;
+import cn.hisouten.mall.user.pojo.dto.AdminUserPageQueryDTO;
 import cn.hisouten.mall.user.pojo.entity.UserProfile;
 import cn.hisouten.mall.user.pojo.vo.AdminUserPageResultVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
