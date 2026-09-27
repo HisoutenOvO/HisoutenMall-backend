@@ -3,7 +3,7 @@ package cn.hisouten.mall.pojo.vo.category;
 import lombok.Data;
 
 /**
- * 通用的列表查询分类返回值——用户端和商家端
+ * 用户和商家的列表查询分类返回值——商家用于回显，用户用于展示
  */
 @Data
 public class CategoryListVO {

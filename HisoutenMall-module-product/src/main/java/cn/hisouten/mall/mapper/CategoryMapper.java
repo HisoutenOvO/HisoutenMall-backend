@@ -17,7 +17,7 @@ public interface CategoryMapper extends BaseMapper<Category> {
      * @param categoryId 分类id
      * @return 返回分类名称
      */
-    @Select("SELECT name from category where id = #{categoryId} and deleted = 0")
+    @Select("SELECT name from category where id = #{categoryId}")
     String getCategoryNameByCategoryId(Long categoryId);
 
     /**

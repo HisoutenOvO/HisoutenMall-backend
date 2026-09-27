@@ -33,4 +33,6 @@ public class ExceptionMessageConstant {
     public static final String BRAND_RELATED_PRODUCT = "该品牌关联着商品，暂不可删除";
     public static final String CATEGORY_RELATED_CHILDREN = "该分类下有子分类，需要删除请先删除子分类";
     public static final String CATEGORY_RELATED_PRODUCT = "该分类下关联着商品，不可删除";
+    public static final String BRAND_INVALID = "该品牌已无效，请更换品牌再进行操作！(被下架，被删除或不存在)";
+    public static final String CATEGORY_INVALID = "该分类已无效，请更换分类再进行操作！(被下架，被删除或不存在)";
 }

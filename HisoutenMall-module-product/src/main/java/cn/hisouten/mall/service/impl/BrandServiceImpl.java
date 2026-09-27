@@ -27,6 +27,7 @@ import java.util.List;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
+import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
 
 @Service
 @RequiredArgsConstructor
@@ -53,12 +54,15 @@ public class BrandServiceImpl implements BrandService {
         List<Brand> brandList = brandMapper.selectBrandList();
         List<BrandListVO> brandVOList = new ArrayList<>();
         for (Brand brand : brandList) {
-            BrandListVO brandListVO = new BrandListVO();
-            brandListVO.setId(brand.getId());
-            brandListVO.setName(brand.getName());
-            brandListVO.setLogo(brand.getLogo());
-            brandListVO.setSort(brand.getSort());
-            brandVOList.add(brandListVO);
+            //只返回上架的
+            if(brand.getStatus() == ENABLED){
+                BrandListVO brandListVO = new BrandListVO();
+                brandListVO.setId(brand.getId());
+                brandListVO.setName(brand.getName());
+                brandListVO.setLogo(brand.getLogo());
+                brandListVO.setSort(brand.getSort());
+                brandVOList.add(brandListVO);
+            }
         }
         return brandVOList;
     }

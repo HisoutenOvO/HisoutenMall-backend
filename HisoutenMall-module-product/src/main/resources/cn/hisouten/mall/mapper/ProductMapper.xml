@@ -52,4 +52,14 @@
         </if>
         limit 1
     </select>
+    <select id="getBrandByProductId" resultType="cn.hisouten.mall.pojo.entity.Brand">
+        select b.* from product p
+        left join brand b on p.brand_id = b.id
+        where p.id = #{productId}
+    </select>
+    <select id="getCategoryByProductId" resultType="cn.hisouten.mall.pojo.entity.Category">
+        select c.* from product p
+        left join category c on p.category_id = c.id
+        where p.id = #{productId}
+    </select>
 </mapper>

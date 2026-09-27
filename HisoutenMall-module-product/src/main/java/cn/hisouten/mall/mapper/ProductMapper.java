@@ -1,6 +1,8 @@
 package cn.hisouten.mall.mapper;
 
 import cn.hisouten.mall.pojo.bo.product.ProductPageQueryBO;
+import cn.hisouten.mall.pojo.entity.Brand;
+import cn.hisouten.mall.pojo.entity.Category;
 import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.bo.product.ProductPageResultBO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -63,4 +65,18 @@ public interface ProductMapper extends BaseMapper<Product> {
      */
     @Select("select count(0) from product where category_id = #{categoryId} and deleted = 0")
     Integer getProductCountByCategoryId(Long categoryId);
+
+    /**
+     * 根据商品id查找品牌
+     * @param productId 商品id
+     * @return 返回品牌
+     */
+    Brand getBrandByProductId(Long productId);
+
+    /**
+     * 根据商品id查找分类
+     * @param productId 分类id
+     * @return 返回分类
+     */
+    Category getCategoryByProductId(Long productId);
 }

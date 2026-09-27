@@ -36,19 +36,23 @@ public class CategoryServiceImpl implements CategoryService {
        List<Category> categoryList = categoryMapper.selectList(null);
        List<CategoryListVO> categoryVOList = new ArrayList<>();
         for (Category category : categoryList) {
-            CategoryListVO categoryListVO = new CategoryListVO();
-            categoryListVO.setId(category.getId());
-            categoryListVO.setName(category.getName());
-            categoryListVO.setParentId(category.getParentId());
-            categoryListVO.setLevel(category.getLevel());
-            categoryListVO.setSort(category.getSort());
-            categoryVOList.add(categoryListVO);
+            //只返回上架的
+            if(category.getStatus() == ENABLED){
+                CategoryListVO categoryListVO = new CategoryListVO();
+                categoryListVO.setId(category.getId());
+                categoryListVO.setName(category.getName());
+                categoryListVO.setParentId(category.getParentId());
+                categoryListVO.setLevel(category.getLevel());
+                categoryListVO.setSort(category.getSort());
+                categoryVOList.add(categoryListVO);
+            }
+
         }
         return categoryVOList;
     }
 
     /**
-     * 商家端和用户端分类列表查询
+     * 管理端分类列表查询
      * @return 返回分类列表
      */
     @Override

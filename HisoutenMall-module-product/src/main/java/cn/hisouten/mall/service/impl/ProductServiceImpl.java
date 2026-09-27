@@ -8,6 +8,8 @@ import cn.hisouten.mall.mapper.ProductSkuMapper;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.product.ProductPageQueryBO;
 import cn.hisouten.mall.pojo.dto.product.*;
+import cn.hisouten.mall.pojo.entity.Brand;
+import cn.hisouten.mall.pojo.entity.Category;
 import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.bo.product.ProductPageResultBO;
 import cn.hisouten.mall.pojo.entity.ProductSku;
@@ -237,6 +239,17 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void changeStatus(Long productId, Integer status) {
         Product product = checkProductOwnership(productId);
+        //若想上架，查询该商品的品牌和分类是否下架了或被删除
+        if(status == ENABLED){
+            Brand brand = productMapper.getBrandByProductId(productId);
+            if(brand == null || brand.getStatus() == DISABLED || brand.getDeleted() == ENABLED){
+                throw new BrandInvalidException(BRAND_INVALID);
+            }
+            Category category = productMapper.getCategoryByProductId(productId);
+            if(category == null || category.getStatus() == DISABLED || category.getDeleted() == ENABLED){
+                throw new CategoryInvalidException(CATEGORY_INVALID);
+            }
+        }
         product.setStatus(status);
         productMapper.updateById(product);
     }
