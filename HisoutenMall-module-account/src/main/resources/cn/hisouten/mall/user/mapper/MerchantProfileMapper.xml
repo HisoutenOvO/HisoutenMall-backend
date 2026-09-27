@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.hisouten.mall.user.mapper.MerchantProfileMapper">
+    <select id="pageQuery" resultType="cn.hisouten.mall.user.pojo.vo.AdminMerchantPageResultVO">
+        select u.id,u.username,u.status,u.deleted,u.create_time,u.update_time,
+               mp.shop_name,mp.shop_logo,mp.contact_phone
+        from user u
+        left join merchant_profile mp
+        on u.id = mp.user_id
+        <where>
+            <if test="dto.keyword != null and dto.keyword != ''">
+                and username like concat('%',#{dto.keyword},'%')
+            </if>
+            <if test="dto.status != null">
+                and status = #{dto.status}
+            </if>
+            <if test="dto.deleted != null">
+                and deleted = #{dto.deleted}
+            </if>
+            order by u.create_time desc
+        </where>
+    </select>
 </mapper>

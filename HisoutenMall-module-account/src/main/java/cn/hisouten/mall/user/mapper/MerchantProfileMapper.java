@@ -1,8 +1,12 @@
 package cn.hisouten.mall.user.mapper;
 
+import cn.hisouten.mall.user.pojo.dto.AdminMerchantPageQueryDTO;
 import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
+import cn.hisouten.mall.user.pojo.vo.AdminMerchantPageResultVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 @Mapper
@@ -31,4 +35,12 @@ public interface MerchantProfileMapper extends BaseMapper<MerchantProfile> {
      */
     @Select("select contact_phone from merchant_profile where contact_phone = #{contactPhone}")
     String selectExistedContactPhone(String contactPhone);
+
+    /**
+     *分页查询商家
+     * @param page 分页参数
+     * @param adminMerchantPageQueryDTO 条件参数
+     * @return 返回值
+     */
+    Page<AdminMerchantPageResultVO> pageQuery(Page<AdminMerchantPageResultVO> page,@Param("dto") AdminMerchantPageQueryDTO adminMerchantPageQueryDTO);
 }
