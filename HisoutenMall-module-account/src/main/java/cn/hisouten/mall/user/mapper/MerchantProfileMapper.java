@@ -18,7 +18,7 @@ public interface MerchantProfileMapper extends BaseMapper<MerchantProfile> {
      * @param merchantId 商家id
      * @return 商家名称
      */
-    @Select("select shop_name from merchant_profile where id = #{merchantId}")
+    @Select("select shop_name from merchant_profile where user_id = #{merchantId}")
     String getMerchantNameByMerchantId(Long merchantId);
 
     /**

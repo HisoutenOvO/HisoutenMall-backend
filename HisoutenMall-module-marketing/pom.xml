@@ -24,10 +24,6 @@
         </dependency>
         <dependency>
             <groupId>cn.hisouten.mall</groupId>
-            <artifactId>HisoutenMall-module-trade</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cn.hisouten.mall</groupId>
             <artifactId>HisoutenMall-module-account</artifactId>
         </dependency>
     </dependencies>

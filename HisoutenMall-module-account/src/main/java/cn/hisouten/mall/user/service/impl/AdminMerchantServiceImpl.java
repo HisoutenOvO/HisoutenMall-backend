@@ -2,10 +2,10 @@ package cn.hisouten.mall.user.service.impl;
 
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.user.mapper.AuthMapper;
 import cn.hisouten.mall.user.mapper.MerchantProfileMapper;
 import cn.hisouten.mall.user.pojo.dto.AdminMerchantPageQueryDTO;
-import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
 import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.vo.AdminMerchantDetailVO;
 import cn.hisouten.mall.user.pojo.vo.AdminMerchantPageResultVO;
@@ -13,6 +13,7 @@ import cn.hisouten.mall.user.service.AdminMerchantService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
 public class AdminMerchantServiceImpl implements AdminMerchantService {
     private final MerchantProfileMapper merchantProfileMapper;
     private final AuthMapper authMapper;
+    private final ProductService productService;
 
     /**
      * 商家分页查询
@@ -31,6 +33,7 @@ public class AdminMerchantServiceImpl implements AdminMerchantService {
      * @return 返回值
      */
     @Override
+    @Transactional
     public PageResult<AdminMerchantPageResultVO> pageQuery(AdminMerchantPageQueryDTO adminMerchantPageQueryDTO) {
         Page<AdminMerchantPageResultVO> page = new Page<>(adminMerchantPageQueryDTO.getPage(),adminMerchantPageQueryDTO.getPageSize());
         if(adminMerchantPageQueryDTO.getDeleted() == null){
@@ -54,5 +57,25 @@ public class AdminMerchantServiceImpl implements AdminMerchantService {
             throw new BizException(USER_NOT_FOUND);
         }
         return merchantProfileMapper.getMerchantById(merchantId);
+    }
+
+    /**
+     * 修改商家状态
+     * @param merchantId 商家id
+     * @param status 状态
+     */
+    @Override
+    public void changeStatus(Long merchantId, Integer status) {
+        User user = authMapper.selectById(merchantId);
+        if(user == null){
+            throw new BizException(USER_NOT_FOUND);
+        }
+        user.setStatus(status);
+        authMapper.updateById(user);
+
+        //如果是下架则下架所有商品
+        if(status == DISABLED){
+            productService.disableAllProductByMerchantId(merchantId);
+        }
     }
 }

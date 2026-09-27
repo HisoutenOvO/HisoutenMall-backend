@@ -16,7 +16,6 @@ import cn.hisouten.mall.pojo.vo.product.*;
 import cn.hisouten.mall.service.BrandService;
 import cn.hisouten.mall.service.CategoryService;
 import cn.hisouten.mall.service.ProductService;
-import cn.hisouten.mall.user.service.MerchantProfileService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -39,7 +38,6 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final ProductSkuMapper productSkuMapper;
     //注入别人的service
-    private final MerchantProfileService merchantProfileService;
     private final CategoryService categoryService;
     private final BrandService brandService;
 
@@ -105,7 +103,7 @@ public class ProductServiceImpl implements ProductService {
         MerchantProductDetailVO merchantProductDetailVO = new MerchantProductDetailVO();
         BeanUtils.copyProperties(product, merchantProductDetailVO);
         String categoryName = categoryService.getCategoryNameByCategoryId(product.getCategoryId());
-        String merchantName = merchantProfileService.getMerchantNameByMerchantId(product.getMerchantId());
+        String merchantName = productMapper.getMerchantNameByMerchantId(product.getMerchantId());
         String brandName = brandService.getBrandNameByBrandId(product.getBrandId());
         merchantProductDetailVO.setBrandName(brandName);
         merchantProductDetailVO.setCategoryName(categoryName);
@@ -345,6 +343,16 @@ public class ProductServiceImpl implements ProductService {
         }
         return product;
     }
+
+
+    /**
+     * 通过商家id下架商家所有商品
+     * @param merchantId 商家id
+     */
+    @Override
+    public void disableAllProductByMerchantId(Long merchantId) {
+        productMapper.removeAllProductsByMerchantId(merchantId);
+    }
     //=======================================用户端逻辑================================================
 
     /**
@@ -403,7 +411,7 @@ public class ProductServiceImpl implements ProductService {
         UserProductDetailVO userProductDetailVO = new UserProductDetailVO();
         BeanUtils.copyProperties(product, userProductDetailVO);
         String categoryName = categoryService.getCategoryNameByCategoryId(product.getCategoryId());
-        String merchantName = merchantProfileService.getMerchantNameByMerchantId(product.getMerchantId());
+        String merchantName = productMapper.getMerchantNameByMerchantId(product.getMerchantId());
         String brandName = brandService.getBrandNameByBrandId(product.getBrandId());
         userProductDetailVO.setBrandName(brandName);
         userProductDetailVO.setCategoryName(categoryName);

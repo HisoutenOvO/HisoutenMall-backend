@@ -20,4 +20,11 @@ public interface AdminMerchantService {
      * @return 返回值
      */
     AdminMerchantDetailVO detailQuery(Long merchantId);
+
+    /**
+     * 修改商家状态
+     * @param merchantId 商家id
+     * @param status 状态
+     */
+    void changeStatus(Long merchantId, Integer status);
 }

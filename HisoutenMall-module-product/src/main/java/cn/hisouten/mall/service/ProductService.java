@@ -119,4 +119,9 @@ public interface ProductService {
      */
     void deleteSku(Long skuId);
 
+    /**
+     * 通过商家id下架所有商品
+     * @param merchantId 商家id
+     */
+    void disableAllProductByMerchantId(Long merchantId);
 }

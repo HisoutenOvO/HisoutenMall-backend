@@ -8,6 +8,7 @@ import cn.hisouten.mall.pojo.bo.product.ProductPageResultBO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.*;
+import org.springframework.stereotype.Service;
 
 @Mapper
 public interface ProductMapper extends BaseMapper<Product> {
@@ -79,4 +80,19 @@ public interface ProductMapper extends BaseMapper<Product> {
      * @return 返回分类
      */
     Category getCategoryByProductId(Long productId);
+
+    /**
+     * 为了解决循环依赖——通过商品id获取商品名称
+     * @param merchantId
+     * @return
+     */
+    @Select("select shop_name from merchant_profile where user_id = #{merchantId}")
+    String getMerchantNameByMerchantId(Long merchantId);
+
+    /**
+     * 通过商家id下架商家所有商品
+     * @param merchantId 商家id
+     */
+    @Update("update product set status = 0 where merchant_id = #{merchanId}")
+    void removeAllProductsByMerchantId(Long merchantId);
 }
