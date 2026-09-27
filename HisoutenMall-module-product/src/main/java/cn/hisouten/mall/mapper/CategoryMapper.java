@@ -28,4 +28,12 @@ public interface CategoryMapper extends BaseMapper<Category> {
      * @return 可能存在的名字
      */
     String selectExistCategoryName(String name, Long parentId,Long categoryId);
+
+    /**
+     * 查询该分类下子分类数量
+     * @param categoryId 分类id
+     * @return 返回子分类数量
+     */
+    @Select("select count(0) from category where parent_id = #{categoryId}")
+    Integer getChildCategoryCount(Long categoryId);
 }

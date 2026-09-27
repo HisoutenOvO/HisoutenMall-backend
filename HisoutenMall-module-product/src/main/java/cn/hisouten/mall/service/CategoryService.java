@@ -53,4 +53,10 @@ public interface CategoryService {
      * @param status 状态
      */
     void changeStatus(Long categoryId, Integer status);
+
+    /**
+     * 逻辑删除分类
+     * @param categoryId 分类id
+     */
+    void logicDelete(Long categoryId);
 }

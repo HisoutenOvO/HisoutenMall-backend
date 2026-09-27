@@ -86,4 +86,17 @@ public class CategoryController {
         categoryService.changeStatus(categoryId,status);
         return Result.success();
     }
+
+    /**
+     * 逻辑删除分类
+     * @param categoryId 分类id
+     * @return 返回值
+     */
+    @DeleteMapping("/{categoryId}/deleted")
+    @Operation(summary = "逻辑删除分类")
+    public Result logicDelete(@PathVariable Long categoryId){
+        log.info("逻辑删除分类：{}",categoryId);
+        categoryService.logicDelete(categoryId);
+        return Result.success();
+    }
 }

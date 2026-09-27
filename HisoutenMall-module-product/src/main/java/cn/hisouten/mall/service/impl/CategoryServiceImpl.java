@@ -1,9 +1,8 @@
 package cn.hisouten.mall.service.impl;
 
-import cn.hisouten.mall.exception.businessexception.CategoryNameAlreadyExistException;
-import cn.hisouten.mall.exception.businessexception.CategoryNotFoundException;
-import cn.hisouten.mall.exception.businessexception.LevelOverflowException;
+import cn.hisouten.mall.exception.businessexception.*;
 import cn.hisouten.mall.mapper.CategoryMapper;
+import cn.hisouten.mall.mapper.ProductMapper;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryAddDTO;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryUpdateDTO;
 import cn.hisouten.mall.pojo.entity.Category;
@@ -25,6 +24,7 @@ import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
+    private final ProductMapper productMapper;
 
 
     /**
@@ -149,6 +149,29 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
+     * 逻辑删除分类
+     * @param categoryId 分类id
+     */
+    @Override
+    public void logicDelete(Long categoryId) {
+        Category category = categoryMapper.selectById(categoryId);
+        if(category == null){
+            throw new CategoryNotFoundException(CATEGORY_NOT_FOUND);
+        }
+        //查询是否有子分类
+        Integer categoryCount = categoryMapper.getChildCategoryCount(categoryId);
+        if(categoryCount > 0){
+            throw new CategoryRelatedChildrenException(CATEGORY_RELATED_CHILDREN);
+        }
+        //查询分类下是否有商品数据
+        Integer productCount = productMapper.getProductCountByCategoryId(categoryId);
+        if(productCount != 0){
+            throw new CategoryRelatedProductException(CATEGORY_RELATED_PRODUCT);
+        }
+        categoryMapper.deleteById(categoryId);
+    }
+
+    /**
      * 组装树递归方法
      * @param all 所有的分类
      * @param parentId 父级分类id
@@ -166,6 +189,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
         return result;
     }
+
     /**
      * 通过分类id获取分类名称
      * @param categoryId 分类id
