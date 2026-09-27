@@ -3,6 +3,8 @@ package cn.hisouten.mall.controller.admin;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryAddDTO;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryUpdateDTO;
+import cn.hisouten.mall.pojo.vo.brand.AdminBrandDetailVO;
+import cn.hisouten.mall.pojo.vo.category.AdminCategoryDetailVO;
 import cn.hisouten.mall.pojo.vo.category.AdminCategoryListVO;
 import cn.hisouten.mall.pojo.vo.category.AdminCategoryTreeVO;
 import cn.hisouten.mall.service.CategoryService;
@@ -44,6 +46,19 @@ public class CategoryController {
         log.info("分类树形查询");
         List<AdminCategoryTreeVO> adminCategoryTreeVOS = categoryService.treeQuery();
         return Result.success(adminCategoryTreeVOS);
+    }
+
+    /**
+     * 分类查询详情
+     * @param categoryId 分类id
+     * @return 返回值
+     */
+    @GetMapping("/{categoryId}")
+    @Operation(summary = "分类查询详情")
+    public Result<AdminCategoryDetailVO> detailQuery(@PathVariable Long categoryId){
+        log.info("分类查询详情");
+        AdminCategoryDetailVO adminCategoryDetailVO = categoryService.detailQuery(categoryId);
+        return Result.success(adminCategoryDetailVO);
     }
 
     /**

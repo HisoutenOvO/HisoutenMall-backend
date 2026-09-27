@@ -2,10 +2,7 @@ package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryAddDTO;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryUpdateDTO;
-import cn.hisouten.mall.pojo.vo.category.AdminCategoryListVO;
-import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
-import cn.hisouten.mall.pojo.vo.category.AdminCategoryTreeVO;
-import cn.hisouten.mall.pojo.vo.category.CategoryTreeVO;
+import cn.hisouten.mall.pojo.vo.category.*;
 
 import java.util.List;
 
@@ -66,4 +63,10 @@ public interface CategoryService {
      * @return 返回值
      */
     List<CategoryTreeVO> treeQueryOthers();
+
+    /**
+     * 分类查询详情
+     * @param categoryId 分类id
+     */
+    AdminCategoryDetailVO detailQuery(Long categoryId);
 }

@@ -6,10 +6,7 @@ import cn.hisouten.mall.mapper.ProductMapper;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryAddDTO;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryUpdateDTO;
 import cn.hisouten.mall.pojo.entity.Category;
-import cn.hisouten.mall.pojo.vo.category.AdminCategoryListVO;
-import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
-import cn.hisouten.mall.pojo.vo.category.AdminCategoryTreeVO;
-import cn.hisouten.mall.pojo.vo.category.CategoryTreeVO;
+import cn.hisouten.mall.pojo.vo.category.*;
 import cn.hisouten.mall.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -94,6 +91,21 @@ public class CategoryServiceImpl implements CategoryService {
         List<Category> categoryList = categoryMapper.selectListWithoutRemove();
         //组装树结构，用抽取端方法递归
         return buildTreeOthers(categoryList,0L); //从0——根节点开始
+    }
+
+    /**
+     * 分类查询详情
+     * @param categoryId 分类id
+     */
+    @Override
+    public AdminCategoryDetailVO detailQuery(Long categoryId) {
+        Category category = categoryMapper.selectById(categoryId);
+        if(category == null){
+            throw new CategoryNotFoundException(CATEGORY_NOT_FOUND);
+        }
+        AdminCategoryDetailVO vo = new AdminCategoryDetailVO();
+        BeanUtils.copyProperties(category, vo);
+        return vo;
     }
 
     /**
