@@ -2,11 +2,13 @@ package cn.hisouten.mall.pojo.vo.category;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
- * 通用的列表查询分类返回值——用户端和商家端
+ * 管理端查询分类树形结构返回值
  */
 @Data
-public class CategoryListVO {
+public class CategoryTreeVO {
 
     private Long id;
 
@@ -17,5 +19,9 @@ public class CategoryListVO {
     private Integer level;
 
     private Integer sort;
+
+    private Integer status;
+
+    private List<CategoryTreeVO> children;
 
 }

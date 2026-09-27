@@ -1,12 +1,15 @@
 package cn.hisouten.mall.service;
 
+import cn.hisouten.mall.pojo.dto.category.AdminCategoryAddDTO;
+import cn.hisouten.mall.pojo.vo.category.AdminCategoryListVO;
 import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
+import cn.hisouten.mall.pojo.vo.category.CategoryTreeVO;
 
 import java.util.List;
 
 public interface CategoryService {
     /**
-     * 分类列表查询
+     * 用户端和商家端分类列表查询
      * @return 返回分类列表
      */
     List<CategoryListVO> listQuery();
@@ -17,4 +20,22 @@ public interface CategoryService {
      * @return 分类名称
      */
     String getCategoryNameByCategoryId(Long categoryId);
+
+    /**
+     * 管理端分类列表查询
+     * @return 返回值
+     */
+    List<AdminCategoryListVO> adminListQuery();
+
+    /**
+     * 分类树形查询
+     * @return 返回值
+     */
+    List<CategoryTreeVO> treeQuery();
+
+    /**
+     * 新增分类
+     * @param adminCategoryAddDTO 分类参数
+     */
+    void addCategory(AdminCategoryAddDTO adminCategoryAddDTO);
 }
