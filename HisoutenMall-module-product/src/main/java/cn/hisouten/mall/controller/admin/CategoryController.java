@@ -2,6 +2,7 @@ package cn.hisouten.mall.controller.admin;
 
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryAddDTO;
+import cn.hisouten.mall.pojo.dto.category.AdminCategoryUpdateDTO;
 import cn.hisouten.mall.pojo.vo.category.AdminCategoryListVO;
 import cn.hisouten.mall.pojo.vo.category.CategoryTreeVO;
 import cn.hisouten.mall.service.CategoryService;
@@ -55,6 +56,34 @@ public class CategoryController {
     public Result addCategory(@RequestBody AdminCategoryAddDTO adminCategoryAddDTO){
         log.info("新增分类");
         categoryService.addCategory(adminCategoryAddDTO);
+        return Result.success();
+    }
+
+    /**
+     * 修改分类
+     * @param categoryId 分类id
+     * @param adminCategoryUpdateDTO 修改分类参数
+     * @return 返回值
+     */
+    @PutMapping("/{categoryId}")
+    @Operation(summary = "修改分类")
+    public Result updateCategory(@PathVariable Long categoryId ,@RequestBody AdminCategoryUpdateDTO adminCategoryUpdateDTO){
+        log.info("修改分类:{}",categoryId);
+        categoryService.updateCategory(categoryId,adminCategoryUpdateDTO);
+        return Result.success();
+    }
+
+    /**
+     * 修改分类状态
+     * @param categoryId 分类id
+     * @param status 状态
+     * @return 返回值
+     */
+    @PutMapping("/{categoryId}/status")
+    @Operation(summary = "修改分类状态")
+    public Result changStatus(@PathVariable Long categoryId,@RequestParam Integer status){
+        log.info("修改分类状态：{}",categoryId);
+        categoryService.changeStatus(categoryId,status);
         return Result.success();
     }
 }

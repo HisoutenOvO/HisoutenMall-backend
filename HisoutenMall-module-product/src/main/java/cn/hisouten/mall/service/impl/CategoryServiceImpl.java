@@ -5,6 +5,7 @@ import cn.hisouten.mall.exception.businessexception.CategoryNotFoundException;
 import cn.hisouten.mall.exception.businessexception.LevelOverflowException;
 import cn.hisouten.mall.mapper.CategoryMapper;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryAddDTO;
+import cn.hisouten.mall.pojo.dto.category.AdminCategoryUpdateDTO;
 import cn.hisouten.mall.pojo.entity.Category;
 import cn.hisouten.mall.pojo.vo.category.AdminCategoryListVO;
 import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
@@ -86,7 +87,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void addCategory(AdminCategoryAddDTO adminCategoryAddDTO) {
         //同级同名校验
-        String existedName = categoryMapper.selectExistCategoryName(adminCategoryAddDTO.getName(),adminCategoryAddDTO.getParentId());
+        String existedName = categoryMapper.selectExistCategoryName(adminCategoryAddDTO.getName(),adminCategoryAddDTO.getParentId(),null);
         if(existedName != null){
             throw new CategoryNameAlreadyExistException(CATEGORY_NAME_ALREADY_EXIST);
         }
@@ -109,6 +110,42 @@ public class CategoryServiceImpl implements CategoryService {
         category.setLevel(level);
         category.setStatus(ENABLED);
         categoryMapper.insert(category);
+    }
+
+    /**
+     * 修改分类
+     * @param categoryId 分类id
+     * @param adminCategoryUpdateDTO 修改分类参数
+     */
+    @Override
+    public void updateCategory(Long categoryId, AdminCategoryUpdateDTO adminCategoryUpdateDTO) {
+        Category category = categoryMapper.selectById(categoryId);
+        if(category == null){
+            throw new CategoryNotFoundException(CATEGORY_NOT_FOUND);
+        }
+        // 同级同名检查，排除自己
+        String existed = categoryMapper.selectExistCategoryName(adminCategoryUpdateDTO.getName(),category.getParentId(), categoryId);
+        if (existed != null) {
+            throw new CategoryNameAlreadyExistException(CATEGORY_NAME_ALREADY_EXIST);
+        }
+        category.setName(adminCategoryUpdateDTO.getName());
+        category.setSort(adminCategoryUpdateDTO.getSort());
+        categoryMapper.updateById(category);
+    }
+
+    /**
+     * 修改分类状态
+     * @param categoryId 分类id
+     * @param status 状态
+     */
+    @Override
+    public void changeStatus(Long categoryId, Integer status) {
+        Category category = categoryMapper.selectById(categoryId);
+        if(category == null){
+            throw new CategoryNotFoundException(CATEGORY_NOT_FOUND);
+        }
+        category.setStatus(status);
+        categoryMapper.updateById(category);
     }
 
     /**

@@ -1,6 +1,7 @@
 package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryAddDTO;
+import cn.hisouten.mall.pojo.dto.category.AdminCategoryUpdateDTO;
 import cn.hisouten.mall.pojo.vo.category.AdminCategoryListVO;
 import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
 import cn.hisouten.mall.pojo.vo.category.CategoryTreeVO;
@@ -38,4 +39,18 @@ public interface CategoryService {
      * @param adminCategoryAddDTO 分类参数
      */
     void addCategory(AdminCategoryAddDTO adminCategoryAddDTO);
+
+    /**
+     * 修改分类
+     * @param categoryId 分类id
+     * @param adminCategoryUpdateDTO 修改分类参数
+     */
+    void updateCategory(Long categoryId, AdminCategoryUpdateDTO adminCategoryUpdateDTO);
+
+    /**
+     * 修改分类状态
+     * @param categoryId 分类id
+     * @param status 状态
+     */
+    void changeStatus(Long categoryId, Integer status);
 }

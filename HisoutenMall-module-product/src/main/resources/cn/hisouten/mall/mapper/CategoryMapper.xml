@@ -2,4 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.hisouten.mall.mapper.CategoryMapper">
 
+    <select id="selectExistCategoryName" resultType="java.lang.String">
+        select name from category where parent_id = #{parentId} and name = #{name}
+        <if test="categoryId != null">
+            and id != #{categoryId}
+        </if>
+        and deleted = 0
+    </select>
 </mapper>

@@ -24,8 +24,8 @@ public interface CategoryMapper extends BaseMapper<Category> {
      * 同级同名查重
      * @param name 新增的名字
      * @param parentId 父级id
+     * @param categoryId 排除自己的id
      * @return 可能存在的名字
      */
-    @Select("select name from category where name = #{name} and parent_id = #{parentId}")
-    String selectExistCategoryName(String name, Long parentId);
+    String selectExistCategoryName(String name, Long parentId,Long categoryId);
 }

@@ -20,6 +20,7 @@
         <if test="brandId != null">
             and id != #{brandId}
         </if>
+        and deleted = 0
         limit 1
     </select>
 </mapper>
