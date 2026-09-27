@@ -93,7 +93,16 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public MerchantProductDetailVO merchantDetailQuery(Long productId) {
-        Product product = checkProductOwnership(productId);
+        //可以查询被删除的记录详情，便于修改后重新恢复删除
+        Product product = productMapper.selectByIdIgnoreLogic(productId);
+        //如果商品不存在或已被逻辑删除，抛出异常
+        if(product == null) {
+            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        }
+        //权限审查
+        if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
+            throw new NoPermissionException(NO_PERMISSION);
+        }
         MerchantProductDetailVO merchantProductDetailVO = new MerchantProductDetailVO();
         BeanUtils.copyProperties(product, merchantProductDetailVO);
         String categoryName = categoryService.getCategoryNameByCategoryId(product.getCategoryId());
@@ -280,6 +289,15 @@ public class ProductServiceImpl implements ProductService {
         }
         if (!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
             throw new NoPermissionException(NO_PERMISSION);
+        }
+        //判断恢复后的品牌或分类是否还存在，不存在则报错
+        Brand brand = productMapper.getBrandByProductId(productId);
+        if(brand == null || brand.getStatus() == DISABLED || brand.getDeleted() == ENABLED){
+            throw new BrandInvalidException(BRAND_INVALID);
+        }
+        Category category = productMapper.getCategoryByProductId(productId);
+        if(category == null || category.getStatus() == DISABLED || category.getDeleted() == ENABLED){
+            throw new CategoryInvalidException(CATEGORY_INVALID);
         }
         //若本就未被删除就提示
         if(product.getDeleted() == DISABLED){

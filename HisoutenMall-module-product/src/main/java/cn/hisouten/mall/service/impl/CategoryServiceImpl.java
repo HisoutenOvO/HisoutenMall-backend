@@ -8,6 +8,7 @@ import cn.hisouten.mall.pojo.dto.category.AdminCategoryUpdateDTO;
 import cn.hisouten.mall.pojo.entity.Category;
 import cn.hisouten.mall.pojo.vo.category.AdminCategoryListVO;
 import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
+import cn.hisouten.mall.pojo.vo.category.AdminCategoryTreeVO;
 import cn.hisouten.mall.pojo.vo.category.CategoryTreeVO;
 import cn.hisouten.mall.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -74,14 +75,25 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
-     * 分类树形查询
+     * 管理员端分类树形查询
      * @return 返回值
      */
     @Override
-    public List<CategoryTreeVO> treeQuery() {
+    public List<AdminCategoryTreeVO> treeQuery() {
         List<Category> categoryList = categoryMapper.selectList(null);
         //组装树结构，用抽取端方法递归
         return buildTree(categoryList,0L); //从0——根节点开始
+    }
+
+    /**
+     * 用户和商家端分类树形查询
+     * @return 返回值
+     */
+    @Override
+    public List<CategoryTreeVO> treeQueryOthers() {
+        List<Category> categoryList = categoryMapper.selectListWithoutRemove();
+        //组装树结构，用抽取端方法递归
+        return buildTreeOthers(categoryList,0L); //从0——根节点开始
     }
 
     /**
@@ -176,12 +188,31 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
-     * 组装树递归方法
+     * 管理端组装树递归方法
      * @param all 所有的分类
      * @param parentId 父级分类id
      * @return 返回值
      */
-    private List<CategoryTreeVO> buildTree(List<Category> all, Long parentId) {
+    private List<AdminCategoryTreeVO> buildTree(List<Category> all, Long parentId) {
+        List<AdminCategoryTreeVO> result = new ArrayList<>();
+        for (Category c : all) {
+            if (c.getParentId().equals(parentId)) {
+                AdminCategoryTreeVO vo = new AdminCategoryTreeVO();
+                BeanUtils.copyProperties(c, vo);
+                vo.setChildren(buildTree(all, c.getId()));
+                result.add(vo);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 商家和用户端组装树递归方法
+     * @param all 所有的分类
+     * @param parentId 父级分类id
+     * @return 返回值
+     */
+    private List<CategoryTreeVO> buildTreeOthers(List<Category> all, Long parentId) {
         List<CategoryTreeVO> result = new ArrayList<>();
         for (Category c : all) {
             if (c.getParentId().equals(parentId)) {

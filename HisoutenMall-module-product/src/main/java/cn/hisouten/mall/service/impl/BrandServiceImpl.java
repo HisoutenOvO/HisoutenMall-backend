@@ -46,7 +46,7 @@ public class BrandServiceImpl implements BrandService {
     }
 
     /**
-     * 获取品牌列表
+     * 用户和商家获取品牌列表
      * @return 返回值
      */
     @Override

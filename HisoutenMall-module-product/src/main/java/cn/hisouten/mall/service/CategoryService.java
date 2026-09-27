@@ -4,6 +4,7 @@ import cn.hisouten.mall.pojo.dto.category.AdminCategoryAddDTO;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryUpdateDTO;
 import cn.hisouten.mall.pojo.vo.category.AdminCategoryListVO;
 import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
+import cn.hisouten.mall.pojo.vo.category.AdminCategoryTreeVO;
 import cn.hisouten.mall.pojo.vo.category.CategoryTreeVO;
 
 import java.util.List;
@@ -29,10 +30,10 @@ public interface CategoryService {
     List<AdminCategoryListVO> adminListQuery();
 
     /**
-     * 分类树形查询
+     * 管理端分类树形查询
      * @return 返回值
      */
-    List<CategoryTreeVO> treeQuery();
+    List<AdminCategoryTreeVO> treeQuery();
 
     /**
      * 新增分类
@@ -59,4 +60,10 @@ public interface CategoryService {
      * @param categoryId 分类id
      */
     void logicDelete(Long categoryId);
+
+    /**
+     * 用户和商家端查询分类树形结构
+     * @return 返回值
+     */
+    List<CategoryTreeVO> treeQueryOthers();
 }

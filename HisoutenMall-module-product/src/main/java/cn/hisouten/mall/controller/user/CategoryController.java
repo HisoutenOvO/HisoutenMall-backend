@@ -2,6 +2,7 @@ package cn.hisouten.mall.controller.user;
 
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
+import cn.hisouten.mall.pojo.vo.category.CategoryTreeVO;
 import cn.hisouten.mall.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,10 +27,22 @@ public class CategoryController {
      * @return 返回分类列表
      */
     @GetMapping("/list")
-    @Operation(summary = "用户列表查询分类")
+    @Operation(summary = "列表查询分类")
     public Result<List<CategoryListVO>> listQuery(){
         log.info("查询分类列表");
         List<CategoryListVO> categoryList = categoryService.listQuery();
         return Result.success(categoryList);
+    }
+
+    /**
+     * 查询分类树形结构
+     * @return 返回值
+     */
+    @GetMapping("/tree")
+    @Operation(summary = "查询分类树形结构")
+    public Result<List<CategoryTreeVO>> treeQuery(){
+        log.info("查询树形结构");
+        List<CategoryTreeVO> categoryTreeVOList = categoryService.treeQueryOthers();
+        return Result.success(categoryTreeVOList);
     }
 }

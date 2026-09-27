@@ -5,10 +5,11 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * 用户和商家端查询分类树形结构返回值
+ * 管理端查询分类树形结构返回值
  */
 @Data
-public class CategoryTreeVO {
+public class AdminCategoryTreeVO {
+
     private Long id;
 
     private Long parentId;
@@ -19,5 +20,8 @@ public class CategoryTreeVO {
 
     private Integer sort;
 
+    private Integer status;
+
     private List<AdminCategoryTreeVO> children;
+
 }

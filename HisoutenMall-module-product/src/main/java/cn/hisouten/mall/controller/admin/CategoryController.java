@@ -4,7 +4,7 @@ import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryAddDTO;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryUpdateDTO;
 import cn.hisouten.mall.pojo.vo.category.AdminCategoryListVO;
-import cn.hisouten.mall.pojo.vo.category.CategoryTreeVO;
+import cn.hisouten.mall.pojo.vo.category.AdminCategoryTreeVO;
 import cn.hisouten.mall.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,10 +40,10 @@ public class CategoryController {
      */
     @GetMapping("/tree")
     @Operation(summary = "分类树形查询")
-    public Result<List<CategoryTreeVO>> treeQuery(){
+    public Result<List<AdminCategoryTreeVO>> treeQuery(){
         log.info("分类树形查询");
-        List<CategoryTreeVO> categoryTreeVOS = categoryService.treeQuery();
-        return Result.success(categoryTreeVOS);
+        List<AdminCategoryTreeVO> adminCategoryTreeVOS = categoryService.treeQuery();
+        return Result.success(adminCategoryTreeVOS);
     }
 
     /**

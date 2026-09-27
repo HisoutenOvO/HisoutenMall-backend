@@ -36,4 +36,11 @@ public interface CategoryMapper extends BaseMapper<Category> {
      */
     @Select("select count(0) from category where parent_id = #{categoryId}")
     Integer getChildCategoryCount(Long categoryId);
+
+    /**
+     * 查询没下架且未删除的分类
+     * @return 返回值
+     */
+    @Select("select * from category where status = 1 and deleted = 0")
+    List<Category> selectListWithoutRemove();
 }
