@@ -3,6 +3,7 @@ package cn.hisouten.mall.user.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.user.mapper.UserAddressMapper;
+import cn.hisouten.mall.user.pojo.dto.UserAddressAddDTO;
 import cn.hisouten.mall.user.pojo.entity.UserAddress;
 import cn.hisouten.mall.user.pojo.vo.UserAddressDetailVO;
 import cn.hisouten.mall.user.pojo.vo.UserAddressListVO;
@@ -10,11 +11,13 @@ import cn.hisouten.mall.user.service.UserAddressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.NO_PERMISSION;
+import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
 
 @Service
 @RequiredArgsConstructor
@@ -59,6 +62,22 @@ public class UserAddressServiceImpl implements UserAddressService {
         UserAddressDetailVO userAddressDetailVO = new UserAddressDetailVO();
         BeanUtils.copyProperties(userAddress,userAddressDetailVO);
         return userAddressDetailVO;
+    }
+
+    /**
+     * 用户新增地址
+     * @param userId 用户id
+     * @param userAddressAddDTO 用户新增地址参数
+     */
+    @Override
+    @Transactional
+    public void addAddress(Long userId, UserAddressAddDTO userAddressAddDTO) {
+        UserAddress userAddress = new UserAddress();
+        BeanUtils.copyProperties(userAddressAddDTO,userAddress);
+        if(userAddressAddDTO.getIsDefault() == ENABLED){
+            userAddressMapper.changeDefaultAddress(userId);
+        }
+        userAddressMapper.insert(userAddress);
     }
 
 

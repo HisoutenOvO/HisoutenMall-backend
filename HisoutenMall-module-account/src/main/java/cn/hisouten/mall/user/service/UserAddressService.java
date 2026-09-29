@@ -1,5 +1,6 @@
 package cn.hisouten.mall.user.service;
 
+import cn.hisouten.mall.user.pojo.dto.UserAddressAddDTO;
 import cn.hisouten.mall.user.pojo.vo.UserAddressDetailVO;
 import cn.hisouten.mall.user.pojo.vo.UserAddressListVO;
 
@@ -20,4 +21,11 @@ public interface UserAddressService {
      * @return 返回值
      */
     UserAddressDetailVO detailQuery(Long addressId);
+
+    /**
+     * 用户新增地址
+     * @param userId 用户id
+     * @param userAddressAddDTO 用户新增地址参数
+     */
+    void addAddress(Long userId, UserAddressAddDTO userAddressAddDTO);
 }
