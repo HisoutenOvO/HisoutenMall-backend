@@ -36,4 +36,6 @@ public class ExceptionMessageConstant {
     public static final String CATEGORY_RELATED_PRODUCT = "该分类下关联着商品，不可删除";
     public static final String BRAND_INVALID = "该品牌已无效，请更换品牌再进行操作！(被下架，被删除或不存在)";
     public static final String CATEGORY_INVALID = "该分类已无效，请更换分类再进行操作！(被下架，被删除或不存在)";
+    public static final String PASSWORD_ERROR = "原密码错误！";
+    public static final String SAME_PASSWORD = "新密码不能和原密码相同！";
 }

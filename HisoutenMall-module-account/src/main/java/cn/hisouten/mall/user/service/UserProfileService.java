@@ -1,6 +1,7 @@
 package cn.hisouten.mall.user.service;
 
 import cn.hisouten.mall.user.pojo.dto.UserUpdateDTO;
+import cn.hisouten.mall.user.pojo.dto.UserUpdatePwdDTO;
 import cn.hisouten.mall.user.pojo.vo.UserDetailVO;
 
 public interface UserProfileService {
@@ -17,4 +18,11 @@ public interface UserProfileService {
      * @param userUpdateDTO 修改参数
      */
     void updateInfo(Long userId, UserUpdateDTO userUpdateDTO);
+
+    /**
+     * 用户修改密码
+     * @param userId 用户id
+     * @param userUpdatePwdDTO 密码
+     */
+    void updatePwd(Long userId, UserUpdatePwdDTO userUpdatePwdDTO);
 }
