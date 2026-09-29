@@ -1,14 +1,20 @@
 package cn.hisouten.mall.user.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.user.mapper.UserAddressMapper;
 import cn.hisouten.mall.user.pojo.entity.UserAddress;
+import cn.hisouten.mall.user.pojo.vo.UserAddressDetailVO;
 import cn.hisouten.mall.user.pojo.vo.UserAddressListVO;
 import cn.hisouten.mall.user.service.UserAddressService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static cn.hisouten.mall.constant.ExceptionMessageConstant.NO_PERMISSION;
 
 @Service
 @RequiredArgsConstructor
@@ -38,4 +44,22 @@ public class UserAddressServiceImpl implements UserAddressService {
         }
         return userAddressListVOS;
     }
+
+    /**
+     * 用户查询地址详情
+     * @param addressId 地址id
+     * @return 返回值
+     */
+    @Override
+    public UserAddressDetailVO detailQuery(Long addressId) {
+        UserAddress userAddress = userAddressMapper.selectById(addressId);
+        if(!userAddress.getUserId().equals(StpUtil.getLoginIdAsLong())){
+            throw new BizException(NO_PERMISSION);
+        }
+        UserAddressDetailVO userAddressDetailVO = new UserAddressDetailVO();
+        BeanUtils.copyProperties(userAddress,userAddressDetailVO);
+        return userAddressDetailVO;
+    }
+
+
 }

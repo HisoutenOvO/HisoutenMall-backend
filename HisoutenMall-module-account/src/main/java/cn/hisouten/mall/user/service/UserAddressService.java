@@ -1,5 +1,6 @@
 package cn.hisouten.mall.user.service;
 
+import cn.hisouten.mall.user.pojo.vo.UserAddressDetailVO;
 import cn.hisouten.mall.user.pojo.vo.UserAddressListVO;
 
 import java.util.List;
@@ -12,4 +13,11 @@ public interface UserAddressService {
      * @return 返回值
      */
     List<UserAddressListVO> listQuery(Long userId);
+
+    /**
+     * 用户查询地址详情
+     * @param addressId 地址id
+     * @return 返回值
+     */
+    UserAddressDetailVO detailQuery(Long addressId);
 }

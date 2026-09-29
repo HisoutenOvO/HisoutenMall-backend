@@ -15,6 +15,6 @@ public interface UserAddressMapper extends BaseMapper<UserAddress> {
      * @param userId 用户id
      * @return 返回值
      */
-    @Select("select * from user_address where user_id = #{userId}")
+    @Select("select * from user_address where user_id = #{userId} order by is_default")
     List<UserAddress> selectListByUserId(Long userId);
 }

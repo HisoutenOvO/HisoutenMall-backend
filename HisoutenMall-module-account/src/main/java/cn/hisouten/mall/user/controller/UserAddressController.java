@@ -2,6 +2,7 @@ package cn.hisouten.mall.user.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.user.pojo.vo.UserAddressDetailVO;
 import cn.hisouten.mall.user.pojo.vo.UserAddressListVO;
 import cn.hisouten.mall.user.service.UserAddressService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,5 +35,18 @@ public class UserAddressController {
         log.info("用户：{}查询地址列表", userId);
         List<UserAddressListVO> userAddressListVOS = userAddressService.listQuery(userId);
         return Result.success(userAddressListVOS);
+    }
+
+    /**
+     * 用户查询地址详情
+     * @param addressId 地址id
+     * @return 返回值
+     */
+    @GetMapping("/{addressId}")
+    @Operation(summary = "用户查询地址详情")
+    public Result<UserAddressDetailVO> detailQuery(@PathVariable Long addressId){
+        log.info("用户:{}查询地址详情:{}",StpUtil.getLoginIdAsLong(),addressId);
+        UserAddressDetailVO userAddressDetailVO = userAddressService.detailQuery(addressId);
+        return Result.success(userAddressDetailVO);
     }
 }
