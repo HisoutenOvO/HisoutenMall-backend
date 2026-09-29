@@ -4,6 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.user.mapper.UserAddressMapper;
 import cn.hisouten.mall.user.pojo.dto.UserAddressAddDTO;
+import cn.hisouten.mall.user.pojo.dto.UserAddressUpdateDTO;
 import cn.hisouten.mall.user.pojo.entity.UserAddress;
 import cn.hisouten.mall.user.pojo.vo.UserAddressDetailVO;
 import cn.hisouten.mall.user.pojo.vo.UserAddressListVO;
@@ -78,6 +79,25 @@ public class UserAddressServiceImpl implements UserAddressService {
             userAddressMapper.changeDefaultAddress(userId);
         }
         userAddressMapper.insert(userAddress);
+    }
+
+    /**
+     * 用户修改地址
+     * @param addressId 地址id
+     * @param userAddressUpdateDTO 修改参数
+     */
+    @Override
+    @Transactional
+    public void updateAddress(Long addressId, UserAddressUpdateDTO userAddressUpdateDTO) {
+        UserAddress userAddress = userAddressMapper.selectById(addressId);
+        if(!userAddress.getUserId().equals(StpUtil.getLoginIdAsLong())){
+            throw new BizException(NO_PERMISSION);
+        }
+        BeanUtils.copyProperties(userAddressUpdateDTO,userAddress);
+        if(userAddressUpdateDTO.getIsDefault() == ENABLED){
+            userAddressMapper.changeDefaultAddress(StpUtil.getLoginIdAsLong());
+        }
+        userAddressMapper.updateById(userAddress);
     }
 
 

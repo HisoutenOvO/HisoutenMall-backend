@@ -3,6 +3,7 @@ package cn.hisouten.mall.user.controller;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.UserAddressAddDTO;
+import cn.hisouten.mall.user.pojo.dto.UserAddressUpdateDTO;
 import cn.hisouten.mall.user.pojo.vo.UserAddressDetailVO;
 import cn.hisouten.mall.user.pojo.vo.UserAddressListVO;
 import cn.hisouten.mall.user.service.UserAddressService;
@@ -59,6 +60,21 @@ public class UserAddressController {
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户：{}新增地址参数",userId);
         userAddressService.addAddress(userId,userAddressAddDTO);
+        return Result.success();
+    }
+
+
+    /**
+     * 用户修改地址
+     * @param addressId 地址id
+     * @param userAddressUpdateDTO 修改参数
+     * @return 返回值
+     */
+    @PutMapping("/{addressId}")
+    @Operation(summary = "用户修改地址")
+    public Result updateAddress(@PathVariable Long addressId,@RequestBody UserAddressUpdateDTO userAddressUpdateDTO){
+        log.info("用户:{}修改地址:{}",StpUtil.getLoginIdAsLong(),addressId);
+        userAddressService.updateAddress(addressId,userAddressUpdateDTO);
         return Result.success();
     }
 }
