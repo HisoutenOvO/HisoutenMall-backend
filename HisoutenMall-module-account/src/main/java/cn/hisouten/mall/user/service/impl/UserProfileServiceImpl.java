@@ -87,7 +87,5 @@ public class UserProfileServiceImpl implements UserProfileService {
         // 3. 加密更新
         user.setPassword(BCrypt.hashpw(passwordUpdateDTO.getNewPwd()));
         authMapper.updateById(user);
-
-
     }
 }

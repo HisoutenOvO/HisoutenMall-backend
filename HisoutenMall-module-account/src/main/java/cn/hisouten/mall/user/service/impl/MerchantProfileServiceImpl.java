@@ -1,9 +1,11 @@
 package cn.hisouten.mall.user.service.impl;
 
+import cn.dev33.satoken.secure.BCrypt;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.user.mapper.AuthMapper;
 import cn.hisouten.mall.user.mapper.MerchantProfileMapper;
 import cn.hisouten.mall.user.pojo.dto.MerchantUpdateDTO;
+import cn.hisouten.mall.user.pojo.dto.PasswordUpdateDTO;
 import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
 import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.vo.MerchantDetailVO;
@@ -12,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import static cn.hisouten.mall.constant.ExceptionMessageConstant.USER_NOT_FOUND;
+import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 
 @Service
 @RequiredArgsConstructor
@@ -71,5 +73,29 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
         }
         BeanUtils.copyProperties(merchantUpdateDTO,merchantProfile);
         merchantProfileMapper.updateById(merchantProfile);
+    }
+
+    /**
+     * 商家修改密码
+     * @param merchantId 商家id
+     * @param passwordUpdateDTO 修改密码参数
+     */
+    @Override
+    public void updatePwd(Long merchantId, PasswordUpdateDTO passwordUpdateDTO) {
+        User user = authMapper.selectById(merchantId);
+        if(user == null){
+            throw new BizException(USER_NOT_FOUND);
+        }
+        // 1. 原密码校验
+        if (!BCrypt.checkpw(passwordUpdateDTO.getOldPwd(), user.getPassword())) {
+            throw new BizException(PASSWORD_ERROR);
+        }
+        // 2. 新旧不能相同
+        if (passwordUpdateDTO.getOldPwd().equals(passwordUpdateDTO.getNewPwd())) {
+            throw new BizException(SAME_PASSWORD);
+        }
+        // 3. 加密更新
+        user.setPassword(BCrypt.hashpw(passwordUpdateDTO.getNewPwd()));
+        authMapper.updateById(user);
     }
 }

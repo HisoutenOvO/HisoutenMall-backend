@@ -2,6 +2,7 @@ package cn.hisouten.mall.user.controller;
 
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.MerchantUpdateDTO;
+import cn.hisouten.mall.user.pojo.dto.PasswordUpdateDTO;
 import cn.hisouten.mall.user.pojo.vo.MerchantDetailVO;
 import cn.hisouten.mall.user.service.AuthService;
 import cn.hisouten.mall.user.service.MerchantProfileService;
@@ -45,6 +46,21 @@ public class MerchantController {
     public Result updateInfo(@PathVariable Long merchantId, @RequestBody MerchantUpdateDTO merchantUpdateDTO){
         log.info("商家:{}修改信息",merchantId);
         merchantProfileService.updateInfo(merchantId,merchantUpdateDTO);
+        return Result.success();
+    }
+
+
+    /**
+     * 商家修改密码
+     * @param merchantId 商家id
+     * @param passwordUpdateDTO 修改密码参数
+     * @return 返回值
+     */
+    @PutMapping("/password/{merchantId}")
+    @Operation(summary = "商家修改密码")
+    public Result updatePwd(@PathVariable Long merchantId, @RequestBody PasswordUpdateDTO passwordUpdateDTO){
+        log.info("商家:{}修改密码",merchantId);
+        merchantProfileService.updatePwd(merchantId,passwordUpdateDTO);
         return Result.success();
     }
 }
