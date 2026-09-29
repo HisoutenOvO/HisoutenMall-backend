@@ -1,8 +1,12 @@
 package cn.hisouten.mall.mapper;
 
+import cn.hisouten.mall.pojo.bo.CartItemListBO;
 import cn.hisouten.mall.pojo.entity.CartItem;
+import cn.hisouten.mall.pojo.vo.UserCartItemListVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 public interface CartItemMapper extends BaseMapper<CartItem> {
 
@@ -22,4 +26,11 @@ public interface CartItemMapper extends BaseMapper<CartItem> {
      */
     @Select("select count(0) from cart_item where user_id = #{userId}")
     int selectCartCount(Long userId);
+
+    /**
+     * 通过用户id查找购物车列表
+     * @param userId 用户id
+     * @return 返回值
+     */
+    List<CartItemListBO> selectListByUserId(Long userId);
 }

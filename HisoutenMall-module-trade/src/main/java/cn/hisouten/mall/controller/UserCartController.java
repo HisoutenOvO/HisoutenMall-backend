@@ -3,15 +3,15 @@ package cn.hisouten.mall.controller;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.UserCartAddDTO;
+import cn.hisouten.mall.pojo.vo.UserCartItemListVO;
 import cn.hisouten.mall.service.CartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user/cart")
@@ -35,5 +35,16 @@ public class UserCartController {
         return Result.success();
     }
 
-
+    /**
+     * 用户查询购物车列表
+     * @return 返回值
+     */
+    @GetMapping("/list")
+    @Operation(summary = "用户查询购物车列表")
+    public Result<List<UserCartItemListVO>> listQuery(){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{}查询购物车列表",userId);
+        List<UserCartItemListVO> list = cartService.listQuery(userId);
+        return Result.success(list);
+    }
 }

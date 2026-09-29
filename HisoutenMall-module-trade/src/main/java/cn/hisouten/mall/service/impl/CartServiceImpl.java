@@ -2,14 +2,19 @@ package cn.hisouten.mall.service.impl;
 
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.CartItemMapper;
+import cn.hisouten.mall.pojo.bo.CartItemListBO;
 import cn.hisouten.mall.pojo.dto.UserCartAddDTO;
 import cn.hisouten.mall.pojo.entity.CartItem;
 import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.entity.ProductSku;
+import cn.hisouten.mall.pojo.vo.UserCartItemListVO;
 import cn.hisouten.mall.service.CartService;
 import cn.hisouten.mall.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
@@ -73,5 +78,44 @@ public class CartServiceImpl implements CartService {
             item.setChecked(ENABLED);
             cartItemMapper.insert(item);
         }
+    }
+
+    /**
+     * 查询购物车列表
+     * @param userId 用户id
+     * @return 返回值
+     */
+    @Override
+    public List<UserCartItemListVO> listQuery(Long userId) {
+        List<CartItemListBO> boList = cartItemMapper.selectListByUserId(userId);
+        List<UserCartItemListVO> voList = new ArrayList<>();
+        for (CartItemListBO bo : boList) {
+            UserCartItemListVO vo = new UserCartItemListVO();
+            //设置图片
+            if (bo.getSkuImage() != null) {
+                vo.setImage(bo.getSkuImage());
+            } else {
+                vo.setImage(bo.getMainImage());
+            }
+            // 失效判断
+            if (bo.getSkuDeleted() == ENABLED || bo.getSkuStatus() != ENABLED) {
+                vo.setInvalid(true);
+                vo.setInvalidReason(SKU_HAS_DISABLED);
+            } else if (bo.getProductDeleted() == ENABLED || bo.getProductStatus() != ENABLED) {
+                vo.setInvalid(true);
+                vo.setInvalidReason(PRODUCT_HAS_DISABLED;
+            } else if (vo.getStock() < vo.getQuantity()) {
+                vo.setInvalid(true);
+                vo.setInvalidReason(OUT_OF_STOCK);
+            } else {
+                vo.setInvalid(false);
+            }
+            // 失效项强制取消勾选（只返回展示）
+            if (vo.getInvalid()) {
+                vo.setChecked(DISABLED);
+            }
+            voList.add(vo);
+        }
+        return voList;
     }
 }
