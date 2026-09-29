@@ -5,7 +5,7 @@ import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.user.mapper.AuthMapper;
 import cn.hisouten.mall.user.mapper.UserProfileMapper;
 import cn.hisouten.mall.user.pojo.dto.UserUpdateDTO;
-import cn.hisouten.mall.user.pojo.dto.UserUpdatePwdDTO;
+import cn.hisouten.mall.user.pojo.dto.PasswordUpdateDTO;
 import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.entity.UserProfile;
 import cn.hisouten.mall.user.pojo.vo.UserDetailVO;
@@ -68,24 +68,24 @@ public class UserProfileServiceImpl implements UserProfileService {
     /**
      * 用户修改密码
      * @param userId 用户id
-     * @param userUpdatePwdDTO 密码
+     * @param passwordUpdateDTO 密码
      */
     @Override
-    public void updatePwd(Long userId, UserUpdatePwdDTO userUpdatePwdDTO) {
+    public void updatePwd(Long userId, PasswordUpdateDTO passwordUpdateDTO) {
         User user = authMapper.selectById(userId);
         if(user == null){
             throw new BizException(USER_NOT_FOUND);
         }
         // 1. 原密码校验
-        if (!BCrypt.checkpw(userUpdatePwdDTO.getOldPwd(), user.getPassword())) {
+        if (!BCrypt.checkpw(passwordUpdateDTO.getOldPwd(), user.getPassword())) {
             throw new BizException(PASSWORD_ERROR);
         }
         // 2. 新旧不能相同
-        if (userUpdatePwdDTO.getOldPwd().equals(userUpdatePwdDTO.getNewPwd())) {
+        if (passwordUpdateDTO.getOldPwd().equals(passwordUpdateDTO.getNewPwd())) {
             throw new BizException(SAME_PASSWORD);
         }
         // 3. 加密更新
-        user.setPassword(BCrypt.hashpw(userUpdatePwdDTO.getNewPwd()));
+        user.setPassword(BCrypt.hashpw(passwordUpdateDTO.getNewPwd()));
         authMapper.updateById(user);
 
 

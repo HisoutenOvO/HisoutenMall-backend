@@ -3,11 +3,13 @@ package cn.hisouten.mall.user.service.impl;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.user.mapper.AuthMapper;
 import cn.hisouten.mall.user.mapper.MerchantProfileMapper;
+import cn.hisouten.mall.user.pojo.dto.MerchantUpdateDTO;
 import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
 import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.vo.MerchantDetailVO;
 import cn.hisouten.mall.user.service.MerchantProfileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.USER_NOT_FOUND;
@@ -40,6 +42,9 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
             throw new BizException(USER_NOT_FOUND);
         }
         MerchantProfile merchantProfile = merchantProfileMapper.selectProfileByMerchantId(merchantId);
+        if(merchantProfile == null){
+            throw new BizException(USER_NOT_FOUND);
+        }
         return MerchantDetailVO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
@@ -51,5 +56,20 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
                 .auditStatus(merchantProfile.getAuditStatus())
                 .auditReason(merchantProfile.getAuditReason())
                 .build();
+    }
+
+    /**
+     * 商家修改信息
+     * @param merchantId 商家id
+     * @param merchantUpdateDTO 修改参数
+     */
+    @Override
+    public void updateInfo(Long merchantId, MerchantUpdateDTO merchantUpdateDTO) {
+        MerchantProfile merchantProfile = merchantProfileMapper.selectProfileByMerchantId(merchantId);
+        if(merchantProfile == null){
+            throw new BizException(USER_NOT_FOUND);
+        }
+        BeanUtils.copyProperties(merchantUpdateDTO,merchantProfile);
+        merchantProfileMapper.updateById(merchantProfile);
     }
 }

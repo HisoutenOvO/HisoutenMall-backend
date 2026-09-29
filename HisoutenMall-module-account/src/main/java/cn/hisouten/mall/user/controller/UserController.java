@@ -2,7 +2,7 @@ package cn.hisouten.mall.user.controller;
 
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.UserUpdateDTO;
-import cn.hisouten.mall.user.pojo.dto.UserUpdatePwdDTO;
+import cn.hisouten.mall.user.pojo.dto.PasswordUpdateDTO;
 import cn.hisouten.mall.user.pojo.vo.UserDetailVO;
 import cn.hisouten.mall.user.service.AuthService;
 import cn.hisouten.mall.user.service.UserProfileService;
@@ -26,7 +26,7 @@ public class UserController {
      * @param userId 用户id
      * @return 返回值
      */
-    @GetMapping("/{userId}")
+    @GetMapping("/profile/{userId}")
     @Operation(summary = "用户查询详情")
     public Result<UserDetailVO> detailQuery(@PathVariable Long userId){
         log.info("用户：{}查询详情",userId);
@@ -40,7 +40,7 @@ public class UserController {
      * @param userUpdateDTO 修改参数
      * @return 返回值
      */
-    @PutMapping("/{userId}")
+    @PutMapping("/profile/{userId}")
     @Operation(summary = "用户修改个人信息")
     public Result updateInfo(@PathVariable Long userId, @RequestBody UserUpdateDTO userUpdateDTO){
         log.info("用户：{}修改个人信息",userId);
@@ -51,14 +51,14 @@ public class UserController {
     /**
      * 用户修改密码
      * @param userId 用户id
-     * @param userUpdatePwdDTO 密码
+     * @param passwordUpdateDTO 密码
      * @return 返回值
      */
-    @PutMapping("/{userId}/pwd")
+    @PutMapping("/password/{userId}")
     @Operation(summary = "用户修改密码")
-    public Result updatePwd(@PathVariable Long userId, @RequestBody UserUpdatePwdDTO userUpdatePwdDTO){
+    public Result updatePwd(@PathVariable Long userId, @RequestBody PasswordUpdateDTO passwordUpdateDTO){
         log.info("用户：{}修改密码",userId);
-        userProfileService.updatePwd(userId,userUpdatePwdDTO);
+        userProfileService.updatePwd(userId, passwordUpdateDTO);
         return Result.success();
     }
 }

@@ -1,5 +1,6 @@
 package cn.hisouten.mall.user.service;
 
+import cn.hisouten.mall.user.pojo.dto.MerchantUpdateDTO;
 import cn.hisouten.mall.user.pojo.vo.MerchantDetailVO;
 
 public interface MerchantProfileService {
@@ -17,4 +18,11 @@ public interface MerchantProfileService {
      * @return 返回值
      */
     MerchantDetailVO detailQuery(Long merchantId);
+
+    /**
+     * 商家修改信息
+     * @param merchantId 商家id
+     * @param merchantUpdateDTO 修改参数
+     */
+    void updateInfo(Long merchantId, MerchantUpdateDTO merchantUpdateDTO);
 }
