@@ -33,4 +33,10 @@ public interface CartService {
      * @param checked 勾选状态
      */
     void updateChecked(Long userId, Long cartItemId, Integer checked);
+
+    /**
+     * 全选或全不选
+     * @param checked 勾选状态
+     */
+    void checkAll(Integer checked);
 }

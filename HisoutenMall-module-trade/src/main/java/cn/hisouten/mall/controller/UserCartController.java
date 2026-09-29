@@ -78,4 +78,18 @@ public class UserCartController {
         cartService.updateChecked(userId,cartItemId,checked);
         return Result.success();
     }
+
+
+    /**
+     * 全选或全不选
+     * @param checked 勾选状态
+     * @return 返回值
+     */
+    @PutMapping("/check-all")
+    @Operation(summary = "全选或全不选")
+    public Result checkAll(@RequestParam Integer checked){
+        log.info("全选或全不选购物车项");
+        cartService.checkAll(checked);
+        return Result.success();
+    }
 }

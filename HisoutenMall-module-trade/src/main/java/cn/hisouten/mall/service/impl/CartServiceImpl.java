@@ -1,5 +1,6 @@
 package cn.hisouten.mall.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.CartItemMapper;
 import cn.hisouten.mall.pojo.bo.CartItemListBO;
@@ -158,4 +159,25 @@ public class CartServiceImpl implements CartService {
         item.setChecked(checked);
         cartItemMapper.updateById(item);
     }
+
+    /**
+     * 全选或全不选
+     * @param checked 勾选状态
+     */
+    @Override
+    public void checkAll(Integer checked) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        if(checked == DISABLED){
+            cartItemMapper.changeAllCheckedByUserId(userId,checked);
+        }else if(checked == ENABLED){
+            //选出有效的购物车id，先取消所有选择，再全选有效的
+            List<Long> validIds = cartItemMapper.selectValidIdsByUserId(userId);
+            cartItemMapper.changeAllCheckedByUserId(userId,checked);
+            cartItemMapper.changeAllCheckedByCartItemId(validIds,ENABLED);
+        }else{
+            throw new BizException(SYSTEM_ERROR);
+        }
+    }
+
+
 }

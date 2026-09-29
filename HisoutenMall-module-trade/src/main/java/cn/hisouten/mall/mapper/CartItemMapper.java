@@ -2,9 +2,9 @@ package cn.hisouten.mall.mapper;
 
 import cn.hisouten.mall.pojo.bo.CartItemListBO;
 import cn.hisouten.mall.pojo.entity.CartItem;
-import cn.hisouten.mall.pojo.vo.UserCartItemListVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -33,4 +33,25 @@ public interface CartItemMapper extends BaseMapper<CartItem> {
      * @return 返回值
      */
     List<CartItemListBO> selectListByUserId(Long userId);
+
+    /**
+     * 根据用户id进行全选或全不选操作
+     * @param userId 用户id
+     * @param checked 勾选状态
+     */
+    @Update("update cart_item set checked = #{checked} where user_id = #{userId}")
+    void changeAllCheckedByUserId(Long userId,Integer checked);
+
+    /**
+     * 通过用户id获取有效项的购物车项id
+     * @param userId 用户id
+     * @return 返回值
+     */
+    List<Long> selectValidIdsByUserId(Long userId);
+
+    /**
+     * 根据购物车项id进行批量选择操作
+     * @param cartItemIds 购物车ids
+     */
+    void changeAllCheckedByCartItemId(List<Long> cartItemIds,Integer checked);
 }

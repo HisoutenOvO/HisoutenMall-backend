@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.hisouten.mall.mapper.CartItemMapper">
+    <update id="changeAllCheckedByCartItemId">
+        update cart_item set checked = #{checked}
+        where id in
+        <foreach collection="cartItemIds" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </update>
     <select id="selectListByUserId" resultType="cn.hisouten.mall.pojo.bo.CartItemListBO">
         select
             c.id, c.product_id, c.sku_id, c.quantity, c.checked,
@@ -11,5 +18,12 @@
         left join product_sku s on c.sku_id = s.id
         where c.user_id = #{userId}
         order by c.create_time desc
+    </select>
+    <select id="selectValidIdsByUserId" resultType="java.lang.Long">
+        select c.id
+        from cart_item c
+        left join product_sku s on c.sku_id = s.id
+        left join product p on c.product_id = p.id
+        where p.status = 1 and s.status = 1 and p.deleted = 0 and s.deleted = 0 and s.stock >= c.quantity
     </select>
 </mapper>

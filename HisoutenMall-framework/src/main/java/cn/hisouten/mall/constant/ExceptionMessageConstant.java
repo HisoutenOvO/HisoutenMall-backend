@@ -6,6 +6,7 @@ package cn.hisouten.mall.constant;
 public class ExceptionMessageConstant {
 
     public static final String NO_PERMISSION = "无权执行该操作！";
+    public static final String SYSTEM_ERROR = "系统错误！";
     public static final String PRODUCT_NOT_FOUND = "商品不存在！";
     public static final String CATEGORY_NOT_FOUND = "分类不存在！";
     public static final String USER_NOT_FOUND = "用户不存在！";
