@@ -2,6 +2,8 @@ package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.product.*;
+import cn.hisouten.mall.pojo.entity.Product;
+import cn.hisouten.mall.pojo.entity.ProductSku;
 import cn.hisouten.mall.pojo.vo.product.*;
 
 import java.util.List;
@@ -124,4 +126,18 @@ public interface ProductService {
      * @param merchantId 商家id
      */
     void disableAllProductByMerchantId(Long merchantId);
+
+    /**
+     * 根据skuId查询sku
+     * @param skuId skuId
+     * @return 返回值
+     */
+    ProductSku selectSkuBySkuId(Long skuId);
+
+    /**
+     * 根据商品id查询商品
+     * @param productId 商品id
+     * @return 返回值
+     */
+    Product selectProductByProductId(Long productId);
 }

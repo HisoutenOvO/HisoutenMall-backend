@@ -42,4 +42,8 @@ public class ExceptionMessageConstant {
     public static final String CHANGE_DEFAULT_ADDRESS_FIRST = "删除默认地址前，请先将其他地址设为默认！";
     public static final String ROLE_NOT_MERCHANT = "该用户角色不是商家，请确认";
     public static final String ROLE_NOT_USER = "该用户角色不是顾客，请确认";
+    public static final String SKU_HAS_DISABLED = "该款式已被下架！";
+    public static final String PRODUCT_HAS_DISABLED = "该商品已被下架！";
+    public static final String OUT_OF_STOCK = "库存不足！";
+    public static final String OUT_OF_CART = "购物车已满！";
 }

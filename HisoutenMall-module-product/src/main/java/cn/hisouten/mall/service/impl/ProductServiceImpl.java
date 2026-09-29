@@ -353,6 +353,26 @@ public class ProductServiceImpl implements ProductService {
     public void disableAllProductByMerchantId(Long merchantId) {
         productMapper.removeAllProductsByMerchantId(merchantId);
     }
+
+    /**
+     * 根据skuId查询sku
+     * @param skuId skuId
+     * @return 返回值
+     */
+    @Override
+    public ProductSku selectSkuBySkuId(Long skuId) {
+        return productSkuMapper.selectById(skuId);
+    }
+
+    /**
+     * 根据商品id查询商品
+     * @param productId 商品id
+     * @return 返回值
+     */
+    @Override
+    public Product selectProductByProductId(Long productId) {
+        return productMapper.selectById(productId);
+    }
     //=======================================用户端逻辑================================================
 
     /**
