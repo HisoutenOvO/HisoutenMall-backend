@@ -10,6 +10,7 @@ public class ExceptionMessageConstant {
     public static final String CATEGORY_NOT_FOUND = "分类不存在！";
     public static final String USER_NOT_FOUND = "用户不存在！";
     public static final String ADDRESS_NOT_FOUND = "地址不存在！";
+    public static final String CART_NOT_FOUND = "购物车项不存在！";
     public static final String PARENT_CATEGORY_NOT_FOUND = "父级分类不存在！";
     public static final String LEVEL_OVERFLOW = "分类层级溢出，最多三级，请修改子分类！";
     public static final String SKU_NOT_FOUND = "商品款式不存在！";

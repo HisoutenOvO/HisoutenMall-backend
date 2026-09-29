@@ -47,4 +47,20 @@ public class UserCartController {
         List<UserCartItemListVO> list = cartService.listQuery(userId);
         return Result.success(list);
     }
+
+
+    /**
+     * 购物车修改数量
+     * @param cartItemId 购物车单品id
+     * @param quantity 最终数量
+     * @return 返回值
+     */
+    @PutMapping("/{cartItemId}/quantity")
+    @Operation(summary = "用户修改购物车商品数量")
+    public Result updateQuantity(@PathVariable Long cartItemId,@RequestParam Integer quantity){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户：{}修改购物车数量",userId);
+        cartService.updateQuantity(userId,cartItemId,quantity);
+        return Result.success();
+    }
 }

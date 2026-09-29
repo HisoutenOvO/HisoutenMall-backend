@@ -103,7 +103,7 @@ public class CartServiceImpl implements CartService {
                 vo.setInvalidReason(SKU_HAS_DISABLED);
             } else if (bo.getProductDeleted() == ENABLED || bo.getProductStatus() != ENABLED) {
                 vo.setInvalid(true);
-                vo.setInvalidReason(PRODUCT_HAS_DISABLED;
+                vo.setInvalidReason(PRODUCT_HAS_DISABLED);
             } else if (vo.getStock() < vo.getQuantity()) {
                 vo.setInvalid(true);
                 vo.setInvalidReason(OUT_OF_STOCK);
@@ -117,5 +117,24 @@ public class CartServiceImpl implements CartService {
             voList.add(vo);
         }
         return voList;
+    }
+
+    /**
+     * 购物车修改数量
+     * @param cartItemId 购物车单品id
+     * @param quantity 最终数量
+     */
+    @Override
+    public void updateQuantity(Long userId, Long cartItemId, Integer quantity) {
+        CartItem item = cartItemMapper.selectById(cartItemId);
+        if (item == null || !item.getUserId().equals(userId)) {
+            throw new BizException(CART_NOT_FOUND);
+        }
+        ProductSku sku = productService.selectSkuBySkuId(item.getSkuId());
+        if (sku == null || quantity > sku.getStock()) {
+            throw new BizException(OUT_OF_STOCK);
+        }
+        item.setQuantity(quantity);
+        cartItemMapper.updateById(item);
     }
 }

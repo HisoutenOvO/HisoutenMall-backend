@@ -19,4 +19,11 @@ public interface CartService {
      * @return 返回值
      */
     List<UserCartItemListVO> listQuery(Long userId);
+
+    /**
+     * 购物车修改数量
+     * @param cartItemId 购物车单品id
+     * @param quantity 最终数量
+     */
+    void updateQuantity(Long userId, Long cartItemId, Integer quantity);
 }
