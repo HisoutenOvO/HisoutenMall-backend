@@ -50,5 +50,6 @@ public interface MerchantProfileMapper extends BaseMapper<MerchantProfile> {
      * @param merchantId 商家id——对应商家user表主键
      * @return 返回值
      */
-    AdminMerchantDetailVO getMerchantById(Long merchantId);
+    @Select("select * from merchant_profile where user_id = #{merchantId}")
+    MerchantProfile selectProfileByMerchantId(Long merchantId);
 }

@@ -1,4 +1,4 @@
-package cn.hisouten.mall.user.pojo.entity;
+package cn.hisouten.mall.user.pojo.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,16 +6,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
+/**
+ * 用户在个人中心查看自身详情返回值
+ */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class UserProfile {
+public class UserDetailVO {
     private Long id;
-
-    private Long userId;
 
     private String username;
 
@@ -31,7 +31,5 @@ public class UserProfile {
 
     private LocalDate birthday;
 
-    private LocalDateTime createTime;
 
-    private LocalDateTime updateTime;
 }

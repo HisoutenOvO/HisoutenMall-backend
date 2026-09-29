@@ -1,11 +1,13 @@
 package cn.hisouten.mall.user.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.user.mapper.AuthMapper;
 import cn.hisouten.mall.user.mapper.MerchantProfileMapper;
 import cn.hisouten.mall.user.pojo.dto.AdminMerchantPageQueryDTO;
+import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
 import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.vo.AdminMerchantDetailVO;
 import cn.hisouten.mall.user.pojo.vo.AdminMerchantPageResultVO;
@@ -56,7 +58,19 @@ public class AdminMerchantServiceImpl implements AdminMerchantService {
         if(user == null){
             throw new BizException(USER_NOT_FOUND);
         }
-        return merchantProfileMapper.getMerchantById(merchantId);
+        MerchantProfile merchantProfile = merchantProfileMapper.selectProfileByMerchantId(merchantId);
+        return AdminMerchantDetailVO.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .status(user.getStatus())
+                .shopName(merchantProfile.getShopName())
+                .shopLogo(merchantProfile.getShopLogo())
+                .shopDescription(merchantProfile.getShopDescription())
+                .contactPhone(merchantProfile.getContactPhone())
+                .businessLicense(merchantProfile.getBusinessLicense())
+                .auditStatus(merchantProfile.getAuditStatus())
+                .auditReason(merchantProfile.getAuditReason())
+                .build();
     }
 
     /**
@@ -77,5 +91,6 @@ public class AdminMerchantServiceImpl implements AdminMerchantService {
         if(status == DISABLED){
             productService.disableAllProductByMerchantId(merchantId);
         }
+        StpUtil.kickout(merchantId);
     }
 }

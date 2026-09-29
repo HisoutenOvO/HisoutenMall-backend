@@ -1,5 +1,6 @@
 package cn.hisouten.mall.user.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.user.mapper.AuthMapper;
@@ -53,5 +54,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         }
         user.setStatus(status);
         authMapper.updateById(user);
+        StpUtil.kickout(userId);
+
     }
 }
