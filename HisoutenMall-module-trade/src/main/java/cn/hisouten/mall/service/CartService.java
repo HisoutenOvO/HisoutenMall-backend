@@ -26,4 +26,11 @@ public interface CartService {
      * @param quantity 最终数量
      */
     void updateQuantity(Long userId, Long cartItemId, Integer quantity);
+
+    /**
+     * 用户单条勾选购物车记录
+     * @param cartItemId 购物车项id
+     * @param checked 勾选状态
+     */
+    void updateChecked(Long userId, Long cartItemId, Integer checked);
 }

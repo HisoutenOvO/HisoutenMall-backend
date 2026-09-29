@@ -63,4 +63,19 @@ public class UserCartController {
         cartService.updateQuantity(userId,cartItemId,quantity);
         return Result.success();
     }
+
+    /**
+     * 用户单条勾选购物车记录
+     * @param cartItemId 购物车项id
+     * @param checked 勾选状态
+     * @return 返回值
+     */
+    @PutMapping("/{cartItemId}/checked")
+    @Operation(summary = "单条勾选")
+    public Result updateChecked(@PathVariable Long cartItemId,@RequestParam Integer checked){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("单条勾选购物车项");
+        cartService.updateChecked(userId,cartItemId,checked);
+        return Result.success();
+    }
 }

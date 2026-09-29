@@ -137,4 +137,25 @@ public class CartServiceImpl implements CartService {
         item.setQuantity(quantity);
         cartItemMapper.updateById(item);
     }
+
+    /**
+     * 用户单条勾选购物车记录
+     * @param cartItemId 购物车项id
+     * @param checked 勾选状态
+     */
+    @Override
+    public void updateChecked(Long userId, Long cartItemId, Integer checked) {
+        CartItem item = cartItemMapper.selectById(cartItemId);
+        if (item == null || !item.getUserId().equals(userId)) {
+            throw new BizException(CART_NOT_FOUND);
+        }
+        // 如果要勾选，校验有效性
+        ProductSku productSku = productService.selectSkuBySkuId(item.getSkuId());
+        Product product = productService.selectProductByProductId(productSku.getProductId());
+        if (checked == ENABLED && productSku.getStatus() == DISABLED && product.getStatus() == DISABLED) {
+            throw new BizException("失效商品无法勾选");
+        }
+        item.setChecked(checked);
+        cartItemMapper.updateById(item);
+    }
 }
