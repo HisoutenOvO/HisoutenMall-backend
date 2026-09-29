@@ -36,4 +36,16 @@ public interface UserAddressService {
      * @param userAddressUpdateDTO 修改参数
      */
     void updateAddress(Long addressId, UserAddressUpdateDTO userAddressUpdateDTO);
+
+    /**
+     * 用户修改默认地址
+     * @param addressId 地址id
+     */
+    void changeDefault(Long addressId);
+
+    /**
+     * 用户删除地址
+     * @param addressId 地址id
+     */
+    void deleteAddress(Long addressId);
 }

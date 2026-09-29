@@ -77,4 +77,31 @@ public class UserAddressController {
         userAddressService.updateAddress(addressId,userAddressUpdateDTO);
         return Result.success();
     }
+
+
+    /**
+     * 用户修改默认地址
+     * @param addressId 地址id
+     * @return 返回值
+     */
+    @PutMapping("/{addressId}/default")
+    @Operation(summary = "用户修改默认地址")
+    public Result changeDefault(@PathVariable Long addressId){
+        log.info("用户：{}修改默认地址：{}",StpUtil.getLoginIdAsLong(),addressId);
+        userAddressService.changeDefault(addressId);
+        return Result.success();
+    }
+
+    /**
+     * 用户删除地址
+     * @param addressId 地址id
+     * @return 返回值
+     */
+    @DeleteMapping("/{addressId}")
+    @Operation(summary = "用户删除地址")
+    public Result deleteAddress(@PathVariable Long addressId){
+        log.info("用户：{}删除地址：{}",StpUtil.getLoginIdAsLong(),addressId);
+        userAddressService.deleteAddress(addressId);
+        return Result.success();
+    }
 }

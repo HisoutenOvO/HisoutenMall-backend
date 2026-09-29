@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static cn.hisouten.mall.constant.ExceptionMessageConstant.CHANGE_DEFAULT_ADDRESS_FIRST;
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.NO_PERMISSION;
 import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
 
@@ -95,9 +96,41 @@ public class UserAddressServiceImpl implements UserAddressService {
         }
         BeanUtils.copyProperties(userAddressUpdateDTO,userAddress);
         if(userAddressUpdateDTO.getIsDefault() == ENABLED){
-            userAddressMapper.changeDefaultAddress(StpUtil.getLoginIdAsLong());
+            userAddressMapper.changeDefaultAddress(userAddress.getUserId());
         }
         userAddressMapper.updateById(userAddress);
+    }
+
+    /**
+     * 用户修改默认地址
+     * @param addressId 地址id
+     */
+    @Override
+    @Transactional
+    public void changeDefault(Long addressId) {
+        UserAddress userAddress = userAddressMapper.selectById(addressId);
+        if(!userAddress.getUserId().equals(StpUtil.getLoginIdAsLong())){
+            throw new BizException(NO_PERMISSION);
+        }
+        userAddress.setIsDefault(ENABLED);
+        userAddressMapper.changeDefaultAddress(userAddress.getUserId());
+        userAddressMapper.updateById(userAddress);
+    }
+
+    /**
+     * 用户删除地址
+     * @param addressId 地址id
+     */
+    @Override
+    public void deleteAddress(Long addressId) {
+        UserAddress userAddress = userAddressMapper.selectById(addressId);
+        if(!userAddress.getUserId().equals(StpUtil.getLoginIdAsLong())){
+            throw new BizException(NO_PERMISSION);
+        }
+        if(userAddress.getIsDefault() == ENABLED){
+            throw new BizException(CHANGE_DEFAULT_ADDRESS_FIRST);
+        }
+        userAddressMapper.deleteById(addressId);
     }
 
 

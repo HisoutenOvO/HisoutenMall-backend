@@ -38,4 +38,5 @@ public class ExceptionMessageConstant {
     public static final String CATEGORY_INVALID = "该分类已无效，请更换分类再进行操作！(被下架，被删除或不存在)";
     public static final String PASSWORD_ERROR = "原密码错误！";
     public static final String SAME_PASSWORD = "新密码不能和原密码相同！";
+    public static final String CHANGE_DEFAULT_ADDRESS_FIRST = "删除默认地址前，请先将其他地址设为默认！";
 }
