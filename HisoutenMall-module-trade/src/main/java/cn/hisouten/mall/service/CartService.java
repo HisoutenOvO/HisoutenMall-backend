@@ -47,4 +47,10 @@ public interface CartService {
      * @param userId 用户id
      */
     void deleteBatch(UserCartItemDeleteDTO userCartItemDeleteDTO,Long userId);
+
+    /**
+     * 获取角标数量
+     * @return 返回值
+     */
+    Integer countQuery(Long userId);
 }

@@ -192,5 +192,14 @@ public class CartServiceImpl implements CartService {
         cartItemMapper.deleteBatchIds(ids);
     }
 
+    /**
+     * 获取角标数量
+     * @return 返回值
+     */
+    @Override
+    public Integer countQuery(Long userId) {
+        return cartItemMapper.selectCartCount(userId);
+    }
+
 
 }

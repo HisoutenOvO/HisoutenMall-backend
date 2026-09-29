@@ -107,4 +107,18 @@ public class UserCartController {
         cartService.deleteBatch(userCartItemDeleteDTO,userId);
         return Result.success();
     }
+
+
+    /**
+     * 获取角标数量
+     * @return 返回值
+     */
+    @GetMapping("/count")
+    @Operation(summary = "获取角标数量")
+    public Result<Integer> countQuery(){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("获取角标数量");
+        Integer count = cartService.countQuery(userId);
+        return Result.success(count);
+    }
 }
