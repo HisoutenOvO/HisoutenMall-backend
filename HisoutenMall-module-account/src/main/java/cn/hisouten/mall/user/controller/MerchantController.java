@@ -1,5 +1,6 @@
 package cn.hisouten.mall.user.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.MerchantUpdateDTO;
 import cn.hisouten.mall.user.pojo.dto.PasswordUpdateDTO;
@@ -23,12 +24,12 @@ public class MerchantController {
 
     /**
      * 商家查询店铺详情
-     * @param merchantId 商家id
      * @return 返回值
      */
-    @GetMapping("/profile/{merchantId}")
+    @GetMapping("/profile")
     @Operation(summary = "商家查询详情")
-    public Result<MerchantDetailVO> detailQuery(@PathVariable Long merchantId){
+    public Result<MerchantDetailVO> detailQuery(){
+        Long merchantId = StpUtil.getLoginIdAsLong();
         log.info("商家：{}查询详情",merchantId);
         MerchantDetailVO merchantDetailVO = merchantProfileService.detailQuery(merchantId);
         return Result.success(merchantDetailVO);
@@ -37,13 +38,13 @@ public class MerchantController {
 
     /**
      * 商家修改信息
-     * @param merchantId 商家id
      * @param merchantUpdateDTO 修改参数
      * @return 返回值
      */
-    @PutMapping("/profile/{merchantId}")
+    @PutMapping("/profile")
     @Operation(summary = "商家修改信息")
-    public Result updateInfo(@PathVariable Long merchantId, @RequestBody MerchantUpdateDTO merchantUpdateDTO){
+    public Result updateInfo(@RequestBody MerchantUpdateDTO merchantUpdateDTO){
+        Long merchantId = StpUtil.getLoginIdAsLong();
         log.info("商家:{}修改信息",merchantId);
         merchantProfileService.updateInfo(merchantId,merchantUpdateDTO);
         return Result.success();
@@ -52,13 +53,13 @@ public class MerchantController {
 
     /**
      * 商家修改密码
-     * @param merchantId 商家id
      * @param passwordUpdateDTO 修改密码参数
      * @return 返回值
      */
-    @PutMapping("/password/{merchantId}")
+    @PutMapping("/password")
     @Operation(summary = "商家修改密码")
-    public Result updatePwd(@PathVariable Long merchantId, @RequestBody PasswordUpdateDTO passwordUpdateDTO){
+    public Result updatePwd(@RequestBody PasswordUpdateDTO passwordUpdateDTO){
+        Long merchantId = StpUtil.getLoginIdAsLong();
         log.info("商家:{}修改密码",merchantId);
         merchantProfileService.updatePwd(merchantId,passwordUpdateDTO);
         return Result.success();

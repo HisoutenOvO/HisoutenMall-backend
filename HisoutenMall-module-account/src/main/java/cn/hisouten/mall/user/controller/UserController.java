@@ -1,5 +1,6 @@
 package cn.hisouten.mall.user.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.UserUpdateDTO;
 import cn.hisouten.mall.user.pojo.dto.PasswordUpdateDTO;
@@ -23,12 +24,12 @@ public class UserController {
 
     /**
      * 用户查询详情
-     * @param userId 用户id
      * @return 返回值
      */
-    @GetMapping("/profile/{userId}")
+    @GetMapping("/profile")
     @Operation(summary = "用户查询详情")
-    public Result<UserDetailVO> detailQuery(@PathVariable Long userId){
+    public Result<UserDetailVO> detailQuery(){
+        Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户：{}查询详情",userId);
         UserDetailVO userDetailVO = userProfileService.detailQuery(userId);
         return Result.success(userDetailVO);
@@ -36,13 +37,13 @@ public class UserController {
 
     /**
      * 用户修改个人信息
-     * @param userId 用户id
      * @param userUpdateDTO 修改参数
      * @return 返回值
      */
-    @PutMapping("/profile/{userId}")
+    @PutMapping("/profile")
     @Operation(summary = "用户修改个人信息")
-    public Result updateInfo(@PathVariable Long userId, @RequestBody UserUpdateDTO userUpdateDTO){
+    public Result updateInfo(@RequestBody UserUpdateDTO userUpdateDTO){
+        Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户：{}修改个人信息",userId);
         userProfileService.updateInfo(userId,userUpdateDTO);
         return Result.success();
@@ -50,13 +51,13 @@ public class UserController {
 
     /**
      * 用户修改密码
-     * @param userId 用户id
      * @param passwordUpdateDTO 密码
      * @return 返回值
      */
-    @PutMapping("/password/{userId}")
+    @PutMapping("/password")
     @Operation(summary = "用户修改密码")
-    public Result updatePwd(@PathVariable Long userId, @RequestBody PasswordUpdateDTO passwordUpdateDTO){
+    public Result updatePwd(@RequestBody PasswordUpdateDTO passwordUpdateDTO){
+        Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户：{}修改密码",userId);
         userProfileService.updatePwd(userId, passwordUpdateDTO);
         return Result.success();
