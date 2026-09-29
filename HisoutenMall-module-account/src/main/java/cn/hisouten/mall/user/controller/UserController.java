@@ -1,6 +1,7 @@
 package cn.hisouten.mall.user.controller;
 
 import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.user.pojo.dto.UserUpdateDTO;
 import cn.hisouten.mall.user.pojo.vo.UserDetailVO;
 import cn.hisouten.mall.user.service.AuthService;
 import cn.hisouten.mall.user.service.UserProfileService;
@@ -8,10 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -33,5 +31,19 @@ public class UserController {
         log.info("用户：{}查询详情",userId);
         UserDetailVO userDetailVO = userProfileService.detailQuery(userId);
         return Result.success(userDetailVO);
+    }
+
+    /**
+     * 用户修改个人信息
+     * @param userId 用户id
+     * @param userUpdateDTO 修改参数
+     * @return 返回值
+     */
+    @PostMapping("/{userId}")
+    @Operation(summary = "用户修改个人信息")
+    public Result updateInfo(@PathVariable Long userId, @RequestBody UserUpdateDTO userUpdateDTO){
+        log.info("用户：{}修改个人信息",userId);
+        userProfileService.updateInfo(userId,userUpdateDTO);
+        return Result.success();
     }
 }

@@ -3,11 +3,13 @@ package cn.hisouten.mall.user.service.impl;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.user.mapper.AuthMapper;
 import cn.hisouten.mall.user.mapper.UserProfileMapper;
+import cn.hisouten.mall.user.pojo.dto.UserUpdateDTO;
 import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.entity.UserProfile;
 import cn.hisouten.mall.user.pojo.vo.UserDetailVO;
 import cn.hisouten.mall.user.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.USER_NOT_FOUND;
@@ -44,5 +46,20 @@ public class UserProfileServiceImpl implements UserProfileService {
                 .gender(userProfile.getGender())
                 .birthday(userProfile.getBirthday())
                 .build();
+    }
+
+    /**
+     * 用户修改个人信息
+     * @param userId 用户id
+     * @param userUpdateDTO 修改参数
+     */
+    @Override
+    public void updateInfo(Long userId, UserUpdateDTO userUpdateDTO) {
+        UserProfile userProfile = userProfileMapper.selectProfileByUserId(userId);
+        if(userProfile == null){
+            throw new BizException(USER_NOT_FOUND);
+        }
+        BeanUtils.copyProperties(userUpdateDTO,userProfile);
+        userProfileMapper.updateById(userProfile);
     }
 }
