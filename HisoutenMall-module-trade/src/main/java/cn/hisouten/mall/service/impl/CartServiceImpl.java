@@ -5,6 +5,7 @@ import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.CartItemMapper;
 import cn.hisouten.mall.pojo.bo.CartItemListBO;
 import cn.hisouten.mall.pojo.dto.UserCartAddDTO;
+import cn.hisouten.mall.pojo.dto.UserCartItemDeleteDTO;
 import cn.hisouten.mall.pojo.entity.CartItem;
 import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.entity.ProductSku;
@@ -177,6 +178,18 @@ public class CartServiceImpl implements CartService {
         }else{
             throw new BizException(SYSTEM_ERROR);
         }
+    }
+
+    /**
+     * 用户批量删除购物车数据
+     * @param userCartItemDeleteDTO 删除的id
+     * @param userId 用户id
+     */
+    @Override
+    public void deleteBatch(UserCartItemDeleteDTO userCartItemDeleteDTO,Long userId) {
+        List<Long> ids = userCartItemDeleteDTO.getIds();
+        if (ids == null || ids.isEmpty()) return;
+        cartItemMapper.deleteBatchIds(ids);
     }
 
 

@@ -3,6 +3,7 @@ package cn.hisouten.mall.controller;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.UserCartAddDTO;
+import cn.hisouten.mall.pojo.dto.UserCartItemDeleteDTO;
 import cn.hisouten.mall.pojo.vo.UserCartItemListVO;
 import cn.hisouten.mall.service.CartService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -90,6 +91,20 @@ public class UserCartController {
     public Result checkAll(@RequestParam Integer checked){
         log.info("全选或全不选购物车项");
         cartService.checkAll(checked);
+        return Result.success();
+    }
+
+    /**
+     * 用户批量删除购物车数据
+     * @param userCartItemDeleteDTO 删除的ids
+     * @return 返回值
+     */
+    @DeleteMapping
+    @Operation(summary = "批量删除购物车数据")
+    public Result deleteBatch(@RequestBody UserCartItemDeleteDTO userCartItemDeleteDTO){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户批量删除购物车数据:{}",userCartItemDeleteDTO.getIds());
+        cartService.deleteBatch(userCartItemDeleteDTO,userId);
         return Result.success();
     }
 }

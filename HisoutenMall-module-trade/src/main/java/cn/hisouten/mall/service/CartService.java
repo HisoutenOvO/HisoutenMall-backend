@@ -1,6 +1,7 @@
 package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.pojo.dto.UserCartAddDTO;
+import cn.hisouten.mall.pojo.dto.UserCartItemDeleteDTO;
 import cn.hisouten.mall.pojo.vo.UserCartItemListVO;
 
 import java.util.List;
@@ -39,4 +40,11 @@ public interface CartService {
      * @param checked 勾选状态
      */
     void checkAll(Integer checked);
+
+    /**
+     * 用户批量删除购物车数据
+     * @param userCartItemDeleteDTO 删除的id
+     * @param userId 用户id
+     */
+    void deleteBatch(UserCartItemDeleteDTO userCartItemDeleteDTO,Long userId);
 }
