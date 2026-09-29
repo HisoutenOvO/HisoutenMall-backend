@@ -17,8 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static cn.hisouten.mall.constant.ExceptionMessageConstant.CHANGE_DEFAULT_ADDRESS_FIRST;
-import static cn.hisouten.mall.constant.ExceptionMessageConstant.NO_PERMISSION;
+import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
 
 @Service
@@ -58,6 +57,9 @@ public class UserAddressServiceImpl implements UserAddressService {
     @Override
     public UserAddressDetailVO detailQuery(Long addressId) {
         UserAddress userAddress = userAddressMapper.selectById(addressId);
+        if(userAddress == null){
+            throw new BizException(ADDRESS_NOT_FOUND);
+        }
         if(!userAddress.getUserId().equals(StpUtil.getLoginIdAsLong())){
             throw new BizException(NO_PERMISSION);
         }
@@ -79,6 +81,7 @@ public class UserAddressServiceImpl implements UserAddressService {
         if(userAddressAddDTO.getIsDefault() == ENABLED){
             userAddressMapper.changeDefaultAddress(userId);
         }
+        userAddress.setUserId(userId);
         userAddressMapper.insert(userAddress);
     }
 
@@ -91,6 +94,9 @@ public class UserAddressServiceImpl implements UserAddressService {
     @Transactional
     public void updateAddress(Long addressId, UserAddressUpdateDTO userAddressUpdateDTO) {
         UserAddress userAddress = userAddressMapper.selectById(addressId);
+        if(userAddress == null){
+            throw new BizException(ADDRESS_NOT_FOUND);
+        }
         if(!userAddress.getUserId().equals(StpUtil.getLoginIdAsLong())){
             throw new BizException(NO_PERMISSION);
         }
@@ -109,11 +115,14 @@ public class UserAddressServiceImpl implements UserAddressService {
     @Transactional
     public void changeDefault(Long addressId) {
         UserAddress userAddress = userAddressMapper.selectById(addressId);
+        if(userAddress == null){
+            throw new BizException(ADDRESS_NOT_FOUND);
+        }
         if(!userAddress.getUserId().equals(StpUtil.getLoginIdAsLong())){
             throw new BizException(NO_PERMISSION);
         }
-        userAddress.setIsDefault(ENABLED);
         userAddressMapper.changeDefaultAddress(userAddress.getUserId());
+        userAddress.setIsDefault(ENABLED);
         userAddressMapper.updateById(userAddress);
     }
 
@@ -124,6 +133,9 @@ public class UserAddressServiceImpl implements UserAddressService {
     @Override
     public void deleteAddress(Long addressId) {
         UserAddress userAddress = userAddressMapper.selectById(addressId);
+        if(userAddress == null){
+            throw new BizException(ADDRESS_NOT_FOUND);
+        }
         if(!userAddress.getUserId().equals(StpUtil.getLoginIdAsLong())){
             throw new BizException(NO_PERMISSION);
         }

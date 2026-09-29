@@ -71,6 +71,15 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
         if(merchantProfile == null){
             throw new BizException(USER_NOT_FOUND);
         }
+        //查询店名和联系电话是否重复
+        String existedShopName = merchantProfileMapper.selectExistedShopName(merchantUpdateDTO.getShopName());
+        if(existedShopName != null){
+            throw new BizException(SHOP_NAME_ALREADY_EXIST);
+        }
+        String existedContactPhone = merchantProfileMapper.selectExistedContactPhone(merchantUpdateDTO.getContactPhone());
+        if(existedContactPhone != null){
+            throw new BizException(CONTACT_PHONE_ALREADY_EXIST);
+        }
         BeanUtils.copyProperties(merchantUpdateDTO,merchantProfile);
         merchantProfileMapper.updateById(merchantProfile);
     }

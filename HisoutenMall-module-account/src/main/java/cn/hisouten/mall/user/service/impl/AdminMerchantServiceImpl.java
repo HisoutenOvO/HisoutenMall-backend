@@ -19,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static cn.hisouten.mall.constant.ExceptionMessageConstant.ROLE_NOT_MERCHANT;
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.USER_NOT_FOUND;
+import static cn.hisouten.mall.constant.RoleConstant.MERCHANT_ROLE;
 import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
 
 @Service
@@ -35,7 +37,6 @@ public class AdminMerchantServiceImpl implements AdminMerchantService {
      * @return 返回值
      */
     @Override
-    @Transactional
     public PageResult<AdminMerchantPageResultVO> pageQuery(AdminMerchantPageQueryDTO adminMerchantPageQueryDTO) {
         Page<AdminMerchantPageResultVO> page = new Page<>(adminMerchantPageQueryDTO.getPage(),adminMerchantPageQueryDTO.getPageSize());
         if(adminMerchantPageQueryDTO.getDeleted() == null){
@@ -79,10 +80,14 @@ public class AdminMerchantServiceImpl implements AdminMerchantService {
      * @param status 状态
      */
     @Override
+    @Transactional
     public void changeStatus(Long merchantId, Integer status) {
         User user = authMapper.selectById(merchantId);
         if(user == null){
             throw new BizException(USER_NOT_FOUND);
+        }
+        if(!user.getRole().equals(MERCHANT_ROLE)){
+            throw new BizException(ROLE_NOT_MERCHANT);
         }
         user.setStatus(status);
         authMapper.updateById(user);

@@ -9,6 +9,7 @@ public class ExceptionMessageConstant {
     public static final String PRODUCT_NOT_FOUND = "商品不存在！";
     public static final String CATEGORY_NOT_FOUND = "分类不存在！";
     public static final String USER_NOT_FOUND = "用户不存在！";
+    public static final String ADDRESS_NOT_FOUND = "地址不存在！";
     public static final String PARENT_CATEGORY_NOT_FOUND = "父级分类不存在！";
     public static final String LEVEL_OVERFLOW = "分类层级溢出，最多三级，请修改子分类！";
     public static final String SKU_NOT_FOUND = "商品款式不存在！";
@@ -39,4 +40,6 @@ public class ExceptionMessageConstant {
     public static final String PASSWORD_ERROR = "原密码错误！";
     public static final String SAME_PASSWORD = "新密码不能和原密码相同！";
     public static final String CHANGE_DEFAULT_ADDRESS_FIRST = "删除默认地址前，请先将其他地址设为默认！";
+    public static final String ROLE_NOT_MERCHANT = "该用户角色不是商家，请确认";
+    public static final String ROLE_NOT_USER = "该用户角色不是顾客，请确认";
 }

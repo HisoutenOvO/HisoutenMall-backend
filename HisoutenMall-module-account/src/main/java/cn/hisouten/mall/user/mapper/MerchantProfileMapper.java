@@ -38,7 +38,7 @@ public interface MerchantProfileMapper extends BaseMapper<MerchantProfile> {
     String selectExistedContactPhone(String contactPhone);
 
     /**
-     *分页查询商家
+     * 分页查询商家
      * @param page 分页参数
      * @param adminMerchantPageQueryDTO 条件参数
      * @return 返回值

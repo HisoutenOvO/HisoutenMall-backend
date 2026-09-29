@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static cn.hisouten.mall.constant.ExceptionMessageConstant.ROLE_NOT_USER;
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.USER_NOT_FOUND;
+import static cn.hisouten.mall.constant.RoleConstant.USER_ROLE;
 import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
 
 @Service
@@ -51,6 +53,9 @@ public class AdminUserServiceImpl implements AdminUserService {
         User user = authMapper.selectById(userId);
         if(user == null){
             throw new BizException(USER_NOT_FOUND);
+        }
+        if(!user.getRole().equals(USER_ROLE)){
+            throw new BizException(ROLE_NOT_USER);
         }
         user.setStatus(status);
         authMapper.updateById(user);
