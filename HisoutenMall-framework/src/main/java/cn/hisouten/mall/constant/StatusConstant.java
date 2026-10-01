@@ -13,12 +13,12 @@ public class StatusConstant {
     // 订单支付状态
     public static final int PENDING_PAYMENT = 0; //待支付
 
-    public static final int ALREADY_PAYMENT = 1; //已支付
+    public static final int PAID = 1; //已支付
 
-    public static final int ALREADY_CANCELED = 2; //已取消
+    public static final int CANCELED = 2; //已取消
 
-    public static final int ALREADY_COMPLETED = 3; //已完成
+    public static final int COMPLETED = 3; //已完成
 
-    public static final int ALREADY_REFUND = 4; //已退款
+    public static final int REFUND = 4; //已退款
 
 }

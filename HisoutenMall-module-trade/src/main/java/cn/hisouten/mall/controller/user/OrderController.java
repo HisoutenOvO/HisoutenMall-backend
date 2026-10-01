@@ -3,6 +3,7 @@ package cn.hisouten.mall.controller.user;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.UserOrderCreateDTO;
+import cn.hisouten.mall.pojo.dto.UserOrderPayDTO;
 import cn.hisouten.mall.pojo.vo.UserOrderCreateVO;
 import cn.hisouten.mall.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,5 +47,19 @@ public class OrderController {
         log.info("用户：{}直接下单",userId);
         UserOrderCreateVO userOrderCreateVO = orderService.createDirect(userId,userOrderCreateDTO);
         return Result.success(userOrderCreateVO);
+    }
+
+    /**
+     * 用户支付订单
+     * @param userOrderPayDTO 支付订单参数
+     * @return 返回值
+     */
+    @PostMapping("/pay")
+    @Operation(summary = "用户支付订单")
+    public Result pay(@RequestBody UserOrderPayDTO userOrderPayDTO){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{}支付订单",userId);
+        orderService.pay(userId,userOrderPayDTO);
+        return Result.success();
     }
 }

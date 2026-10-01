@@ -4,10 +4,8 @@ import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.*;
 import cn.hisouten.mall.pojo.bo.CartItemListBO;
 import cn.hisouten.mall.pojo.dto.UserOrderCreateDTO;
-import cn.hisouten.mall.pojo.entity.Order;
-import cn.hisouten.mall.pojo.entity.OrderItem;
-import cn.hisouten.mall.pojo.entity.Product;
-import cn.hisouten.mall.pojo.entity.ProductSku;
+import cn.hisouten.mall.pojo.dto.UserOrderPayDTO;
+import cn.hisouten.mall.pojo.entity.*;
 import cn.hisouten.mall.pojo.vo.UserOrderCreateVO;
 import cn.hisouten.mall.service.OrderService;
 import cn.hisouten.mall.user.pojo.entity.UserAddress;
@@ -17,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +24,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
-import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
-import static cn.hisouten.mall.constant.StatusConstant.PENDING_PAYMENT;
+import static cn.hisouten.mall.constant.PayMethodConstant.WECHAT;
+import static cn.hisouten.mall.constant.StatusConstant.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
     private final ProductSkuMapper productSkuMapper;
     private final ProductMapper productMapper;
     private final OrderItemMapper orderItemMapper;
+    private final PaymentMapper paymentMapper;
 
     private final UserAddressService userAddressService;
 
@@ -98,6 +98,39 @@ public class OrderServiceImpl implements OrderService {
         item.setPrice(sku.getPrice());
         item.setQuantity(userOrderCreateDTO.getQuantity());
         return doCreateOrder(userId,userOrderCreateDTO.getAddressId(),List.of(item),null);
+    }
+
+    /**
+     * 用户支付订单
+     * @param userOrderPayDTO 支付订单参数
+     */
+    @Override
+    @Transactional
+    public void pay(Long userId, UserOrderPayDTO userOrderPayDTO) {
+        for (String orderNo : userOrderPayDTO.getOrderNos()) {
+            Order order = orderMapper.selectByOrderNo(orderNo);
+            // 校验归属
+            if (order == null || !order.getUserId().equals(userId)) {
+                throw new BizException(ORDER_NOT_FOUND);
+            }
+            // 校验状态
+            if (order.getStatus() != PENDING_PAYMENT) {
+                throw new BizException(ORDER_STATUS_ERROR);
+            }
+            //修改订单状态
+            order.setStatus(PAID);
+            order.setPayTime(LocalDateTime.now());
+            orderMapper.updateById(order);
+            //添加payment
+            Payment payment = new Payment();
+            payment.setOrderId(order.getId());
+            payment.setPayNo(System.currentTimeMillis() + String.format("%04d", ThreadLocalRandom.current().nextInt(10000)));
+            payment.setAmount(order.getPayAmount());
+            payment.setPayType(WECHAT);
+            payment.setStatus(PAID);
+            payment.setPayTime(LocalDateTime.now());
+            paymentMapper.insert(payment);
+        }
     }
 
     /**

@@ -12,6 +12,7 @@ public class ExceptionMessageConstant {
     public static final String USER_NOT_FOUND = "用户不存在！";
     public static final String ADDRESS_NOT_FOUND = "地址不存在！";
     public static final String CART_NOT_FOUND = "购物车项不存在！";
+    public static final String ORDER_NOT_FOUND = "订单不存在！";
     public static final String PARENT_CATEGORY_NOT_FOUND = "父级分类不存在！";
     public static final String LEVEL_OVERFLOW = "分类层级溢出，最多三级，请修改子分类！";
     public static final String SKU_NOT_FOUND = "商品款式不存在！";
@@ -19,6 +20,7 @@ public class ExceptionMessageConstant {
     public static final String PRODUCT_HAS_NOT_DELETED = "商品未被删除！";
     public static final String SKU_HAS_NOT_DELETED = "商品款式未被删除！";
     public static final String USER_STATUS_ERROR = "该用户状态异常，无法进行此操作！";
+    public static final String ORDER_STATUS_ERROR = "订单状态异常，无法进行此操作！";
     public static final String USER_ALREADY_EXIST = "该用户名已存在！";
     public static final String SHOP_NAME_ALREADY_EXIST = "该店铺名已存在！";
     public static final String CATEGORY_NAME_ALREADY_EXIST = "该分类名已存在！";

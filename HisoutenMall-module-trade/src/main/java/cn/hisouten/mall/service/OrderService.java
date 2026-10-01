@@ -1,6 +1,7 @@
 package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.pojo.dto.UserOrderCreateDTO;
+import cn.hisouten.mall.pojo.dto.UserOrderPayDTO;
 import cn.hisouten.mall.pojo.vo.UserOrderCreateVO;
 
 public interface OrderService {
@@ -18,4 +19,10 @@ public interface OrderService {
      * @return 返回值
      */
     UserOrderCreateVO createDirect(Long userId, UserOrderCreateDTO userOrderCreateDTO);
+
+    /**
+     * 用户支付订单
+     * @param userOrderPayDTO 支付订单参数
+     */
+    void pay(Long userId, UserOrderPayDTO userOrderPayDTO);
 }
