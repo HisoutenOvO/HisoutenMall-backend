@@ -373,6 +373,28 @@ public class ProductServiceImpl implements ProductService {
     public Product getProductByProductId(Long productId) {
         return productMapper.selectById(productId);
     }
+
+    /**
+     * 扣减sku库存
+     * @param skuId skuId
+     * @param quantity 扣减数量
+     * @return 返回影响行数
+     */
+    @Override
+    public int deductStock(Long skuId, Integer quantity) {
+        return productSkuMapper.deductStock(skuId,quantity);
+    }
+
+
+    /**
+     * 回滚库存
+     * @param skuId skuId
+     * @param quantity 回滚数量
+     */
+    @Override
+    public void restoreStock(Long skuId, Integer quantity) {
+        productSkuMapper.restoreStock(skuId,quantity);
+    }
     //=======================================用户端逻辑================================================
 
     /**

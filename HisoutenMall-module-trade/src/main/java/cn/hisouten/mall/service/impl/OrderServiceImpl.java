@@ -8,6 +8,7 @@ import cn.hisouten.mall.pojo.dto.UserOrderPayDTO;
 import cn.hisouten.mall.pojo.entity.*;
 import cn.hisouten.mall.pojo.vo.UserOrderCreateVO;
 import cn.hisouten.mall.service.OrderService;
+import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.user.pojo.entity.UserAddress;
 import cn.hisouten.mall.user.service.UserAddressService;
 import lombok.RequiredArgsConstructor;
@@ -32,12 +33,12 @@ import static cn.hisouten.mall.constant.StatusConstant.*;
 public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final CartItemMapper cartItemMapper;
-    private final ProductSkuMapper productSkuMapper;
-    private final ProductMapper productMapper;
     private final OrderItemMapper orderItemMapper;
     private final PaymentMapper paymentMapper;
 
     private final UserAddressService userAddressService;
+    private final ProductService productService;
+
 
 
     /**
@@ -76,11 +77,11 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public UserOrderCreateVO createDirect(Long userId, UserOrderCreateDTO userOrderCreateDTO) {
         //判断有效性
-        ProductSku sku = productSkuMapper.selectById(userOrderCreateDTO.getSkuId());
+        ProductSku sku = productService.getSkuBySkuId(userOrderCreateDTO.getSkuId());
         if (sku == null) {
             throw new BizException(SKU_NOT_FOUND);
         }
-        Product product = productMapper.selectById(sku.getProductId());
+        Product product = productService.getProductByProductId(sku.getProductId());
         if(product == null){
             throw new BizException(PRODUCT_NOT_FOUND);
         }
@@ -134,6 +135,30 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
+     * 订单取消支付
+     * @param orderNo 订单编号
+     */
+    @Override
+    public void cancelPay(Long userId, String orderNo) {
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if(order == null || !Objects.equals(order.getUserId(), userId)){
+            throw new BizException(ORDER_NOT_FOUND);
+        }
+        if(order.getStatus() != PENDING_PAYMENT){
+            throw new BizException(ORDER_STATUS_ERROR);
+        }
+        //改订单状态
+        order.setStatus(CANCELLED);
+        order.setCancelTime(LocalDateTime.now());
+        orderMapper.updateById(order);
+        //给各订单项回滚库存
+        List<OrderItem> itemList = orderItemMapper.selectByOrderId(order.getId());
+        for (OrderItem item : itemList) {
+            productService.restoreStock(item.getSkuId(),item.getQuantity());
+        }
+    }
+
+    /**
      * 核心下单逻辑
      * @param userId 用户id
      * @param addressId 地址id
@@ -179,7 +204,7 @@ public class OrderServiceImpl implements OrderService {
             orderMapper.insert(order);
             //扣除库存并插入订单明细表
             for (CartItemListBO item : bo) {
-                int affected = productSkuMapper.deductStock(item.getSkuId(), item.getQuantity());
+                int affected = productService.deductStock(item.getSkuId(), item.getQuantity());
                 if (affected == 0) {
                     throw new BizException(item.getProductName() + OUT_OF_STOCK);
                 }

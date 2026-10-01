@@ -25,4 +25,10 @@ public interface OrderService {
      * @param userOrderPayDTO 支付订单参数
      */
     void pay(Long userId, UserOrderPayDTO userOrderPayDTO);
+
+    /**
+     * 订单取消支付
+     * @param orderNo 订单编号
+     */
+    void cancelPay(Long userId, String orderNo);
 }

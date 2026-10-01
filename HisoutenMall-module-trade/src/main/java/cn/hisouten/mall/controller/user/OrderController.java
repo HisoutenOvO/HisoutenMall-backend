@@ -62,4 +62,19 @@ public class OrderController {
         orderService.pay(userId,userOrderPayDTO);
         return Result.success();
     }
+
+
+    /**
+     * 订单取消支付
+     * @param orderNo 订单编号
+     * @return 返回值
+     */
+    @PutMapping("/{orderNo}/cancel")
+    @Operation(summary = "订单取消支付")
+    public Result cancelPay(@PathVariable String orderNo){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{}取消支付订单",userId);
+        orderService.cancelPay(userId,orderNo);
+        return Result.success();
+    }
 }

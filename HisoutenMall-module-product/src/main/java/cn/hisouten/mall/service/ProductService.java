@@ -140,4 +140,19 @@ public interface ProductService {
      * @return 返回值
      */
     Product getProductByProductId(Long productId);
+
+    /**
+     * 扣减sku库存
+     * @param skuId skuId
+     * @param quantity 扣减数量
+     * @return 返回影响行数
+     */
+    int deductStock(Long skuId, Integer quantity);
+
+    /**
+     * 回滚库存
+     * @param skuId skuId
+     * @param quantity 回滚数量
+     */
+    void restoreStock(Long skuId, Integer quantity);
 }

@@ -96,4 +96,13 @@ public interface ProductSkuMapper extends BaseMapper<ProductSku> {
      */
     @Update("update product_sku set stock = stock - #{quantity} where id = #{skuId} and stock > #{quantity} and deleted = 0")
     int deductStock(Long skuId, Integer quantity);
+
+
+    /**
+     * 回滚库存
+     * @param skuId skuId
+     * @param quantity 回滚数量
+     */
+    @Update("update product_sku set stock = stock + #{quantity} where id = #{skuId}")
+    void restoreStock(Long skuId, Integer quantity);
 }

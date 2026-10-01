@@ -15,7 +15,7 @@ public class StatusConstant {
 
     public static final int PAID = 1; //已支付
 
-    public static final int CANCELED = 2; //已取消
+    public static final int CANCELLED = 2; //已取消
 
     public static final int COMPLETED = 3; //已完成
 
