@@ -1,9 +1,11 @@
 package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.pojo.dto.MerchantOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.UserOrderCreateDTO;
 import cn.hisouten.mall.pojo.dto.UserOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.UserOrderPayDTO;
+import cn.hisouten.mall.pojo.vo.MerchantOrderPageResultVO;
 import cn.hisouten.mall.pojo.vo.UserOrderCreateVO;
 import cn.hisouten.mall.pojo.vo.UserOrderDetailVO;
 import cn.hisouten.mall.pojo.vo.UserOrderPageResultVO;
@@ -42,12 +44,19 @@ public interface OrderService {
      * @param userOrderPageQueryDTO 分页查询参数
      * @return 返回值
      */
-    PageResult<UserOrderPageResultVO> pageQuery(UserOrderPageQueryDTO userOrderPageQueryDTO);
+    PageResult<UserOrderPageResultVO> userPageQuery(UserOrderPageQueryDTO userOrderPageQueryDTO);
 
     /**
      * 查询订单详情
      * @param orderNo 订单号
      * @return 返回值
      */
-    UserOrderDetailVO detailQuery(String orderNo);
+    UserOrderDetailVO userDetailQuery(String orderNo);
+
+    /**
+     * 商家分页查询订单
+     * @param merchantOrderPageQueryDTO 查询条件
+     * @return 返回值
+     */
+    PageResult<MerchantOrderPageResultVO> merchantPageQuery(MerchantOrderPageQueryDTO merchantOrderPageQueryDTO);
 }

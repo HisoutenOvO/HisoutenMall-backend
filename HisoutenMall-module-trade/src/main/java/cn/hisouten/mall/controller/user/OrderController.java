@@ -96,7 +96,7 @@ public class OrderController {
     public Result<PageResult<UserOrderPageResultVO>> pageQuery(@RequestBody UserOrderPageQueryDTO userOrderPageQueryDTO) {
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户：{}分页查询订单", userId);
-        PageResult<UserOrderPageResultVO> pageResult = orderService.pageQuery(userOrderPageQueryDTO);
+        PageResult<UserOrderPageResultVO> pageResult = orderService.userPageQuery(userOrderPageQueryDTO);
         return Result.success(pageResult);
     }
 
@@ -110,7 +110,7 @@ public class OrderController {
     @Operation(summary = "查询订单详情")
     public Result<UserOrderDetailVO> detailQuery(@PathVariable String orderNo){
         log.info("用户:{}查询订单详情",StpUtil.getLoginIdAsLong());
-        UserOrderDetailVO userDetailVO = orderService.detailQuery(orderNo);
+        UserOrderDetailVO userDetailVO = orderService.userDetailQuery(orderNo);
         return Result.success(userDetailVO);
     }
 

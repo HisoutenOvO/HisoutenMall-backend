@@ -5,14 +5,12 @@ import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.*;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.CartItemListBO;
+import cn.hisouten.mall.pojo.dto.MerchantOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.UserOrderCreateDTO;
 import cn.hisouten.mall.pojo.dto.UserOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.UserOrderPayDTO;
 import cn.hisouten.mall.pojo.entity.*;
-import cn.hisouten.mall.pojo.vo.OrderItemVO;
-import cn.hisouten.mall.pojo.vo.UserOrderCreateVO;
-import cn.hisouten.mall.pojo.vo.UserOrderDetailVO;
-import cn.hisouten.mall.pojo.vo.UserOrderPageResultVO;
+import cn.hisouten.mall.pojo.vo.*;
 import cn.hisouten.mall.service.OrderService;
 import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.user.pojo.entity.UserAddress;
@@ -168,12 +166,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 订单分页查询
+     * 用户订单分页查询
      * @param userOrderPageQueryDTO 分页查询参数
      * @return 返回值
      */
     @Override
-    public PageResult<UserOrderPageResultVO> pageQuery(UserOrderPageQueryDTO userOrderPageQueryDTO) {
+    public PageResult<UserOrderPageResultVO> userPageQuery(UserOrderPageQueryDTO userOrderPageQueryDTO) {
         //先查询订单主表
         Page<UserOrderPageResultVO> page = new Page<>(userOrderPageQueryDTO.getPage(), userOrderPageQueryDTO.getPageSize());
         Page<UserOrderPageResultVO> result = orderMapper.pageQuery(page,userOrderPageQueryDTO);
@@ -198,12 +196,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 查询订单详情
+     * 用户查询订单详情
      * @param orderNo 订单号
      * @return 返回值
      */
     @Override
-    public UserOrderDetailVO detailQuery(String orderNo) {
+    public UserOrderDetailVO userDetailQuery(String orderNo) {
         Order order = orderMapper.selectByOrderNo(orderNo);
         if(order == null || !order.getUserId().equals(StpUtil.getLoginIdAsLong())){
             throw new BizException(ORDER_NOT_FOUND);
@@ -226,6 +224,36 @@ public class OrderServiceImpl implements OrderService {
         }
         userOrderDetailVO.setItems(itemVOList);
         return userOrderDetailVO;
+    }
+
+    /**
+     * 商家分页查询订单
+     * @param merchantOrderPageQueryDTO 查询条件
+     * @return 返回值
+     */
+    @Override
+    public PageResult<MerchantOrderPageResultVO> merchantPageQuery(MerchantOrderPageQueryDTO merchantOrderPageQueryDTO) {
+        Page<MerchantOrderPageResultVO> page = new Page<>(merchantOrderPageQueryDTO.getPage(), merchantOrderPageQueryDTO.getPageSize());
+        Page<MerchantOrderPageResultVO> result = orderMapper.MerchantPageQuery(page,merchantOrderPageQueryDTO);
+        long total = result.getTotal();
+
+        //拼装订单项
+        List<Long> orderIds = result.getRecords().stream().map(MerchantOrderPageResultVO::getId).toList();
+        List<OrderItemVO> itemVOList = orderItemMapper.selectByOrderIds(orderIds);
+
+        //分组
+        Map<Long,List<OrderItemVO>> group = itemVOList.stream().collect(Collectors.groupingBy(OrderItemVO::getOrderId));
+
+        //每组进行操作
+        List<MerchantOrderPageResultVO> records = result.getRecords();
+        for (MerchantOrderPageResultVO record : records) {
+            List<OrderItemVO> items = group.get(record.getId());
+            if(items == null){
+                items = new ArrayList<>();
+            }
+            record.setItems(items);
+        }
+        return new PageResult<>(total,records);
     }
 
     /**

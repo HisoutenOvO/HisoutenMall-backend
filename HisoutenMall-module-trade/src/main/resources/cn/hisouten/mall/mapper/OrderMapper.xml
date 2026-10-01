@@ -3,7 +3,7 @@
 <mapper namespace="cn.hisouten.mall.mapper.OrderMapper">
     <select id="pageQuery" resultType="cn.hisouten.mall.pojo.vo.UserOrderPageResultVO">
         select o.id , o.order_no as orderNo,o.merchant_id as merchantId,m.name as merchantName,
-               o.pay_account as payAccount,o.status,o.create_time as createTime
+               o.pay_amount as payAmount,o.status,o.create_time as createTime
         from `order` o
         left join merchant_profile m on o.merchant_id = m.user_id
         <where>
@@ -16,5 +16,20 @@
         and deleted = 0
         order by m.create_time desc
         </where>
+    </select>
+    <select id="MerchantPageQuery" resultType="cn.hisouten.mall.pojo.vo.MerchantOrderPageResultVO">
+        select o.id,o.order_no as orderNo,o.pay_amount as payAmount,o.status,o.create_time as createTime,
+               u.name as buyerName
+        from `order` o
+        left join user_profile u on o.user_id = u.user_id
+        <where>
+        <if test="dto.keyword != null and dto.keyword != ''">
+            and keyword = #{dto.keyword}
+        </if>
+        <if test="dto.status != null ">
+            and keyword = #{dto.status}
+        </if>
+        and deleted = 0
+        order by m.create_time desc
     </select>
 </mapper>

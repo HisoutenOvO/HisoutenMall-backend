@@ -1,7 +1,9 @@
 package cn.hisouten.mall.mapper;
 
+import cn.hisouten.mall.pojo.dto.MerchantOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.UserOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.entity.Order;
+import cn.hisouten.mall.pojo.vo.MerchantOrderPageResultVO;
 import cn.hisouten.mall.pojo.vo.UserOrderPageResultVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -38,4 +40,12 @@ public interface OrderMapper extends BaseMapper<Order> {
      * @return 返回值
      */
     Page<UserOrderPageResultVO> pageQuery(Page<UserOrderPageResultVO> page,@Param("dto") UserOrderPageQueryDTO userOrderPageQueryDTO);
+
+    /**
+     * 商家分页查询订单
+     * @param page 分页条件
+     * @param merchantOrderPageQueryDTO 查询条件
+     * @return 返回值
+     */
+    Page<MerchantOrderPageResultVO> MerchantPageQuery(Page<MerchantOrderPageResultVO> page, @Param("dto") MerchantOrderPageQueryDTO merchantOrderPageQueryDTO);
 }
