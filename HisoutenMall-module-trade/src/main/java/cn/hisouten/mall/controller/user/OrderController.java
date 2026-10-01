@@ -93,7 +93,7 @@ public class OrderController {
      */
     @GetMapping("/page")
     @Operation(summary = "订单分页查询")
-    public Result<PageResult<UserOrderPageResultVO>> pageQuery(@RequestBody UserOrderPageQueryDTO userOrderPageQueryDTO) {
+    public Result<PageResult<UserOrderPageResultVO>> pageQuery(UserOrderPageQueryDTO userOrderPageQueryDTO) {
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户：{}分页查询订单", userId);
         PageResult<UserOrderPageResultVO> pageResult = orderService.userPageQuery(userOrderPageQueryDTO);

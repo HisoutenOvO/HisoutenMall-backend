@@ -5,10 +5,7 @@ import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.*;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.CartItemListBO;
-import cn.hisouten.mall.pojo.dto.MerchantOrderPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.UserOrderCreateDTO;
-import cn.hisouten.mall.pojo.dto.UserOrderPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.UserOrderPayDTO;
+import cn.hisouten.mall.pojo.dto.*;
 import cn.hisouten.mall.pojo.entity.*;
 import cn.hisouten.mall.pojo.vo.*;
 import cn.hisouten.mall.service.OrderService;
@@ -236,7 +233,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public PageResult<MerchantOrderPageResultVO> merchantPageQuery(MerchantOrderPageQueryDTO merchantOrderPageQueryDTO) {
         Page<MerchantOrderPageResultVO> page = new Page<>(merchantOrderPageQueryDTO.getPage(), merchantOrderPageQueryDTO.getPageSize());
-        Page<MerchantOrderPageResultVO> result = orderMapper.MerchantPageQuery(page,merchantOrderPageQueryDTO);
+        Long merchantId = StpUtil.getLoginIdAsLong();
+        Page<MerchantOrderPageResultVO> result = orderMapper.MerchantPageQuery(page,merchantOrderPageQueryDTO,merchantId);
         long total = result.getTotal();
 
         //拼装订单项
@@ -307,6 +305,30 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(COMPLETED);   // 阶段二简化,发货即完成
         order.setFinishTime(LocalDateTime.now());
         orderMapper.updateById(order);
+    }
+
+    /**
+     * 管理员分页查询订单
+     * @param adminOrderPageQueryDTO 分页参数
+     * @return 返回值
+     */
+    @Override
+    public PageResult<AdminOrderPageResultVO> AdminPageQuery(AdminOrderPageQueryDTO adminOrderPageQueryDTO) {
+        Page<AdminOrderPageResultVO> page = new Page<>(adminOrderPageQueryDTO.getPage(),adminOrderPageQueryDTO.getPageSize());
+        Page<AdminOrderPageResultVO> result = orderMapper.AdminPageQuery(page,adminOrderPageQueryDTO);
+        long total = result.getTotal();
+        List<Long> orderIds = result.getRecords().stream().map(AdminOrderPageResultVO::getId).toList();
+        List<OrderItemVO> itemVOList = orderItemMapper.selectByOrderIds(orderIds);
+        Map<Long,List<OrderItemVO>> group = itemVOList.stream().collect(Collectors.groupingBy(OrderItemVO::getOrderId));
+        List<AdminOrderPageResultVO> records = result.getRecords();
+        for (AdminOrderPageResultVO record : records) {
+            List<OrderItemVO> items = group.get(record.getId());
+            if(items == null){
+                items = new ArrayList<>();
+            }
+            record.setItems(items);
+        }
+        return new PageResult<>(total,records);
     }
 
     /**

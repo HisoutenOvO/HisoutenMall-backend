@@ -1,10 +1,7 @@
 package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.dto.MerchantOrderPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.UserOrderCreateDTO;
-import cn.hisouten.mall.pojo.dto.UserOrderPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.UserOrderPayDTO;
+import cn.hisouten.mall.pojo.dto.*;
 import cn.hisouten.mall.pojo.vo.*;
 
 
@@ -70,4 +67,11 @@ public interface OrderService {
      * @param orderNo 订单号
      */
     void ship(String orderNo);
+
+    /**
+     * 分页查询订单
+     * @param adminOrderPageResultDTO 分页参数
+     * @return 返回值
+     */
+    PageResult<AdminOrderPageResultVO> AdminPageQuery(AdminOrderPageQueryDTO adminOrderPageResultDTO);
 }

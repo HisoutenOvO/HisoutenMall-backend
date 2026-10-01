@@ -1,8 +1,10 @@
 package cn.hisouten.mall.mapper;
 
+import cn.hisouten.mall.pojo.dto.AdminOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.UserOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.entity.Order;
+import cn.hisouten.mall.pojo.vo.AdminOrderPageResultVO;
 import cn.hisouten.mall.pojo.vo.MerchantOrderPageResultVO;
 import cn.hisouten.mall.pojo.vo.UserOrderPageResultVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -34,7 +36,7 @@ public interface OrderMapper extends BaseMapper<Order> {
     List<Order> selectByCreateTime(LocalDateTime deadLineTime);
 
     /**
-     * 分页查询订单
+     * 用户分页查询订单
      * @param page 分页条件
      * @param userOrderPageQueryDTO 条件参数
      * @return 返回值
@@ -47,5 +49,13 @@ public interface OrderMapper extends BaseMapper<Order> {
      * @param merchantOrderPageQueryDTO 查询条件
      * @return 返回值
      */
-    Page<MerchantOrderPageResultVO> MerchantPageQuery(Page<MerchantOrderPageResultVO> page, @Param("dto") MerchantOrderPageQueryDTO merchantOrderPageQueryDTO);
+    Page<MerchantOrderPageResultVO> MerchantPageQuery(Page<MerchantOrderPageResultVO> page, @Param("dto") MerchantOrderPageQueryDTO merchantOrderPageQueryDTO,Long merchantId);
+
+    /**
+     * 管理员分页查询订单
+     * @param page 分页参数
+     * @param adminOrderPageQueryDTO 条件参数
+     * @return 返回值
+     */
+    Page<AdminOrderPageResultVO> AdminPageQuery(Page<AdminOrderPageResultVO> page,@Param("dto") AdminOrderPageQueryDTO adminOrderPageQueryDTO);
 }

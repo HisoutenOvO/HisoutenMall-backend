@@ -28,7 +28,7 @@ public class OrderController {
      */
     @GetMapping("/page")
     @Operation(summary = "分页查询订单")
-    public Result<PageResult<MerchantOrderPageResultVO>> pageQuery(@RequestBody MerchantOrderPageQueryDTO  merchantOrderPageQueryDTO){
+    public Result<PageResult<MerchantOrderPageResultVO>> pageQuery(MerchantOrderPageQueryDTO  merchantOrderPageQueryDTO){
         log.info("商家：{}分页查询订单", StpUtil.getLoginIdAsLong());
         PageResult<MerchantOrderPageResultVO> pageResult = orderService.merchantPageQuery(merchantOrderPageQueryDTO);
         return Result.success(pageResult);
