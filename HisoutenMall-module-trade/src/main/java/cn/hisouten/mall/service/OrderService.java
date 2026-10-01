@@ -60,7 +60,7 @@ public interface OrderService {
      * @param orderNo 订单号
      * @return 返回值
      */
-    MerchantOrderDetailVO MerchantDetailQuery(String orderNo);
+    MerchantOrderDetailVO merchantDetailQuery(String orderNo);
 
     /**
      * 商家发货
@@ -73,5 +73,5 @@ public interface OrderService {
      * @param adminOrderPageResultDTO 分页参数
      * @return 返回值
      */
-    PageResult<AdminOrderPageResultVO> AdminPageQuery(AdminOrderPageQueryDTO adminOrderPageResultDTO);
+    PageResult<AdminOrderPageResultVO> adminPageQuery(AdminOrderPageQueryDTO adminOrderPageResultDTO);
 }

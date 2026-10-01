@@ -57,7 +57,9 @@ public class OrderServiceImpl implements OrderService {
     public UserOrderCreateVO createFromCart(Long userId, Long addressId) {
         //查看购物车勾选项
         List<CartItemListBO> cartItemList = cartItemMapper.selectCheckedItemByUserId(userId);
-
+        if (cartItemList == null || cartItemList.isEmpty()) {
+            throw new BizException(CHECK_PRODUCT_FIRST);
+        }
         //判断有效
         for (CartItemListBO bo : cartItemList) {
             if (bo.getSkuDeleted() == ENABLED || bo.getSkuStatus() != ENABLED) {
@@ -90,6 +92,11 @@ public class OrderServiceImpl implements OrderService {
         Product product = productService.getProductByProductId(sku.getProductId());
         if(product == null){
             throw new BizException(PRODUCT_NOT_FOUND);
+        }if (sku.getStatus() != ENABLED) {
+            throw new BizException(SKU_HAS_DISABLED);
+        }
+        if (product.getStatus() != ENABLED) {
+            throw new BizException(PRODUCT_HAS_DISABLED);
         }
         if(sku.getStock() < userOrderCreateDTO.getQuantity()){
             throw new BizException(OUT_OF_STOCK);
@@ -121,7 +128,7 @@ public class OrderServiceImpl implements OrderService {
                 throw new BizException(ORDER_NOT_FOUND);
             }
             // 校验状态
-            if (order.getStatus() != PENDING_PAYMENT) {
+            if (!Objects.equals(order.getStatus(), PENDING_PAYMENT)) {
                 throw new BizException(ORDER_STATUS_ERROR);
             }
             //修改订单状态
@@ -145,6 +152,7 @@ public class OrderServiceImpl implements OrderService {
      * @param orderNo 订单编号
      */
     @Override
+    @Transactional
     public void cancelPay(Long userId, String orderNo) {
         Order order = orderMapper.selectByOrderNo(orderNo);
         if(order == null || !Objects.equals(order.getUserId(), userId)){
@@ -263,7 +271,7 @@ public class OrderServiceImpl implements OrderService {
      * @return 返回值
      */
     @Override
-    public MerchantOrderDetailVO MerchantDetailQuery(String orderNo) {
+    public MerchantOrderDetailVO merchantDetailQuery(String orderNo) {
         Order order = orderMapper.selectByOrderNo(orderNo);
         if(order == null || !order.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
             throw new BizException(ORDER_NOT_FOUND);
@@ -313,7 +321,7 @@ public class OrderServiceImpl implements OrderService {
      * @return 返回值
      */
     @Override
-    public PageResult<AdminOrderPageResultVO> AdminPageQuery(AdminOrderPageQueryDTO adminOrderPageQueryDTO) {
+    public PageResult<AdminOrderPageResultVO> adminPageQuery(AdminOrderPageQueryDTO adminOrderPageQueryDTO) {
         Page<AdminOrderPageResultVO> page = new Page<>(adminOrderPageQueryDTO.getPage(),adminOrderPageQueryDTO.getPageSize());
         Page<AdminOrderPageResultVO> result = orderMapper.AdminPageQuery(page,adminOrderPageQueryDTO);
         long total = result.getTotal();

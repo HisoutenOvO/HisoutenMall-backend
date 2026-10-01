@@ -44,7 +44,7 @@ public class OrderController {
     @Operation(summary = "查询订单详情")
     public Result<MerchantOrderDetailVO> detailQuery(@PathVariable String orderNo){
         log.info("商家：{}查询订单详情:{}",StpUtil.getLoginIdAsLong(),orderNo);
-        MerchantOrderDetailVO merchantOrderDetailVO = orderService.MerchantDetailQuery(orderNo);
+        MerchantOrderDetailVO merchantOrderDetailVO = orderService.merchantDetailQuery(orderNo);
         return Result.success(merchantOrderDetailVO);
     }
 

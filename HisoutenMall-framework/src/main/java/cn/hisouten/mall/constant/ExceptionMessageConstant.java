@@ -45,6 +45,7 @@ public class ExceptionMessageConstant {
     public static final String PASSWORD_ERROR = "原密码错误！";
     public static final String SAME_PASSWORD = "新密码不能和原密码相同！";
     public static final String CHANGE_DEFAULT_ADDRESS_FIRST = "删除默认地址前，请先将其他地址设为默认！";
+    public static final String CHECK_PRODUCT_FIRST = "请先勾选商品再进行结算！";
     public static final String ROLE_NOT_MERCHANT = "该用户角色不是商家，请确认";
     public static final String ROLE_NOT_USER = "该用户角色不是顾客，请确认";
     public static final String SKU_HAS_DISABLED = "该款式已被下架！";

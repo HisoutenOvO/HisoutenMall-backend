@@ -30,7 +30,7 @@ public class OrderController {
     @Operation(summary = "分页查询订单")
     public Result<PageResult<AdminOrderPageResultVO>> pageQuery(AdminOrderPageQueryDTO adminOrderPageResultDTO){
         log.info("管理员分页查询订单");
-        PageResult<AdminOrderPageResultVO> pageResult = orderService.AdminPageQuery(adminOrderPageResultDTO);
+        PageResult<AdminOrderPageResultVO> pageResult = orderService.adminPageQuery(adminOrderPageResultDTO);
         return Result.success(pageResult);
     }
 }
