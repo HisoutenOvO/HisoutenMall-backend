@@ -27,6 +27,8 @@ public class OrderItem {
 
     private String skuSpecs;
 
+    private String image;
+
     private BigDecimal price;
 
     private Integer quantity;

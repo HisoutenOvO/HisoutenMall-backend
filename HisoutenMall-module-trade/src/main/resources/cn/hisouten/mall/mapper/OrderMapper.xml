@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.hisouten.mall.mapper.OrderMapper">
+    <select id="pageQuery" resultType="cn.hisouten.mall.pojo.vo.UserOrderPageResultVO">
+        select o.id , o.order_no as orderNo,o.merchant_id as merchantId,m.name as merchantName,
+               o.pay_account as payAccount,o.status,o.create_time as createTime
+        from `order` o
+        left join merchant_profile m on o.merchant_id = m.user_id
+        <where>
+            <if test="dto.keyword != null and dto.keyword != ''">
+                and keyword = #{dto.keyword}
+            </if>
+            <if test="dto.status != null ">
+                and keyword = #{dto.status}
+            </if>
+        and deleted = 0
+        order by m.create_time desc
+        </where>
+    </select>
 </mapper>

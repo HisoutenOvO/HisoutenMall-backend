@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.hisouten.mall.mapper.OrderItemMapper">
+    <select id="selectByOrderIds" resultType="cn.hisouten.mall.pojo.vo.OrderItemVO">
+        select id, order_id, product_id, sku_id, product_name,
+        sku_specs, price, quantity, total_price
+        from order_item
+        where order_id IN
+        <foreach collection="orderIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

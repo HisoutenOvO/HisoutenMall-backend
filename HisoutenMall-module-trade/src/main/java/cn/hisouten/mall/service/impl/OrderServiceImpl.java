@@ -2,15 +2,20 @@ package cn.hisouten.mall.service.impl;
 
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.*;
+import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.CartItemListBO;
 import cn.hisouten.mall.pojo.dto.UserOrderCreateDTO;
+import cn.hisouten.mall.pojo.dto.UserOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.UserOrderPayDTO;
 import cn.hisouten.mall.pojo.entity.*;
+import cn.hisouten.mall.pojo.vo.OrderItemVO;
 import cn.hisouten.mall.pojo.vo.UserOrderCreateVO;
+import cn.hisouten.mall.pojo.vo.UserOrderPageResultVO;
 import cn.hisouten.mall.service.OrderService;
 import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.user.pojo.entity.UserAddress;
 import cn.hisouten.mall.user.service.UserAddressService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -159,6 +164,36 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
+     * 订单分页查询
+     * @param userOrderPageQueryDTO 分页查询参数
+     * @return 返回值
+     */
+    @Override
+    public PageResult<UserOrderPageResultVO> pageQuery(UserOrderPageQueryDTO userOrderPageQueryDTO) {
+        //先查询订单主表
+        Page<UserOrderPageResultVO> page = new Page<>(userOrderPageQueryDTO.getPage(), userOrderPageQueryDTO.getPageSize());
+        Page<UserOrderPageResultVO> result = orderMapper.pageQuery(page,userOrderPageQueryDTO);
+        long total = result.getTotal();
+        //再查询每个订单的具体项
+        List<Long> orderIds = result.getRecords().stream().map(UserOrderPageResultVO::getId).toList();
+        List<OrderItemVO> itemVOList = orderItemMapper.selectByOrderIds(orderIds);
+
+        //按订单id分组
+        Map<Long,List<OrderItemVO>> group = itemVOList.stream().collect(Collectors.groupingBy(OrderItemVO::getOrderId));
+
+        //给每组进行组装
+        List<UserOrderPageResultVO> records = result.getRecords();
+        for (UserOrderPageResultVO record : records) {
+            List<OrderItemVO> items = group.get(record.getId());   // 从 Map 里取
+            if(items == null){
+                items = new ArrayList<>();
+            }
+            record.setItems(items);
+        }
+        return new PageResult<>(total,records);
+    }
+
+    /**
      * 核心下单逻辑
      * @param userId 用户id
      * @param addressId 地址id
@@ -215,6 +250,11 @@ public class OrderServiceImpl implements OrderService {
                 orderItem.setSkuId(item.getSkuId());
                 orderItem.setProductName(item.getProductName());   // 快照
                 orderItem.setSkuSpecs(item.getSkuSpecs());         // 快照
+                if(item.getSkuImage() != null){
+                    orderItem.setImage(item.getSkuImage());        // 快照
+                }else{
+                    orderItem.setImage(item.getMainImage());       // 快照
+                }
                 orderItem.setPrice(item.getPrice());               // 快照
                 orderItem.setQuantity(item.getQuantity());
                 orderItem.setTotalPrice(item.getPrice()

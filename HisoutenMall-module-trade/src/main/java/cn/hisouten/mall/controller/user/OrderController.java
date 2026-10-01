@@ -1,10 +1,13 @@
 package cn.hisouten.mall.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.UserOrderCreateDTO;
+import cn.hisouten.mall.pojo.dto.UserOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.UserOrderPayDTO;
 import cn.hisouten.mall.pojo.vo.UserOrderCreateVO;
+import cn.hisouten.mall.pojo.vo.UserOrderPageResultVO;
 import cn.hisouten.mall.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -76,5 +79,18 @@ public class OrderController {
         log.info("用户:{}取消支付订单",userId);
         orderService.cancelPay(userId,orderNo);
         return Result.success();
+    }
+
+    /**
+     * 订单分页查询
+     * @param userOrderPageQueryDTO 分页查询参数
+     * @return 返回值
+     */
+    @GetMapping("/page")
+    @Operation(summary = "订单分页查询")
+    public Result<PageResult<UserOrderPageResultVO>> pageQuery(@RequestBody UserOrderPageQueryDTO userOrderPageQueryDTO){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户：{}分页查询订单",userId);
+        PageResult<UserOrderPageResultVO> pageResult = orderService.pageQuery(userOrderPageQueryDTO);
     }
 }

@@ -1,8 +1,11 @@
 package cn.hisouten.mall.service;
 
+import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.UserOrderCreateDTO;
+import cn.hisouten.mall.pojo.dto.UserOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.UserOrderPayDTO;
 import cn.hisouten.mall.pojo.vo.UserOrderCreateVO;
+import cn.hisouten.mall.pojo.vo.UserOrderPageResultVO;
 
 public interface OrderService {
 
@@ -31,4 +34,11 @@ public interface OrderService {
      * @param orderNo 订单编号
      */
     void cancelPay(Long userId, String orderNo);
+
+    /**
+     * 订单分页查询
+     * @param userOrderPageQueryDTO 分页查询参数
+     * @return 返回值
+     */
+    PageResult<UserOrderPageResultVO> pageQuery(UserOrderPageQueryDTO userOrderPageQueryDTO);
 }
