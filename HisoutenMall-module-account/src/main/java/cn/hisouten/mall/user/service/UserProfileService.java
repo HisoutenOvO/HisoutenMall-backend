@@ -25,4 +25,11 @@ public interface UserProfileService {
      * @param passwordUpdateDTO 密码
      */
     void updatePwd(Long userId, PasswordUpdateDTO passwordUpdateDTO);
+
+    /**
+     * 通过用户id查询用户信息
+     * @param userId 用户主表id
+     * @return 返回值
+     */
+    String getUserNicknameByUserId(Long userId);
 }

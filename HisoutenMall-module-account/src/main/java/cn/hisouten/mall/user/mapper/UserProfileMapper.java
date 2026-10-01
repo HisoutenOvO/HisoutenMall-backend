@@ -26,4 +26,12 @@ public interface UserProfileMapper extends BaseMapper<UserProfile> {
      */
     @Select("select * from user_profile where user_id = #{userId}")
     UserProfile selectProfileByUserId(Long userId);
+
+    /**
+     * 通过用户id查询用户信息
+     * @param userId 用户主表id
+     * @return 返回值
+     */
+    @Select("select nickname from user_profile where user_id = #{userId}")
+    String selectUserNicknameByUserId(Long userId);
 }

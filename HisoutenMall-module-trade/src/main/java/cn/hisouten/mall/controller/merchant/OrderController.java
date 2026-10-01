@@ -4,16 +4,14 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.MerchantOrderPageQueryDTO;
+import cn.hisouten.mall.pojo.vo.MerchantOrderDetailVO;
 import cn.hisouten.mall.pojo.vo.MerchantOrderPageResultVO;
 import cn.hisouten.mall.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController("merchantOrderController")
 @RequestMapping("/merchant/order")
@@ -34,5 +32,19 @@ public class OrderController {
         log.info("商家：{}分页查询订单", StpUtil.getLoginIdAsLong());
         PageResult<MerchantOrderPageResultVO> pageResult = orderService.merchantPageQuery(merchantOrderPageQueryDTO);
         return Result.success(pageResult);
+    }
+
+
+    /**
+     * 商家查询订单详情
+     * @param orderNo 订单号
+     * @return 返回值
+     */
+    @GetMapping("/{orderNo}")
+    @Operation(summary = "查询订单详情")
+    public Result<MerchantOrderDetailVO> detailQuery(@PathVariable String orderNo){
+        log.info("商家：{}查询订单详情:{}",StpUtil.getLoginIdAsLong(),orderNo);
+        MerchantOrderDetailVO merchantOrderDetailVO = orderService.MerchantDetailQuery(orderNo);
+        return Result.success(merchantOrderDetailVO);
     }
 }

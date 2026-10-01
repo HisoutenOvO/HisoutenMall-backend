@@ -88,4 +88,14 @@ public class UserProfileServiceImpl implements UserProfileService {
         user.setPassword(BCrypt.hashpw(passwordUpdateDTO.getNewPwd()));
         authMapper.updateById(user);
     }
+
+    /**
+     * 通过用户id查询用户名称
+     * @param userId 用户主表id
+     * @return 返回值
+     */
+    @Override
+    public String getUserNicknameByUserId(Long userId) {
+        return userProfileMapper.selectUserNicknameByUserId(userId);
+    }
 }

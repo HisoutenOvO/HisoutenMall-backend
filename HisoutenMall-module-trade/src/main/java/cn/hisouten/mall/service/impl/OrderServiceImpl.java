@@ -16,6 +16,7 @@ import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.user.pojo.entity.UserAddress;
 import cn.hisouten.mall.user.service.MerchantProfileService;
 import cn.hisouten.mall.user.service.UserAddressService;
+import cn.hisouten.mall.user.service.UserProfileService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -46,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserAddressService userAddressService;
     private final ProductService productService;
     private final MerchantProfileService merchantProfileService;
+    private final UserProfileService userProfileService;
 
 
     /**
@@ -254,6 +256,38 @@ public class OrderServiceImpl implements OrderService {
             record.setItems(items);
         }
         return new PageResult<>(total,records);
+    }
+
+
+    /**
+     * 商家查询订单详情
+     * @param orderNo 订单号
+     * @return 返回值
+     */
+    @Override
+    public MerchantOrderDetailVO MerchantDetailQuery(String orderNo) {
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if(order == null || !order.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
+            throw new BizException(ORDER_NOT_FOUND);
+        }
+        String buyerName = userProfileService.getUserNicknameByUserId(order.getUserId());
+        if(buyerName == null){
+            buyerName = USER_NOT_FOUND;
+        }
+        MerchantOrderDetailVO merchantOrderDetailVO = new MerchantOrderDetailVO();
+        BeanUtils.copyProperties(order,merchantOrderDetailVO);
+        merchantOrderDetailVO.setBuyerUsername(buyerName);
+
+        //查找订单项
+        List<OrderItem> itemList = orderItemMapper.selectByOrderId(order.getId());
+        List<OrderItemVO> itemVOList = new ArrayList<>();
+        for (OrderItem item : itemList) {
+            OrderItemVO orderItemVO = new OrderItemVO();
+            BeanUtils.copyProperties(item,orderItemVO);
+            itemVOList.add(orderItemVO);
+        }
+        merchantOrderDetailVO.setItems(itemVOList);
+        return merchantOrderDetailVO;
     }
 
     /**
