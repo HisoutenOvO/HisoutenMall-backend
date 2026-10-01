@@ -2,12 +2,15 @@ package cn.hisouten.mall.mapper;
 
 import cn.hisouten.mall.pojo.bo.CartItemListBO;
 import cn.hisouten.mall.pojo.entity.CartItem;
+import cn.hisouten.mall.pojo.vo.UserCartItemListVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
+@Mapper
 public interface CartItemMapper extends BaseMapper<CartItem> {
 
     /**
@@ -54,4 +57,11 @@ public interface CartItemMapper extends BaseMapper<CartItem> {
      * @param cartItemIds 购物车ids
      */
     void changeAllCheckedByCartItemId(List<Long> cartItemIds,Integer checked);
+
+    /**
+     * 根据用户id获取勾选到的购物车内容
+     * @param userId 用户id
+     * @return 返回值
+     */
+    List<CartItemListBO> selectCheckedItemByUserId(Long userId);
 }

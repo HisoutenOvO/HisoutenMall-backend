@@ -1,0 +1,21 @@
+package cn.hisouten.mall.service;
+
+import cn.hisouten.mall.pojo.dto.UserOrderCreateDTO;
+import cn.hisouten.mall.pojo.vo.UserOrderCreateVO;
+
+public interface OrderService {
+
+    /**
+     * 用户从购物车里结算下单
+     * @param addressId 地址id
+     * @return 返回值
+     */
+    UserOrderCreateVO createFromCart(Long userId, Long addressId);
+
+    /**
+     * 用户立即购买下单
+     * @param userOrderCreateDTO 下单参数
+     * @return 返回值
+     */
+    UserOrderCreateVO createDirect(Long userId, UserOrderCreateDTO userOrderCreateDTO);
+}

@@ -26,4 +26,15 @@
         left join product p on c.product_id = p.id
         where p.status = 1 and s.status = 1 and p.deleted = 0 and s.deleted = 0 and s.stock >= c.quantity
     </select>
+    <select id="selectCheckedItemByUserId" resultType="cn.hisouten.mall.pojo.bo.CartItemListBO">
+        SELECT c.id, c.product_id, c.sku_id, c.quantity,
+        p.merchant_id, p.name AS productName, p.main_image AS mainImage,
+        s.specs AS skuSpecs, s.price, s.stock,
+        s.status AS skuStatus, s.deleted AS skuDeleted,
+        p.status AS productStatus, p.deleted AS productDeleted
+        FROM cart_item c
+        INNER JOIN product p ON c.product_id = p.id
+        INNER JOIN product_sku s ON c.sku_id = s.id
+        WHERE c.user_id = #{userId} AND c.checked = 1
+    </select>
 </mapper>

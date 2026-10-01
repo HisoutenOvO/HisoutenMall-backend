@@ -17,6 +17,8 @@ import java.math.BigDecimal;
 public class CartItemListBO {
     private Long id;
 
+    private Long merchantId;
+
     private Long productId;
 
     private Long skuId;

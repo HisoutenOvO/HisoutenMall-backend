@@ -1,4 +1,4 @@
-package cn.hisouten.mall.controller;
+package cn.hisouten.mall.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.pojo.Result;
@@ -19,7 +19,7 @@ import java.util.List;
 @Tag(name = "用户端——购物车接口")
 @Slf4j
 @RequiredArgsConstructor
-public class UserCartController {
+public class CartController {
     private final CartService cartService;
 
     /**

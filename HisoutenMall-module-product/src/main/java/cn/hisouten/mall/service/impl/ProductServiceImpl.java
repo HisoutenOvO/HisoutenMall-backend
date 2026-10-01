@@ -360,7 +360,7 @@ public class ProductServiceImpl implements ProductService {
      * @return 返回值
      */
     @Override
-    public ProductSku selectSkuBySkuId(Long skuId) {
+    public ProductSku getSkuBySkuId(Long skuId) {
         return productSkuMapper.selectById(skuId);
     }
 
@@ -370,7 +370,7 @@ public class ProductServiceImpl implements ProductService {
      * @return 返回值
      */
     @Override
-    public Product selectProductByProductId(Long productId) {
+    public Product getProductByProductId(Long productId) {
         return productMapper.selectById(productId);
     }
     //=======================================用户端逻辑================================================

@@ -1,0 +1,50 @@
+package cn.hisouten.mall.controller.user;
+
+import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.pojo.dto.UserOrderCreateDTO;
+import cn.hisouten.mall.pojo.vo.UserOrderCreateVO;
+import cn.hisouten.mall.service.OrderService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+
+@RestController("userOrderController")
+@RequestMapping("/user/order")
+@Tag(name = "用户端——订单接口")
+@Slf4j
+@RequiredArgsConstructor
+public class OrderController {
+    private final OrderService orderService;
+
+
+    /**
+     * 用户从购物车里结算下单
+     * @param addressId 地址id
+     * @return 返回值
+     */
+    @PostMapping("/create-from-cart")
+    @Operation(summary = "从购物车里结算")
+    public Result<UserOrderCreateVO> createFromCart(@RequestParam Long addressId){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户：{}从购物车结算订单",userId);
+        UserOrderCreateVO userOrderCreateVO = orderService.createFromCart(userId,addressId);
+        return Result.success(userOrderCreateVO);
+    }
+
+    /**
+     * 用户立即购买下单
+     * @param userOrderCreateDTO 下单参数
+     * @return 返回值
+     */
+    @PostMapping("/create-direct")
+    @Operation(summary = "直接购买")
+    public Result<UserOrderCreateVO> createDirect(@RequestBody UserOrderCreateDTO userOrderCreateDTO){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户：{}直接下单",userId);
+        UserOrderCreateVO userOrderCreateVO = orderService.createDirect(userId,userOrderCreateDTO);
+        return Result.success(userOrderCreateVO);
+    }
+}

@@ -2,6 +2,7 @@ package cn.hisouten.mall.user.service;
 
 import cn.hisouten.mall.user.pojo.dto.UserAddressAddDTO;
 import cn.hisouten.mall.user.pojo.dto.UserAddressUpdateDTO;
+import cn.hisouten.mall.user.pojo.entity.UserAddress;
 import cn.hisouten.mall.user.pojo.vo.UserAddressDetailVO;
 import cn.hisouten.mall.user.pojo.vo.UserAddressListVO;
 
@@ -48,4 +49,11 @@ public interface UserAddressService {
      * @param addressId 地址id
      */
     void deleteAddress(Long addressId);
+
+    /**
+     * 根据id查询地址信息
+     * @param addressId 地址id
+     * @return 返回值
+     */
+    UserAddress getById(Long addressId);
 }

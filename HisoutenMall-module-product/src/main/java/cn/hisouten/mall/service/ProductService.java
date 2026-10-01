@@ -132,12 +132,12 @@ public interface ProductService {
      * @param skuId skuId
      * @return 返回值
      */
-    ProductSku selectSkuBySkuId(Long skuId);
+    ProductSku getSkuBySkuId(Long skuId);
 
     /**
      * 根据商品id查询商品
      * @param productId 商品id
      * @return 返回值
      */
-    Product selectProductByProductId(Long productId);
+    Product getProductByProductId(Long productId);
 }

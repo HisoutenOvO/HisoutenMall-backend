@@ -87,4 +87,13 @@ public interface ProductSkuMapper extends BaseMapper<ProductSku> {
      */
     @Select("select specs from product_sku where product_id = #{productId} and id != #{skuId} and specs = #{specs}")
     String selectExistSpecsByProductId(Long productId,Long skuId,String specs);
+
+    /**
+     * 扣减sku库存
+     * @param skuId skuId
+     * @param quantity 扣减数量
+     * @return 返回影响到的行数以便作判断
+     */
+    @Update("update product_sku set stock = stock - #{quantity} where id = #{skuId} and stock > #{quantity} and deleted = 0")
+    int deductStock(Long skuId, Integer quantity);
 }

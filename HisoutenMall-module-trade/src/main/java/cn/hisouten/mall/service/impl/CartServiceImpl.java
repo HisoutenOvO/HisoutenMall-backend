@@ -39,14 +39,14 @@ public class CartServiceImpl implements CartService {
     @Override
     public void addCart(Long userId, UserCartAddDTO userCartAddDTO) {
         //校验商品及商品规格是否存在且合法
-        ProductSku productSku = productService.selectSkuBySkuId(userCartAddDTO.getSkuId());
+        ProductSku productSku = productService.getSkuBySkuId(userCartAddDTO.getSkuId());
         if(productSku == null){
             throw new BizException(SKU_NOT_FOUND);
         }
         if(productSku.getStatus() == DISABLED){
             throw new BizException(SKU_HAS_DISABLED);
         }
-        Product product = productService.selectProductByProductId(productSku.getProductId());
+        Product product = productService.getProductByProductId(productSku.getProductId());
         if(product == null){
             throw new BizException(PRODUCT_NOT_FOUND);
         }
@@ -106,7 +106,7 @@ public class CartServiceImpl implements CartService {
             } else if (bo.getProductDeleted() == ENABLED || bo.getProductStatus() != ENABLED) {
                 vo.setInvalid(true);
                 vo.setInvalidReason(PRODUCT_HAS_DISABLED);
-            } else if (vo.getStock() < vo.getQuantity()) {
+            } else if (bo.getStock() < bo.getQuantity()) {
                 vo.setInvalid(true);
                 vo.setInvalidReason(OUT_OF_STOCK);
             } else {
@@ -132,7 +132,7 @@ public class CartServiceImpl implements CartService {
         if (item == null || !item.getUserId().equals(userId)) {
             throw new BizException(CART_NOT_FOUND);
         }
-        ProductSku sku = productService.selectSkuBySkuId(item.getSkuId());
+        ProductSku sku = productService.getSkuBySkuId(item.getSkuId());
         if (sku == null || quantity > sku.getStock()) {
             throw new BizException(OUT_OF_STOCK);
         }
@@ -152,8 +152,8 @@ public class CartServiceImpl implements CartService {
             throw new BizException(CART_NOT_FOUND);
         }
         // 如果要勾选，校验有效性
-        ProductSku productSku = productService.selectSkuBySkuId(item.getSkuId());
-        Product product = productService.selectProductByProductId(productSku.getProductId());
+        ProductSku productSku = productService.getSkuBySkuId(item.getSkuId());
+        Product product = productService.getProductByProductId(productSku.getProductId());
         if (checked == ENABLED && productSku.getStatus() == DISABLED && product.getStatus() == DISABLED) {
             throw new BizException("失效商品无法勾选");
         }

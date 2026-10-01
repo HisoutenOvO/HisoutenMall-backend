@@ -145,5 +145,15 @@ public class UserAddressServiceImpl implements UserAddressService {
         userAddressMapper.deleteById(addressId);
     }
 
+    /**
+     * 根据id查询地址信息
+     * @param addressId 地址id
+     * @return 返回值
+     */
+    @Override
+    public UserAddress getById(Long addressId) {
+        return userAddressMapper.selectById(addressId);
+    }
+
 
 }
