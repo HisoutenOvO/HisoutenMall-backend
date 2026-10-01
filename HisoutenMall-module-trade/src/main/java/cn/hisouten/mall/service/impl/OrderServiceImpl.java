@@ -291,6 +291,25 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
+     * 商家发货
+     * @param orderNo 订单号
+     */
+    @Override
+    @Transactional
+    public void ship(String orderNo) {
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if (order == null || !order.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
+            throw new BizException(ORDER_NOT_FOUND);
+        }
+        if (order.getStatus() != PAID) {
+            throw new BizException(ORDER_STATUS_ERROR);
+        }
+        order.setStatus(COMPLETED);   // 阶段二简化,发货即完成
+        order.setFinishTime(LocalDateTime.now());
+        orderMapper.updateById(order);
+    }
+
+    /**
      * 核心下单逻辑
      * @param userId 用户id
      * @param addressId 地址id

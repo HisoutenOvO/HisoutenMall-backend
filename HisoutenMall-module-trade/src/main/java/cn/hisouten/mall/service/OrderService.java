@@ -64,4 +64,10 @@ public interface OrderService {
      * @return 返回值
      */
     MerchantOrderDetailVO MerchantDetailQuery(String orderNo);
+
+    /**
+     * 商家发货
+     * @param orderNo 订单号
+     */
+    void ship(String orderNo);
 }

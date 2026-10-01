@@ -47,4 +47,17 @@ public class OrderController {
         MerchantOrderDetailVO merchantOrderDetailVO = orderService.MerchantDetailQuery(orderNo);
         return Result.success(merchantOrderDetailVO);
     }
+
+    /**
+     * 商家发货
+     * @param orderNo 订单号
+     * @return 返回值
+     */
+    @PutMapping("/{orderNo}/ship")
+    @Operation(summary = "商家发货")
+    public Result ship(@PathVariable String orderNo){
+        log.info("商家：{}发货:{}",StpUtil.getLoginIdAsLong(),orderNo);
+        orderService.ship(orderNo);
+        return Result.success();
+    }
 }
