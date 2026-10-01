@@ -5,7 +5,9 @@ import cn.hisouten.mall.pojo.dto.UserOrderCreateDTO;
 import cn.hisouten.mall.pojo.dto.UserOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.UserOrderPayDTO;
 import cn.hisouten.mall.pojo.vo.UserOrderCreateVO;
+import cn.hisouten.mall.pojo.vo.UserOrderDetailVO;
 import cn.hisouten.mall.pojo.vo.UserOrderPageResultVO;
+
 
 public interface OrderService {
 
@@ -41,4 +43,11 @@ public interface OrderService {
      * @return 返回值
      */
     PageResult<UserOrderPageResultVO> pageQuery(UserOrderPageQueryDTO userOrderPageQueryDTO);
+
+    /**
+     * 查询订单详情
+     * @param orderNo 订单号
+     * @return 返回值
+     */
+    UserOrderDetailVO detailQuery(String orderNo);
 }

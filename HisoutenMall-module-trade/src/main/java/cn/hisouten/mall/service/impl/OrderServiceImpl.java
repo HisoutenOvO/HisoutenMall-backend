@@ -1,5 +1,6 @@
 package cn.hisouten.mall.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.*;
 import cn.hisouten.mall.pojo.PageResult;
@@ -10,13 +11,16 @@ import cn.hisouten.mall.pojo.dto.UserOrderPayDTO;
 import cn.hisouten.mall.pojo.entity.*;
 import cn.hisouten.mall.pojo.vo.OrderItemVO;
 import cn.hisouten.mall.pojo.vo.UserOrderCreateVO;
+import cn.hisouten.mall.pojo.vo.UserOrderDetailVO;
 import cn.hisouten.mall.pojo.vo.UserOrderPageResultVO;
 import cn.hisouten.mall.service.OrderService;
 import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.user.pojo.entity.UserAddress;
+import cn.hisouten.mall.user.service.MerchantProfileService;
 import cn.hisouten.mall.user.service.UserAddressService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +47,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final UserAddressService userAddressService;
     private final ProductService productService;
-
+    private final MerchantProfileService merchantProfileService;
 
 
     /**
@@ -191,6 +195,37 @@ public class OrderServiceImpl implements OrderService {
             record.setItems(items);
         }
         return new PageResult<>(total,records);
+    }
+
+    /**
+     * 查询订单详情
+     * @param orderNo 订单号
+     * @return 返回值
+     */
+    @Override
+    public UserOrderDetailVO detailQuery(String orderNo) {
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if(order == null || !order.getUserId().equals(StpUtil.getLoginIdAsLong())){
+            throw new BizException(ORDER_NOT_FOUND);
+        }
+        String merchantName = merchantProfileService.getMerchantNameByMerchantId(order.getMerchantId());
+        if(merchantName == null){
+            merchantName = MERCHANT_NOT_FOUND;
+        }
+        UserOrderDetailVO userOrderDetailVO = new UserOrderDetailVO();
+        BeanUtils.copyProperties(order,userOrderDetailVO);
+        userOrderDetailVO.setMerchantName(merchantName);
+
+        //查找订单项
+        List<OrderItem> itemList = orderItemMapper.selectByOrderId(order.getId());
+        List<OrderItemVO> itemVOList = new ArrayList<>();
+        for (OrderItem item : itemList) {
+            OrderItemVO orderItemVO = new OrderItemVO();
+            BeanUtils.copyProperties(item,orderItemVO);
+            itemVOList.add(orderItemVO);
+        }
+        userOrderDetailVO.setItems(itemVOList);
+        return userOrderDetailVO;
     }
 
     /**
