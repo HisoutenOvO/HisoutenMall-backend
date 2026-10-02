@@ -1,4 +1,4 @@
-package cn.hisouten.mall.web.config;
+package cn.hisouten.mall.config;
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.router.SaRouter;

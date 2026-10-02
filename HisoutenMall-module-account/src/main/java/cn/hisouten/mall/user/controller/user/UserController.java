@@ -1,6 +1,7 @@
 package cn.hisouten.mall.user.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.UserUpdateDTO;
 import cn.hisouten.mall.user.pojo.dto.PasswordUpdateDTO;
@@ -41,6 +42,7 @@ public class UserController {
      * @return 返回值
      */
     @PutMapping("/profile")
+    @Log("用户修改个人信息")
     @Operation(summary = "用户修改个人信息")
     public Result updateInfo(@RequestBody UserUpdateDTO userUpdateDTO){
         Long userId = StpUtil.getLoginIdAsLong();
@@ -55,6 +57,7 @@ public class UserController {
      * @return 返回值
      */
     @PutMapping("/password")
+    @Log("用户修改密码")
     @Operation(summary = "用户修改密码")
     public Result updatePwd(@RequestBody PasswordUpdateDTO passwordUpdateDTO){
         Long userId = StpUtil.getLoginIdAsLong();

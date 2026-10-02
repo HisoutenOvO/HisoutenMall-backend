@@ -1,5 +1,6 @@
 package cn.hisouten.mall.controller.admin;
 
+import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandAddDTO;
@@ -54,7 +55,8 @@ public class BrandController {
      * @return 返回值
      */
     @PostMapping
-    @Operation(summary = "新增商品")
+    @Log("管理端新增品牌")
+    @Operation(summary = "新增品牌")
     public Result addBrand(@RequestBody AdminBrandAddDTO adminBrandAddDTO){
         log.info("新增品牌");
         brandService.addBrand(adminBrandAddDTO);
@@ -67,6 +69,7 @@ public class BrandController {
      * @return 返回值
      */
     @PutMapping("/{brandId}")
+    @Log("管理端修改品牌")
     @Operation(summary = "修改品牌")
     public Result updateBrand(@PathVariable Long brandId ,@RequestBody AdminBrandUpdateDTO adminBrandUpdateDTO){
         log.info("修改品牌：{}",brandId);
@@ -81,6 +84,7 @@ public class BrandController {
      * @return 返回值
      */
     @PutMapping("/{brandId}/status")
+    @Log("管理端修改品牌上下架状态")
     @Operation(summary = "修改品牌上下架状态")
     public Result changeStatus(@PathVariable Long brandId,@RequestParam Integer status){
         log.info("修改品牌状态：{}",brandId);
@@ -94,6 +98,7 @@ public class BrandController {
      * @return 返回值
      */
     @DeleteMapping("{brandId}/deleted")
+    @Log("管理端逻辑删除品牌")
     @Operation(summary = "逻辑删除品牌")
     public Result logicDelete(@PathVariable Long brandId){
         log.info("逻辑删除品牌：{}",brandId);

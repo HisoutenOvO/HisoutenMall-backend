@@ -1,6 +1,7 @@
 package cn.hisouten.mall.controller.merchant;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.product.*;
@@ -45,6 +46,7 @@ public class ProductController {
      * @return 返回空
      */
     @PostMapping
+    @Log("商家端新增商品")
     @Operation(summary = "新增商品")
     public Result addProduct(@Valid @RequestBody MerchantProductAddDTO merchantProductAddDTO){
         log.info("商家{}新增商品", StpUtil.getLoginIdAsLong());
@@ -72,6 +74,7 @@ public class ProductController {
      * @return 返回空
      */
     @PutMapping("/{productId}")
+    @Log("商家端修改商品")
     @Operation(summary = "修改商品")
     public Result updateProduct(@PathVariable Long productId,@Valid @RequestBody MerchantProductUpdateDTO merchantProductUpdateDTO){
         log.info("修改商品：{}",productId);
@@ -85,6 +88,7 @@ public class ProductController {
      * @return 返回空
      */
     @PutMapping("/{productId}/status")
+    @Log("商家端修改商品状态")
     @Operation(summary = "修改商品上下架状态")
     public Result changeStatus(@PathVariable Long productId,@RequestParam Integer status){
         log.info("修改商品上下架状态：{}",productId);
@@ -98,6 +102,7 @@ public class ProductController {
      * @return 返回空
      */
     @DeleteMapping("/{productId}/deleted")
+    @Log("商家端逻辑删除商品")
     @Operation(summary = "逻辑删除商品")
     public Result logicDeleteProduct(@PathVariable Long productId){
         log.info("逻辑删除商品：{}",productId);
@@ -112,6 +117,7 @@ public class ProductController {
      * @return 返回空
      */
     @PutMapping("/{productId}/deleted")
+    @Log("商家端恢复逻辑删除商品")
     @Operation(summary = "复原删除的商品")
     public Result recoveryProduct(@PathVariable Long productId){
         log.info("复原商品：{}",productId);
@@ -125,6 +131,7 @@ public class ProductController {
      * @return 返回空
      */
     @DeleteMapping("/{productId}")
+    @Log("商家端彻底删除商品数据")
     @Operation(summary = "删除商品数据")
     public Result deleteProduct(@PathVariable Long productId){
         log.info("删除商品数据:{}",productId);
@@ -164,8 +171,9 @@ public class ProductController {
      * @param productSkuDTO 修改sku的参数
      * @return 返回值
      */
-    @PutMapping("/sku/{skuId}")@
-    Operation(summary = "修改sku")
+    @PutMapping("/sku/{skuId}")
+    @Log("商家端修改sku")
+    @Operation(summary = "修改sku")
     public Result updateSku(@PathVariable Long skuId, @RequestBody MerchantProductSkuDTO productSkuDTO){
         log.info("修改：{}",skuId);
         productService.updateSku(skuId,productSkuDTO);
@@ -179,6 +187,7 @@ public class ProductController {
      * @return 返回值
      */
     @PutMapping("/sku/{skuId}/status")
+    @Log("商家端修改sku状态")
     @Operation(summary = "修改sku上下架状态")
     public Result changeSkuStatus(@PathVariable Long skuId,@RequestParam Integer status){
         log.info("修改sku：{}上下架状态",skuId);
@@ -192,6 +201,7 @@ public class ProductController {
      * @return 返回值
      */
     @DeleteMapping("/sku/{skuId}/deleted")
+    @Log("商家端逻辑删除sku")
     @Operation(summary = "逻辑删除sku")
     public Result logicDeleteSku(@PathVariable Long skuId){
         log.info("逻辑删除sku：{}",skuId);
@@ -202,9 +212,10 @@ public class ProductController {
     /**
      * 恢复删除掉的sku
      * @param skuId skuId
-     * @return
+     * @return 返回值
      */
     @PutMapping("/sku/{skuId}/deleted")
+    @Log("商家端恢复逻辑删除sku")
     @Operation(summary = "恢复删除的sku")
     public Result RecoverySku(@PathVariable Long skuId){
         log.info("恢复删除sku：{}",skuId);
@@ -215,9 +226,10 @@ public class ProductController {
     /**
      * 彻底删除sku
      * @param skuId skuId
-     * @return
+     * @return 返回值
      */
     @DeleteMapping("/sku/{skuId}")
+    @Log("商家端彻底删除sku")
     @Operation(summary = "彻底删除sku")
     public Result deleteSku(@PathVariable Long skuId){
         log.info("彻底删除sku：{}",skuId);

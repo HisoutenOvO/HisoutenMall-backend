@@ -1,4 +1,4 @@
-package cn.hisouten.mall.web.config;
+package cn.hisouten.mall.config;
 
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;

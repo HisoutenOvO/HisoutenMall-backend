@@ -1,5 +1,6 @@
 package cn.hisouten.mall.controller.admin;
 
+import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryAddDTO;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryUpdateDTO;
@@ -67,6 +68,7 @@ public class CategoryController {
      * @return 返回值
      */
     @PostMapping
+    @Log("管理端新增分类")
     @Operation(summary = "新增分类")
     public Result addCategory(@RequestBody AdminCategoryAddDTO adminCategoryAddDTO){
         log.info("新增分类");
@@ -81,6 +83,7 @@ public class CategoryController {
      * @return 返回值
      */
     @PutMapping("/{categoryId}")
+    @Log("管理端修改分类")
     @Operation(summary = "修改分类")
     public Result updateCategory(@PathVariable Long categoryId ,@RequestBody AdminCategoryUpdateDTO adminCategoryUpdateDTO){
         log.info("修改分类:{}",categoryId);
@@ -95,6 +98,7 @@ public class CategoryController {
      * @return 返回值
      */
     @PutMapping("/{categoryId}/status")
+    @Log("管理端修改分类状态")
     @Operation(summary = "修改分类状态")
     public Result changStatus(@PathVariable Long categoryId,@RequestParam Integer status){
         log.info("修改分类状态：{}",categoryId);
@@ -108,6 +112,7 @@ public class CategoryController {
      * @return 返回值
      */
     @DeleteMapping("/{categoryId}/deleted")
+    @Log("管理端逻辑删除分类")
     @Operation(summary = "逻辑删除分类")
     public Result logicDelete(@PathVariable Long categoryId){
         log.info("逻辑删除分类：{}",categoryId);

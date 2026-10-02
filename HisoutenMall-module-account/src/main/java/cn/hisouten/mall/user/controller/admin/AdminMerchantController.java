@@ -1,5 +1,6 @@
 package cn.hisouten.mall.user.controller.admin;
 
+import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.AdminMerchantPageQueryDTO;
@@ -53,6 +54,7 @@ public class AdminMerchantController {
      * @return 返回值
      */
     @PostMapping("/{merchantId}/status")
+    @Log("管理端修改商家状态")
     @Operation(summary = "修改商家状态")
     public Result changeStatus(@PathVariable Long merchantId,@RequestParam Integer status){
         log.info("修改商家状态:{}",merchantId);

@@ -1,6 +1,7 @@
 package cn.hisouten.mall.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.UserOrderCreateDTO;
@@ -27,11 +28,11 @@ public class OrderController {
 
     /**
      * 用户从购物车里结算下单
-     *
      * @param addressId 地址id
      * @return 返回值
      */
     @PostMapping("/create-from-cart")
+    @Log("购物车下单")
     @Operation(summary = "从购物车里结算")
     public Result<UserOrderCreateVO> createFromCart(@RequestParam Long addressId) {
         Long userId = StpUtil.getLoginIdAsLong();
@@ -42,11 +43,11 @@ public class OrderController {
 
     /**
      * 用户立即购买下单
-     *
      * @param userOrderCreateDTO 下单参数
      * @return 返回值
      */
     @PostMapping("/create-direct")
+    @Log("立即下单")
     @Operation(summary = "直接购买")
     public Result<UserOrderCreateVO> createDirect(@RequestBody UserOrderCreateDTO userOrderCreateDTO) {
         Long userId = StpUtil.getLoginIdAsLong();
@@ -57,12 +58,12 @@ public class OrderController {
 
     /**
      * 用户支付订单
-     *
      * @param userOrderPayDTO 支付订单参数
      * @return 返回值
      */
     @PostMapping("/pay")
     @Operation(summary = "用户支付订单")
+    @Log("支付订单")
     public Result pay(@RequestBody UserOrderPayDTO userOrderPayDTO) {
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户:{}支付订单", userId);
@@ -73,11 +74,11 @@ public class OrderController {
 
     /**
      * 订单取消支付
-     *
      * @param orderNo 订单编号
      * @return 返回值
      */
     @PutMapping("/{orderNo}/cancel")
+    @Log("取消支付订单")
     @Operation(summary = "订单取消支付")
     public Result cancelPay(@PathVariable String orderNo) {
         Long userId = StpUtil.getLoginIdAsLong();

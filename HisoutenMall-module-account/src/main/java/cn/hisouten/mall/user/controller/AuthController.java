@@ -2,6 +2,7 @@ package cn.hisouten.mall.user.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.AdminLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.MerchantLoginDTO;
@@ -34,6 +35,7 @@ public class AuthController {
      */
     @SaIgnore
     @PostMapping("/merchant/login")
+    @Log("商家登录")
     @Operation(summary = "商家登录")
     public Result<LoginVO> merchantLogin(@RequestBody MerchantLoginDTO merchantLoginDTO){
         log.info("商家：'{}'登录",merchantLoginDTO.getUsername());
@@ -48,6 +50,7 @@ public class AuthController {
      */
     @SaIgnore
     @PostMapping("/merchant/register")
+    @Log("商家注册")
     @Operation(summary = "商家注册")
     public Result merchantRegister(@RequestBody MerchantRegisterDTO merchantRegisterDTO){
         log.info("商家注册：{}",merchantRegisterDTO.getUsername());
@@ -62,6 +65,7 @@ public class AuthController {
      */
     @SaIgnore
     @PostMapping("/user/login")
+    @Log("用户登录")
     @Operation(summary = "用户登录")
     public Result<LoginVO> userLogin(@RequestBody UserLoginDTO userLoginDTO){
         log.info("用户:{}登录",userLoginDTO.getUsername());
@@ -70,12 +74,13 @@ public class AuthController {
     }
 
     /**
-     * 用户登录
+     * 管理员登录
      * @param adminLoginDTO 管理员登录参数
      * @return 返回值
      */
     @SaIgnore
     @PostMapping("/admin/login")
+    @Log("管理员登录")
     @Operation(summary = "管理员登录")
     public Result<LoginVO> adminLogin(@RequestBody AdminLoginDTO adminLoginDTO){
         log.info("管理员：{}登录",adminLoginDTO.getUsername());
@@ -90,6 +95,7 @@ public class AuthController {
      */
     @SaIgnore
     @PostMapping("/user/register")
+    @Log("用户注册")
     @Operation(summary = "用户注册")
     public Result userRegister(@RequestBody UserRegisterDTO userRegisterDTO){
         log.info("用户登录：{}",userRegisterDTO.getUsername());
@@ -102,6 +108,7 @@ public class AuthController {
      * @return 返回值
      */
     @PostMapping("/logout")
+    @Log("当前用户登出")
     @Operation(summary = "通用登出接口")
     public Result logout(){
         log.info("用户：{}登出", StpUtil.getLoginIdAsLong());

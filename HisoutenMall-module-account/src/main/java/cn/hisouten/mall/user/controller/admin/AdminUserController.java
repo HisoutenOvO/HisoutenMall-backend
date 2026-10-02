@@ -1,5 +1,6 @@
 package cn.hisouten.mall.user.controller.admin;
 
+import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.AdminUserPageQueryDTO;
@@ -39,6 +40,7 @@ public class AdminUserController {
      * @return 返回值
      */
     @PutMapping("/{userId}/status")
+    @Log("管理端修改用户状态")
     @Operation(summary = "改变用户状态")
     public Result changeStatus(@PathVariable Long userId,@RequestParam Integer status){
         log.info("改变用户状态：{}",userId);

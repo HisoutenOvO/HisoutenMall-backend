@@ -1,6 +1,7 @@
 package cn.hisouten.mall.user.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.UserAddressAddDTO;
 import cn.hisouten.mall.user.pojo.dto.UserAddressUpdateDTO;
@@ -55,6 +56,7 @@ public class UserAddressController {
      * @return 返回值
      */
     @PostMapping
+    @Log("用户新增地址")
     @Operation(summary = "用户新增地址")
     public Result addAddress(@RequestBody UserAddressAddDTO userAddressAddDTO){
         Long userId = StpUtil.getLoginIdAsLong();
@@ -71,6 +73,7 @@ public class UserAddressController {
      * @return 返回值
      */
     @PutMapping("/{addressId}")
+    @Log("用户修改地址")
     @Operation(summary = "用户修改地址")
     public Result updateAddress(@PathVariable Long addressId,@RequestBody UserAddressUpdateDTO userAddressUpdateDTO){
         log.info("用户:{}修改地址:{}",StpUtil.getLoginIdAsLong(),addressId);
@@ -85,6 +88,7 @@ public class UserAddressController {
      * @return 返回值
      */
     @PutMapping("/{addressId}/default")
+    @Log("用户修改默认地址")
     @Operation(summary = "用户修改默认地址")
     public Result changeDefault(@PathVariable Long addressId){
         log.info("用户：{}修改默认地址：{}",StpUtil.getLoginIdAsLong(),addressId);
@@ -98,6 +102,7 @@ public class UserAddressController {
      * @return 返回值
      */
     @DeleteMapping("/{addressId}")
+    @Log("用户删除地址")
     @Operation(summary = "用户删除地址")
     public Result deleteAddress(@PathVariable Long addressId){
         log.info("用户：{}删除地址：{}",StpUtil.getLoginIdAsLong(),addressId);

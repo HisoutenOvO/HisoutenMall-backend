@@ -1,6 +1,7 @@
 package cn.hisouten.mall.user.controller.merchant;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.MerchantUpdateDTO;
 import cn.hisouten.mall.user.pojo.dto.PasswordUpdateDTO;
@@ -42,6 +43,7 @@ public class MerchantController {
      * @return 返回值
      */
     @PutMapping("/profile")
+    @Log("商家端修改信息")
     @Operation(summary = "商家修改信息")
     public Result updateInfo(@RequestBody MerchantUpdateDTO merchantUpdateDTO){
         Long merchantId = StpUtil.getLoginIdAsLong();
@@ -57,6 +59,7 @@ public class MerchantController {
      * @return 返回值
      */
     @PutMapping("/password")
+    @Log("商家端修改密码")
     @Operation(summary = "商家修改密码")
     public Result updatePwd(@RequestBody PasswordUpdateDTO passwordUpdateDTO){
         Long merchantId = StpUtil.getLoginIdAsLong();

@@ -1,6 +1,7 @@
 package cn.hisouten.mall.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.UserCartAddDTO;
 import cn.hisouten.mall.pojo.dto.UserCartItemDeleteDTO;
@@ -28,6 +29,7 @@ public class CartController {
      * @return 返回值
      */
     @PostMapping
+    @Log("新增购物车")
     @Operation(summary = "用户新增购物车")
     public Result addCart(@RequestBody UserCartAddDTO userCartAddDTO){
         Long userId = StpUtil.getLoginIdAsLong();
@@ -57,6 +59,7 @@ public class CartController {
      * @return 返回值
      */
     @PutMapping("/{cartItemId}/quantity")
+    @Log("修改购物车数量")
     @Operation(summary = "用户修改购物车商品数量")
     public Result updateQuantity(@PathVariable Long cartItemId,@RequestParam Integer quantity){
         Long userId = StpUtil.getLoginIdAsLong();
@@ -72,6 +75,7 @@ public class CartController {
      * @return 返回值
      */
     @PutMapping("/{cartItemId}/checked")
+    @Log("勾选单条购物车记录")
     @Operation(summary = "单条勾选")
     public Result updateChecked(@PathVariable Long cartItemId,@RequestParam Integer checked){
         Long userId = StpUtil.getLoginIdAsLong();
@@ -87,6 +91,7 @@ public class CartController {
      * @return 返回值
      */
     @PutMapping("/check-all")
+    @Log("全选与否")
     @Operation(summary = "全选或全不选")
     public Result checkAll(@RequestParam Integer checked){
         log.info("全选或全不选购物车项");
@@ -100,6 +105,7 @@ public class CartController {
      * @return 返回值
      */
     @DeleteMapping
+    @Log("批量删除购物车")
     @Operation(summary = "批量删除购物车数据")
     public Result deleteBatch(@RequestBody UserCartItemDeleteDTO userCartItemDeleteDTO){
         Long userId = StpUtil.getLoginIdAsLong();
