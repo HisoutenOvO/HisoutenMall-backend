@@ -1,4 +1,4 @@
-package cn.hisouten.mall.user.controller;
+package cn.hisouten.mall.user.controller.merchant;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.pojo.Result;

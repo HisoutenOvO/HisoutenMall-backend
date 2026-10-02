@@ -3,6 +3,7 @@ package cn.hisouten.mall.user.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.exception.BizException;
+import cn.hisouten.mall.user.mapper.AdminProfileMapper;
 import cn.hisouten.mall.user.mapper.AuthMapper;
 import cn.hisouten.mall.user.mapper.MerchantProfileMapper;
 import cn.hisouten.mall.user.mapper.UserProfileMapper;
@@ -11,10 +12,12 @@ import cn.hisouten.mall.user.pojo.dto.MerchantLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.MerchantRegisterDTO;
 import cn.hisouten.mall.user.pojo.dto.UserLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.UserRegisterDTO;
+import cn.hisouten.mall.user.pojo.entity.AdminProfile;
 import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
 import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.entity.UserProfile;
 import cn.hisouten.mall.user.pojo.vo.LoginVO;
+import cn.hisouten.mall.user.pojo.vo.UserInfoVO;
 import cn.hisouten.mall.user.service.AuthService;
 import cn.hutool.crypto.digest.BCrypt;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +34,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthMapper authMapper;
     private final UserProfileMapper userProfileMapper;
     private final MerchantProfileMapper merchantProfileMapper;
+    private final AdminProfileMapper adminProfileMapper;
 
     /**
      * 商家登录
@@ -82,6 +86,49 @@ public class AuthServiceImpl implements AuthService {
         profile.setContactPhone(merchantRegisterDTO.getContactPhone());
         profile.setAuditStatus(ENABLED); //默认通过，后期改成管理员审核
         merchantProfileMapper.insert(profile);
+    }
+
+    /**
+     * 查询当前用户信息
+     * @param userId 用户if
+     * @return 返回值
+     */
+    @Override
+    public UserInfoVO infoQuery(Long userId) {
+        User user = authMapper.selectById(userId);
+        if(user == null){
+            throw new BizException(USER_NOT_FOUND);
+        }
+        UserInfoVO userInfoVO = new UserInfoVO();
+        userInfoVO.setUserId(userId);
+        userInfoVO.setUsername(user.getUsername());
+        userInfoVO.setRole(user.getRole());
+
+        //根据角色分别注入信息
+        if(user.getRole() == USER_ROLE){
+            UserProfile userProfile = userProfileMapper.selectProfileByUserId(userId);
+            if(userProfile != null) {
+                userInfoVO.setNickname(userProfile.getNickname());
+                userInfoVO.setAvatar(userProfile.getAvatar());
+                userInfoVO.setEmail(userProfile.getEmail());
+                userInfoVO.setPhone(userProfile.getPhone());
+            }
+        }else if(user.getRole() == MERCHANT_ROLE){
+            MerchantProfile merchantProfile = merchantProfileMapper.selectProfileByMerchantId(userId);
+            if(merchantProfile != null){
+                userInfoVO.setShopName(merchantProfile.getShopName());
+                userInfoVO.setShopLogo(merchantProfile.getShopLogo());
+                userInfoVO.setAuditStatus(merchantProfile.getAuditStatus());
+
+            }
+        }else if(user.getRole() == ADMIN_ROLE){
+            AdminProfile adminProfile = adminProfileMapper.selectProfileByUserId(userId);
+            if(adminProfile != null){
+                userInfoVO.setRealName(adminProfile.getRealName());
+                userInfoVO.setAdminLevel(adminProfile.getAdminLevel());
+            }
+        }
+        return userInfoVO;
     }
 
     /**

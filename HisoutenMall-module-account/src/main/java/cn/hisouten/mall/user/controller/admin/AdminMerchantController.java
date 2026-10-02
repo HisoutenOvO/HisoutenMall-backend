@@ -1,4 +1,4 @@
-package cn.hisouten.mall.user.controller;
+package cn.hisouten.mall.user.controller.admin;
 
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;

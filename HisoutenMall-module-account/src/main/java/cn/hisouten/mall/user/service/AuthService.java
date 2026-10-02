@@ -6,6 +6,7 @@ import cn.hisouten.mall.user.pojo.dto.MerchantRegisterDTO;
 import cn.hisouten.mall.user.pojo.dto.UserLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.UserRegisterDTO;
 import cn.hisouten.mall.user.pojo.vo.LoginVO;
+import cn.hisouten.mall.user.pojo.vo.UserInfoVO;
 
 public interface AuthService {
     /**
@@ -40,4 +41,11 @@ public interface AuthService {
      * @param merchantRegisterDTO 商家注册参数
      */
     void merchantRegister(MerchantRegisterDTO merchantRegisterDTO);
+
+    /**
+     * 查询当前用户信息
+     * @param userId 用户if
+     * @return 返回值
+     */
+    UserInfoVO infoQuery(Long userId);
 }

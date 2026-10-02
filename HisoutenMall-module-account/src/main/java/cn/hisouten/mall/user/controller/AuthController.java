@@ -1,6 +1,7 @@
 package cn.hisouten.mall.user.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.AdminLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.MerchantLoginDTO;
@@ -8,11 +9,13 @@ import cn.hisouten.mall.user.pojo.dto.MerchantRegisterDTO;
 import cn.hisouten.mall.user.pojo.dto.UserLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.UserRegisterDTO;
 import cn.hisouten.mall.user.pojo.vo.LoginVO;
+import cn.hisouten.mall.user.pojo.vo.UserInfoVO;
 import cn.hisouten.mall.user.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -92,6 +95,31 @@ public class AuthController {
         log.info("用户登录：{}",userRegisterDTO.getUsername());
         authService.userRegister(userRegisterDTO);
         return Result.success();
+    }
+
+    /**
+     * 通用登出接口
+     * @return 返回值
+     */
+    @PostMapping("/logout")
+    @Operation(summary = "通用登出接口")
+    public Result logout(){
+        log.info("用户：{}登出", StpUtil.getLoginIdAsLong());
+        StpUtil.logout();
+        return Result.success();
+    }
+
+    /**
+     * 返回当前用户信息
+     * @return 返回值
+     */
+    @GetMapping("/info")
+    @Operation(summary = "返回当前用户信息")
+    public Result<UserInfoVO> infoQuery(){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("返回当前用户：{}信息",userId);
+        UserInfoVO userInfoVO = authService.infoQuery(userId);
+        return Result.success(userInfoVO);
     }
 
 }
