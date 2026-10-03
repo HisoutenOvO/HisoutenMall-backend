@@ -42,4 +42,6 @@ public class MerchantProductPageResultVO {
     private Integer totalStock;
 
     private LocalDateTime updateTime;
+
+    private Integer deleted;
 }

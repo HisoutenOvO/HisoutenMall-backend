@@ -75,8 +75,9 @@ public class ProductServiceImpl implements ProductService {
                     .mainImage(bo.getMainImage())
                     .status(bo.getStatus())
                     .updateTime(bo.getUpdateTime())
-                    .minPrice(bo.getMinPrice()).
-                    totalStock(bo.getTotalStock())
+                    .minPrice(bo.getMinPrice())
+                    .totalStock(bo.getTotalStock())
+                    .deleted(bo.getDeleted())
                     .build();
             records.add(vo);
         }
@@ -90,16 +91,7 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public MerchantProductDetailVO merchantDetailQuery(Long productId) {
-        //可以查询被删除的记录详情，便于修改后重新恢复删除
-        Product product = productMapper.selectByIdIgnoreLogic(productId);
-        //如果商品不存在或已被逻辑删除，抛出异常
-        if(product == null) {
-            throw new BizException(PRODUCT_NOT_FOUND);
-        }
-        //权限审查
-        if(!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())){
-            throw new BizException(NO_PERMISSION);
-        }
+        Product product = checkProductOwnership(productId);
         MerchantProductDetailVO merchantProductDetailVO = new MerchantProductDetailVO();
         BeanUtils.copyProperties(product, merchantProductDetailVO);
         String categoryName = categoryService.getCategoryNameByCategoryId(product.getCategoryId());
@@ -142,6 +134,7 @@ public class ProductServiceImpl implements ProductService {
         }
         BeanUtils.copyProperties(merchantProductAddDTO,product);
         product.setMerchantId(StpUtil.getLoginIdAsLong());
+        product.setStatus(DISABLED);
         productMapper.insert(product);
 
         //增加新的sku
@@ -280,13 +273,7 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public void recoveryProduct(Long productId) {
-        Product product = productMapper.selectByIdIgnoreLogic(productId);
-        if (product == null) {
-            throw new BizException(PRODUCT_NOT_FOUND);
-        }
-        if (!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
-            throw new BizException(NO_PERMISSION);
-        }
+        Product product = checkProductOwnership(productId);
         //判断恢复后的品牌或分类是否还存在，不存在则报错
         Brand brand = productMapper.getBrandByProductId(productId);
         if(brand == null || brand.getStatus() == DISABLED || brand.getDeleted() == ENABLED){
@@ -310,13 +297,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public void deleteProduct(Long productId) {
-        Product product = productMapper.selectByIdIgnoreLogic(productId);
-        if (product == null) {
-            throw new BizException(PRODUCT_NOT_FOUND);
-        }
-        if (!product.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
-            throw new BizException(NO_PERMISSION);
-        }
+        Product product = checkProductOwnership(productId);
         //若未被逻辑删除则不可物理删除
         if(product.getDeleted() != ENABLED){
             throw new BizException(LOGIC_DELETE_PRODUCT_BEFORE_PHYSICAL);
@@ -332,7 +313,7 @@ public class ProductServiceImpl implements ProductService {
      * @return
      */
     private Product checkProductOwnership(Long productId){
-        Product product = productMapper.selectById(productId);
+        Product product = productMapper.selectByIdIgnoreLogic(productId);
         //如果商品不存在或已被逻辑删除，抛出异常
         if(product == null) {
             throw new BizException(PRODUCT_NOT_FOUND);
@@ -651,7 +632,7 @@ public class ProductServiceImpl implements ProductService {
         if (sku == null) {
             throw new BizException(SKU_NOT_FOUND);
         }
-        Product product = productMapper.selectById(sku.getProductId());
+        Product product = productMapper.selectByIdIgnoreLogic(sku.getProductId());
         if(product == null){
             throw new BizException(PRODUCT_NOT_FOUND);
         }

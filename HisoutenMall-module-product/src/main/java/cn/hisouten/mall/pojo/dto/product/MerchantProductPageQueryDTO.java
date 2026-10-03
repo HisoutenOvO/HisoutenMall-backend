@@ -18,4 +18,6 @@ public class MerchantProductPageQueryDTO extends BasePageQuery {
     private Long brandId;
 
     private Integer status;
+
+    private Integer deleted;
 }
