@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 
+@TableName("`order`")
 public class Order {
     @TableId(type = IdType.AUTO)
     private Long id;

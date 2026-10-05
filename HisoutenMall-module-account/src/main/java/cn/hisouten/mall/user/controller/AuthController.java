@@ -4,11 +4,7 @@ import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.pojo.Result;
-import cn.hisouten.mall.user.pojo.dto.AdminLoginDTO;
-import cn.hisouten.mall.user.pojo.dto.MerchantLoginDTO;
-import cn.hisouten.mall.user.pojo.dto.MerchantRegisterDTO;
-import cn.hisouten.mall.user.pojo.dto.UserLoginDTO;
-import cn.hisouten.mall.user.pojo.dto.UserRegisterDTO;
+import cn.hisouten.mall.user.pojo.dto.*;
 import cn.hisouten.mall.user.pojo.vo.LoginVO;
 import cn.hisouten.mall.user.pojo.vo.UserInfoVO;
 import cn.hisouten.mall.user.service.AuthService;
@@ -16,10 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -127,6 +120,22 @@ public class AuthController {
         log.info("返回当前用户：{}信息",userId);
         UserInfoVO userInfoVO = authService.infoQuery(userId);
         return Result.success(userInfoVO);
+    }
+
+
+    /**
+     * 修改密码
+     * @param passwordUpdateDTO 密码
+     * @return 返回值
+     */
+    @PutMapping("/password")
+    @Log("修改密码")
+    @Operation(summary = "用户修改密码")
+    public Result updatePwd(@RequestBody PasswordUpdateDTO passwordUpdateDTO){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户：{}修改密码",userId);
+        authService.updatePwd(userId, passwordUpdateDTO);
+        return Result.success();
     }
 
 }

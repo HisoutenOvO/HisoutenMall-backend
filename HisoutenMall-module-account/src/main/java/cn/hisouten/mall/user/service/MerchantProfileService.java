@@ -27,10 +27,5 @@ public interface MerchantProfileService {
      */
     void updateInfo(Long merchantId, MerchantUpdateDTO merchantUpdateDTO);
 
-    /**
-     * 商家修改密码
-     * @param merchantId 商家id
-     * @param passwordUpdateDTO 修改密码参数
-     */
-    void updatePwd(Long merchantId, PasswordUpdateDTO passwordUpdateDTO);
+
 }

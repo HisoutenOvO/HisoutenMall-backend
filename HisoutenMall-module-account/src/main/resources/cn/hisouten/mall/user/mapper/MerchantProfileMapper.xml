@@ -8,6 +8,7 @@
         left join merchant_profile mp
         on u.id = mp.user_id
         <where>
+               and u.role = 2
             <if test="dto.keyword != null and dto.keyword != ''">
                 and username like concat('%',#{dto.keyword},'%')
             </if>
@@ -28,5 +29,24 @@
         left join merchant_profile mp
         on u.id = mp.user_id
         where u.id = #{merchantId}
+    </select>
+    <select id="selectExistedShopNameExceptSelf" resultType="java.lang.String">
+        select shop_name from merchant_profile
+        <where>
+            shop_name = #{shopName}
+            <if test="merchantId != null">
+                and user_id != #{merchantId}
+            </if>
+        </where>
+    </select>
+    <select id="selectExistedContactPhoneExceptSelf" resultType="java.lang.String">
+        select contact_phone from merchant_profile
+            <where>
+                contact_phone = #{contactPhone}
+        <if test="userId != null">
+            and user_id != #{userId}
+        </if>
+            </where>
+
     </select>
 </mapper>

@@ -26,16 +26,14 @@ public interface MerchantProfileMapper extends BaseMapper<MerchantProfile> {
      * @param shopName 注册的店名
      * @return 可能存在的店名
      */
-    @Select("select shop_name from merchant_profile where shop_name = #{shopName}")
-    String selectExistedShopName(String shopName);
+    String selectExistedShopNameExceptSelf(String shopName,Long merchantId);
 
     /**
      * 查询是否有重复的联系电话
      * @param contactPhone 注册的联系电话
      * @return 可能存在的联系电话
      */
-    @Select("select contact_phone from merchant_profile where contact_phone = #{contactPhone}")
-    String selectExistedContactPhone(String contactPhone);
+    String selectExistedContactPhoneExceptSelf(String contactPhone,Long userId);
 
     /**
      * 分页查询商家

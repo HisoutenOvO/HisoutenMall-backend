@@ -1,10 +1,6 @@
 package cn.hisouten.mall.user.service;
 
-import cn.hisouten.mall.user.pojo.dto.AdminLoginDTO;
-import cn.hisouten.mall.user.pojo.dto.MerchantLoginDTO;
-import cn.hisouten.mall.user.pojo.dto.MerchantRegisterDTO;
-import cn.hisouten.mall.user.pojo.dto.UserLoginDTO;
-import cn.hisouten.mall.user.pojo.dto.UserRegisterDTO;
+import cn.hisouten.mall.user.pojo.dto.*;
 import cn.hisouten.mall.user.pojo.vo.LoginVO;
 import cn.hisouten.mall.user.pojo.vo.UserInfoVO;
 
@@ -48,4 +44,11 @@ public interface AuthService {
      * @return 返回值
      */
     UserInfoVO infoQuery(Long userId);
+
+    /**
+     * 修改密码
+     * @param userId 用户id
+     * @param passwordUpdateDTO 密码
+     */
+    void updatePwd(Long userId, PasswordUpdateDTO passwordUpdateDTO);
 }

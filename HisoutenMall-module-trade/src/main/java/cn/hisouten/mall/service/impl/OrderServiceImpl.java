@@ -185,15 +185,23 @@ public class OrderServiceImpl implements OrderService {
         long total = result.getTotal();
         //再查询每个订单的具体项
         List<Long> orderIds = result.getRecords().stream().map(UserOrderPageResultVO::getId).toList();
-        List<OrderItemVO> itemVOList = orderItemMapper.selectByOrderIds(orderIds);
+        List<OrderItemVO> itemVOList = null;
+        if (!orderIds.isEmpty()) {
+            itemVOList = orderItemMapper.selectByOrderIds(orderIds);
+        }
 
         //按订单id分组
-        Map<Long,List<OrderItemVO>> group = itemVOList.stream().collect(Collectors.groupingBy(OrderItemVO::getOrderId));
-
+        Map<Long,List<OrderItemVO>> group = null;
+        if (itemVOList != null) {
+            group = itemVOList.stream().collect(Collectors.groupingBy(OrderItemVO::getOrderId));
+        }
         //给每组进行组装
         List<UserOrderPageResultVO> records = result.getRecords();
         for (UserOrderPageResultVO record : records) {
-            List<OrderItemVO> items = group.get(record.getId());   // 从 Map 里取
+            List<OrderItemVO> items = null;
+            if (group != null && !group.isEmpty()) {
+                items = group.get(record.getId());
+            }
             if(items == null){
                 items = new ArrayList<>();
             }
@@ -247,15 +255,23 @@ public class OrderServiceImpl implements OrderService {
 
         //拼装订单项
         List<Long> orderIds = result.getRecords().stream().map(MerchantOrderPageResultVO::getId).toList();
-        List<OrderItemVO> itemVOList = orderItemMapper.selectByOrderIds(orderIds);
+        List<OrderItemVO> itemVOList = null;
+        if (!orderIds.isEmpty()) {
+            itemVOList = orderItemMapper.selectByOrderIds(orderIds);
+        }
 
         //分组
-        Map<Long,List<OrderItemVO>> group = itemVOList.stream().collect(Collectors.groupingBy(OrderItemVO::getOrderId));
-
+        Map<Long,List<OrderItemVO>> group = null;
+        if (itemVOList != null) {
+            group = itemVOList.stream().collect(Collectors.groupingBy(OrderItemVO::getOrderId));
+        }
         //每组进行操作
         List<MerchantOrderPageResultVO> records = result.getRecords();
         for (MerchantOrderPageResultVO record : records) {
-            List<OrderItemVO> items = group.get(record.getId());
+            List<OrderItemVO> items = null;
+            if (group != null && !group.isEmpty()) {
+                items = group.get(record.getId());
+            }
             if(items == null){
                 items = new ArrayList<>();
             }
@@ -326,11 +342,20 @@ public class OrderServiceImpl implements OrderService {
         Page<AdminOrderPageResultVO> result = orderMapper.AdminPageQuery(page,adminOrderPageQueryDTO);
         long total = result.getTotal();
         List<Long> orderIds = result.getRecords().stream().map(AdminOrderPageResultVO::getId).toList();
-        List<OrderItemVO> itemVOList = orderItemMapper.selectByOrderIds(orderIds);
-        Map<Long,List<OrderItemVO>> group = itemVOList.stream().collect(Collectors.groupingBy(OrderItemVO::getOrderId));
+        List<OrderItemVO> itemVOList = null;
+        if (!orderIds.isEmpty()) {
+            itemVOList = orderItemMapper.selectByOrderIds(orderIds);
+        }
+        Map<Long,List<OrderItemVO>> group = null;
+        if (itemVOList != null) {
+            group = itemVOList.stream().collect(Collectors.groupingBy(OrderItemVO::getOrderId));
+        }
         List<AdminOrderPageResultVO> records = result.getRecords();
         for (AdminOrderPageResultVO record : records) {
-            List<OrderItemVO> items = group.get(record.getId());
+            List<OrderItemVO> items = null;
+            if (group != null && !group.isEmpty()) {
+                items = group.get(record.getId());
+            }
             if(items == null){
                 items = new ArrayList<>();
             }
@@ -412,7 +437,7 @@ public class OrderServiceImpl implements OrderService {
         //4. 清空购物车
         if (clearCartItemIds != null && !clearCartItemIds.isEmpty()) {
             cartItemMapper.deleteBatchIds(clearCartItemIds);
-        };
+        }
         //5. 返回订单号和金额
         BigDecimal totalAmount = totalAmountList.stream().reduce(BigDecimal.ZERO,BigDecimal::add);
         return new UserOrderCreateVO(orderNos,totalAmount);

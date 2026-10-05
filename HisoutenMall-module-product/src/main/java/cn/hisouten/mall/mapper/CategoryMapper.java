@@ -34,7 +34,7 @@ public interface CategoryMapper extends BaseMapper<Category> {
      * @param categoryId 分类id
      * @return 返回子分类数量
      */
-    @Select("select count(0) from category where parent_id = #{categoryId}")
+    @Select("select count(0) from category where parent_id = #{categoryId} and deleted = 0x")
     Integer getChildCategoryCount(Long categoryId);
 
     /**

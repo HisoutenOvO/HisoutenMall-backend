@@ -8,7 +8,7 @@
         left join merchant_profile m on o.merchant_id = m.user_id
         <where>
             <if test="dto.keyword != null and dto.keyword != ''">
-                and keyword = #{dto.keyword}
+                and order_no = #{dto.keyword}
             </if>
             <if test="dto.status != null ">
                 and keyword = #{dto.status}
@@ -19,23 +19,24 @@
     </select>
     <select id="MerchantPageQuery" resultType="cn.hisouten.mall.pojo.vo.MerchantOrderPageResultVO">
         select o.id,o.order_no as orderNo,o.pay_amount as payAmount,o.status,o.create_time as createTime,
-               u.name as buyerName
+               u.nickname as buyerName
         from `order` o
         left join user_profile u on o.user_id = u.user_id
         <where>
         <if test="dto.keyword != null and dto.keyword != ''">
-            and keyword = #{dto.keyword}
+            and order_no = #{dto.keyword}
         </if>
         <if test="dto.status != null ">
-            and keyword = #{dto.status}
+            and status = #{dto.status}
         </if>
         and deleted = 0 and o.merchant_id = #{merchantId}
-        order by m.create_time desc
+        order by o.create_time desc
         </where>
     </select>
     <select id="AdminPageQuery" resultType="cn.hisouten.mall.pojo.vo.AdminOrderPageResultVO">
         select o.id,o.order_no as orderNo,o.pay_amount as payAmount,o.status,o.create_time as createTime,
-               u.name as buyerName,m.name as merchantName
+               u.nickname as buyerName,m.shop_name as merchantName,o.receiver_name as receiverName,
+               o.receiver_address as receiverAddress,o.receiver_phone as receiverPhone,o.pay_time as payTime
         from `order` o
         left join merchant_profile m on m.user_id = o.merchant_id
         left join user_profile u on o.user_id = u.user_id
@@ -46,7 +47,7 @@
             <if test="dto.status != null ">
                 and keyword = #{dto.status}
             </if>
-            and deleted = 0
+            and o.deleted = 0
             order by m.create_time desc
         </where>
     </select>

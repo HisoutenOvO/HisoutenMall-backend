@@ -50,19 +50,4 @@ public class UserController {
         userProfileService.updateInfo(userId,userUpdateDTO);
         return Result.success();
     }
-
-    /**
-     * 用户修改密码
-     * @param passwordUpdateDTO 密码
-     * @return 返回值
-     */
-    @PutMapping("/password")
-    @Log("用户修改密码")
-    @Operation(summary = "用户修改密码")
-    public Result updatePwd(@RequestBody PasswordUpdateDTO passwordUpdateDTO){
-        Long userId = StpUtil.getLoginIdAsLong();
-        log.info("用户：{}修改密码",userId);
-        userProfileService.updatePwd(userId, passwordUpdateDTO);
-        return Result.success();
-    }
 }

@@ -32,6 +32,7 @@ public class OrderTimeoutTask {
     @Scheduled(cron = "0 * * * * ?")
     @Transactional
     public void closeTimeOutOrders(){
+        log.info("扫描超时订单中……");
         //截止时间
         LocalDateTime deadLineTime = LocalDateTime.now().minusMinutes(30);
         List<Order> orderList = orderMapper.selectByCreateTime(deadLineTime);

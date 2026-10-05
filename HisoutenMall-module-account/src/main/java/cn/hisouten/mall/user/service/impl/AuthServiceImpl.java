@@ -7,11 +7,7 @@ import cn.hisouten.mall.user.mapper.AdminProfileMapper;
 import cn.hisouten.mall.user.mapper.AuthMapper;
 import cn.hisouten.mall.user.mapper.MerchantProfileMapper;
 import cn.hisouten.mall.user.mapper.UserProfileMapper;
-import cn.hisouten.mall.user.pojo.dto.AdminLoginDTO;
-import cn.hisouten.mall.user.pojo.dto.MerchantLoginDTO;
-import cn.hisouten.mall.user.pojo.dto.MerchantRegisterDTO;
-import cn.hisouten.mall.user.pojo.dto.UserLoginDTO;
-import cn.hisouten.mall.user.pojo.dto.UserRegisterDTO;
+import cn.hisouten.mall.user.pojo.dto.*;
 import cn.hisouten.mall.user.pojo.entity.AdminProfile;
 import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
 import cn.hisouten.mall.user.pojo.entity.User;
@@ -72,11 +68,11 @@ public class AuthServiceImpl implements AuthService {
 
         //插入merchant_profile表
         //查询店名和联系电话是否重复
-        String existedShopName = merchantProfileMapper.selectExistedShopName(merchantRegisterDTO.getShopName());
+        String existedShopName = merchantProfileMapper.selectExistedShopNameExceptSelf(merchantRegisterDTO.getShopName(),null);
         if(existedShopName != null){
             throw new BizException(SHOP_NAME_ALREADY_EXIST);
         }
-        String existedContactPhone = merchantProfileMapper.selectExistedContactPhone(merchantRegisterDTO.getContactPhone());
+        String existedContactPhone = merchantProfileMapper.selectExistedContactPhoneExceptSelf(merchantRegisterDTO.getContactPhone(),null);
         if(existedContactPhone != null){
             throw new BizException(CONTACT_PHONE_ALREADY_EXIST);
         }
@@ -214,5 +210,31 @@ public class AuthServiceImpl implements AuthService {
         vo.setToken(StpUtil.getTokenValue());
         vo.setRole(user.getRole());
         return vo;
+    }
+
+
+
+    /**
+     * 修改密码
+     * @param userId 商家id
+     * @param passwordUpdateDTO 修改密码参数
+     */
+    @Override
+    public void updatePwd(Long userId, PasswordUpdateDTO passwordUpdateDTO) {
+        User user = authMapper.selectById(userId);
+        if(user == null){
+            throw new BizException(USER_NOT_FOUND);
+        }
+        // 1. 原密码校验
+        if (!cn.dev33.satoken.secure.BCrypt.checkpw(passwordUpdateDTO.getOldPwd(), user.getPassword())) {
+            throw new BizException(PASSWORD_ERROR);
+        }
+        // 2. 新旧不能相同
+        if (passwordUpdateDTO.getOldPwd().equals(passwordUpdateDTO.getNewPwd())) {
+            throw new BizException(SAME_PASSWORD);
+        }
+        // 3. 加密更新
+        user.setPassword(cn.dev33.satoken.secure.BCrypt.hashpw(passwordUpdateDTO.getNewPwd()));
+        authMapper.updateById(user);
     }
 }

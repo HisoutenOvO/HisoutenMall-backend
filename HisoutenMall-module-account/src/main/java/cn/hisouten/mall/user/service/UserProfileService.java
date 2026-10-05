@@ -19,12 +19,6 @@ public interface UserProfileService {
      */
     void updateInfo(Long userId, UserUpdateDTO userUpdateDTO);
 
-    /**
-     * 用户修改密码
-     * @param userId 用户id
-     * @param passwordUpdateDTO 密码
-     */
-    void updatePwd(Long userId, PasswordUpdateDTO passwordUpdateDTO);
 
     /**
      * 通过用户id查询用户信息

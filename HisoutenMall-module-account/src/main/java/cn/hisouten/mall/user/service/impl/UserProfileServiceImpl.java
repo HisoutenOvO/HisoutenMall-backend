@@ -66,30 +66,6 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     /**
-     * 用户修改密码
-     * @param userId 用户id
-     * @param passwordUpdateDTO 密码
-     */
-    @Override
-    public void updatePwd(Long userId, PasswordUpdateDTO passwordUpdateDTO) {
-        User user = authMapper.selectById(userId);
-        if(user == null){
-            throw new BizException(USER_NOT_FOUND);
-        }
-        // 1. 原密码校验
-        if (!BCrypt.checkpw(passwordUpdateDTO.getOldPwd(), user.getPassword())) {
-            throw new BizException(PASSWORD_ERROR);
-        }
-        // 2. 新旧不能相同
-        if (passwordUpdateDTO.getOldPwd().equals(passwordUpdateDTO.getNewPwd())) {
-            throw new BizException(SAME_PASSWORD);
-        }
-        // 3. 加密更新
-        user.setPassword(BCrypt.hashpw(passwordUpdateDTO.getNewPwd()));
-        authMapper.updateById(user);
-    }
-
-    /**
      * 通过用户id查询用户名称
      * @param userId 用户主表id
      * @return 返回值

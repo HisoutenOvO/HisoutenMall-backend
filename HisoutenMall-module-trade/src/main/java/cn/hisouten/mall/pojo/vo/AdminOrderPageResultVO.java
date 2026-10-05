@@ -25,5 +25,13 @@ public class AdminOrderPageResultVO {
 
     private LocalDateTime createTime;
 
+    private String receiverName;
+
+    private String receiverPhone;
+
+    private String receiverAddress;
+
+    private String payTime;
+
     private List<OrderItemVO> items;
 }

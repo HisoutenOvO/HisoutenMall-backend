@@ -72,11 +72,11 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
             throw new BizException(USER_NOT_FOUND);
         }
         //查询店名和联系电话是否重复
-        String existedShopName = merchantProfileMapper.selectExistedShopName(merchantUpdateDTO.getShopName());
+        String existedShopName = merchantProfileMapper.selectExistedShopNameExceptSelf(merchantUpdateDTO.getShopName(),merchantProfile.getUserId());
         if(existedShopName != null){
             throw new BizException(SHOP_NAME_ALREADY_EXIST);
         }
-        String existedContactPhone = merchantProfileMapper.selectExistedContactPhone(merchantUpdateDTO.getContactPhone());
+        String existedContactPhone = merchantProfileMapper.selectExistedContactPhoneExceptSelf(merchantUpdateDTO.getContactPhone(),merchantProfile.getUserId());
         if(existedContactPhone != null){
             throw new BizException(CONTACT_PHONE_ALREADY_EXIST);
         }
@@ -84,27 +84,5 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
         merchantProfileMapper.updateById(merchantProfile);
     }
 
-    /**
-     * 商家修改密码
-     * @param merchantId 商家id
-     * @param passwordUpdateDTO 修改密码参数
-     */
-    @Override
-    public void updatePwd(Long merchantId, PasswordUpdateDTO passwordUpdateDTO) {
-        User user = authMapper.selectById(merchantId);
-        if(user == null){
-            throw new BizException(USER_NOT_FOUND);
-        }
-        // 1. 原密码校验
-        if (!BCrypt.checkpw(passwordUpdateDTO.getOldPwd(), user.getPassword())) {
-            throw new BizException(PASSWORD_ERROR);
-        }
-        // 2. 新旧不能相同
-        if (passwordUpdateDTO.getOldPwd().equals(passwordUpdateDTO.getNewPwd())) {
-            throw new BizException(SAME_PASSWORD);
-        }
-        // 3. 加密更新
-        user.setPassword(BCrypt.hashpw(passwordUpdateDTO.getNewPwd()));
-        authMapper.updateById(user);
-    }
+
 }

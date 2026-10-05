@@ -2,23 +2,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.hisouten.mall.user.mapper.UserProfileMapper">
     <select id="pageQuery" resultType="cn.hisouten.mall.user.pojo.vo.AdminUserPageResultVO">
-        select u.username,u.status,u.create_time,u.update_time,u.deleted,
+        select u.id,u.username,u.status,u.create_time,u.update_time,u.deleted,
                up.nickname,up.avatar,up.phone,up.email,up.gender,up.birthday
         from user u
         left join user_profile up
         on u.id = up.user_id
         <where>
+            and u.role = 1
             <if test="dto.deleted != null">
-                and deleted = #{dto.deleted}
+                and u.deleted = #{dto.deleted}
             </if>
             <if test="dto.keyword != null and dto.keyword !=''">
-                and nickname like concat('%',#{dto.keyword},'%')
+                and up.nickname like concat('%',#{dto.keyword},'%')
             </if>
             <if test="dto.status != null">
-                and status = #{status}
+                and u.status = #{dto.status}
             </if>
             <if test="dto.gender != null">
-                and gender = #{gender}
+                and up.gender = #{dto.gender}
             </if>
         </where>
         order by u.create_time desc
