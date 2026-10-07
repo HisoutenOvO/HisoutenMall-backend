@@ -9,6 +9,7 @@ import cn.hisouten.mall.user.pojo.entity.UserAddress;
 import cn.hisouten.mall.user.pojo.vo.UserAddressDetailVO;
 import cn.hisouten.mall.user.pojo.vo.UserAddressListVO;
 import cn.hisouten.mall.user.service.UserAddressService;
+import cn.hisouten.mall.util.CacheClientUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -16,14 +17,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
+import static cn.hisouten.mall.constant.RedisConstant.CACHE_ADDRESS_DETAIL_PREFIX;
+import static cn.hisouten.mall.constant.RedisConstant.CACHE_ADDRESS_DETAIL_TTL;
 import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
 
 @Service
 @RequiredArgsConstructor
 public class UserAddressServiceImpl implements UserAddressService {
     private final UserAddressMapper userAddressMapper;
+    private final CacheClientUtils cacheClientUtils;
 
 
     /**
@@ -56,6 +61,17 @@ public class UserAddressServiceImpl implements UserAddressService {
      */
     @Override
     public UserAddressDetailVO detailQuery(Long addressId) {
+        return cacheClientUtils.queryWithPassThrough(
+                CACHE_ADDRESS_DETAIL_PREFIX,
+                addressId,
+                UserAddressDetailVO.class,
+                this::loadDetailFromDB,
+                CACHE_ADDRESS_DETAIL_TTL,
+                TimeUnit.MINUTES
+        );
+    }
+
+    private UserAddressDetailVO loadDetailFromDB(Long addressId){
         UserAddress userAddress = userAddressMapper.selectById(addressId);
         if(userAddress == null){
             throw new BizException(ADDRESS_NOT_FOUND);

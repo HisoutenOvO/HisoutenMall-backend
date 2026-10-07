@@ -17,12 +17,15 @@ import cn.hisouten.mall.service.BrandService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
+import static cn.hisouten.mall.constant.RedisConstant.*;
 import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
 import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
 
@@ -38,6 +41,7 @@ public class BrandServiceImpl implements BrandService {
      * @return 品牌名称
      */
     @Override
+    @Cacheable(cacheNames = CACHE_BRAND_NAME_PREFIX, key = "#brandId")
     public String getBrandNameByBrandId(Long brandId) {
         return brandMapper.getBrandNameByBrandId(brandId);
     }
@@ -47,6 +51,7 @@ public class BrandServiceImpl implements BrandService {
      * @return 返回值
      */
     @Override
+    @Cacheable(cacheNames = CACHE_BRAND_PREFIX, key = "'list'")
     public List<BrandListVO> listQuery() {
         List<Brand> brandList = brandMapper.selectBrandList();
         List<BrandListVO> brandVOList = new ArrayList<>();
@@ -118,6 +123,7 @@ public class BrandServiceImpl implements BrandService {
      * @param adminBrandAddDTO 新增品牌参数
      */
     @Override
+    @CacheEvict(value = CACHE_BRAND_PREFIX, allEntries = true)
     public void addBrand(AdminBrandAddDTO adminBrandAddDTO) {
         Brand brand = new Brand();
         String existedName = brandMapper.getExistName(adminBrandAddDTO.getName(),null);
@@ -133,6 +139,7 @@ public class BrandServiceImpl implements BrandService {
      * @param adminBrandUpdateDTO 修改参数
      */
     @Override
+    @CacheEvict(value = CACHE_BRAND_PREFIX, allEntries = true)
     public void updateBrand(Long brandId, AdminBrandUpdateDTO adminBrandUpdateDTO) {
         Brand brand = brandMapper.selectById(brandId);
         if(brand == null){
@@ -152,6 +159,7 @@ public class BrandServiceImpl implements BrandService {
      * @param status 状态
      */
     @Override
+    @CacheEvict(value = CACHE_BRAND_PREFIX, allEntries = true)
     public void changeStatus(Long brandId,Integer status) {
         Brand brand = brandMapper.selectById(brandId);
         if(brand == null){
@@ -166,6 +174,7 @@ public class BrandServiceImpl implements BrandService {
      * @param brandId 品牌id
      */
     @Override
+    @CacheEvict(value = CACHE_BRAND_PREFIX, allEntries = true)
     public void logicDelete(Long brandId) {
         Brand brand = brandMapper.selectById(brandId);
         if(brand == null){

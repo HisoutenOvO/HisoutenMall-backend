@@ -16,6 +16,7 @@ import cn.hisouten.mall.pojo.vo.product.*;
 import cn.hisouten.mall.service.BrandService;
 import cn.hisouten.mall.service.CategoryService;
 import cn.hisouten.mall.service.ProductService;
+import cn.hisouten.mall.util.CacheClientUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -26,8 +27,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
+import static cn.hisouten.mall.constant.RedisConstant.*;
 import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
 import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
 
@@ -41,6 +44,8 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryService categoryService;
     private final BrandService brandService;
 
+    //注入工具类
+    private final CacheClientUtils cacheClientUtils;
     //=======================================商家端逻辑================================================
 
     /**
@@ -91,6 +96,18 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public MerchantProductDetailVO merchantDetailQuery(Long productId) {
+        return cacheClientUtils.queryWithLogicExpire(
+                CACHE_PRODUCT_DETAIL_PREFIX,
+                LOCK_PRODUCT_DETAIL_PREFIX,
+                productId,
+                MerchantProductDetailVO.class,
+                this::loadMerchantProductDetailFromDB,
+                CACHE_PRODUCT_DETAIL_TTL,
+                TimeUnit.MINUTES
+        );
+    }
+
+    private MerchantProductDetailVO loadMerchantProductDetailFromDB(Long productId){
         Product product = checkProductOwnership(productId);
         MerchantProductDetailVO merchantProductDetailVO = new MerchantProductDetailVO();
         BeanUtils.copyProperties(product, merchantProductDetailVO);
@@ -426,6 +443,24 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public UserProductDetailVO userDetailQuery(Long productId) {
+        //逻辑过期方法，防止被击穿
+        return cacheClientUtils.queryWithLogicExpire(
+                CACHE_PRODUCT_DETAIL_PREFIX,
+                LOCK_PRODUCT_DETAIL_PREFIX,
+                productId,
+                UserProductDetailVO.class,
+                this::loadUserProductDetailFromDB,
+                CACHE_PRODUCT_DETAIL_TTL,
+                TimeUnit.MINUTES
+        );
+    }
+
+    /**
+     * 用户查询商品详情回源方法
+     * @param productId
+     * @return
+     */
+    private UserProductDetailVO loadUserProductDetailFromDB(Long productId){
         Product product = productMapper.selectById(productId);
         //如果商品不存在或已被逻辑删除，抛出异常
         if(product == null || product.getStatus() != ENABLED){

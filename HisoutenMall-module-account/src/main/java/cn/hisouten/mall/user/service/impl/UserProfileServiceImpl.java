@@ -10,17 +10,25 @@ import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.entity.UserProfile;
 import cn.hisouten.mall.user.pojo.vo.UserDetailVO;
 import cn.hisouten.mall.user.service.UserProfileService;
+import cn.hisouten.mall.util.CacheClientUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.TimeUnit;
+
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
+import static cn.hisouten.mall.constant.RedisConstant.*;
 
 @Service
 @RequiredArgsConstructor
 public class UserProfileServiceImpl implements UserProfileService {
     private final UserProfileMapper userProfileMapper;
     private final AuthMapper authMapper;
+
+    private final CacheClientUtils cacheClientUtils;
 
 
     /**
@@ -30,6 +38,17 @@ public class UserProfileServiceImpl implements UserProfileService {
      */
     @Override
     public UserDetailVO detailQuery(Long userId) {
+        return cacheClientUtils.queryWithPassThrough(
+                CACHE_USER_DETAIL_PREFIX,
+                userId,
+                UserDetailVO.class,
+                this::loadDetailFromDB,
+                CACHE_USER_DETAIL_TTL,
+                TimeUnit.MINUTES
+        );
+    }
+
+    private UserDetailVO loadDetailFromDB(Long userId){
         User user = authMapper.selectById(userId);
         if(user == null){
             throw new BizException(USER_NOT_FOUND);
@@ -49,13 +68,13 @@ public class UserProfileServiceImpl implements UserProfileService {
                 .birthday(userProfile.getBirthday())
                 .build();
     }
-
     /**
      * 用户修改个人信息
      * @param userId 用户id
      * @param userUpdateDTO 修改参数
      */
     @Override
+    @CacheEvict(value = CACHE_USER_NICKNAME_PREFIX, key = "#userId")
     public void updateInfo(Long userId, UserUpdateDTO userUpdateDTO) {
         UserProfile userProfile = userProfileMapper.selectProfileByUserId(userId);
         if(userProfile == null){
@@ -71,6 +90,7 @@ public class UserProfileServiceImpl implements UserProfileService {
      * @return 返回值
      */
     @Override
+    @Cacheable(cacheNames = CACHE_USER_NICKNAME_PREFIX, key = "#userId")
     public String getUserNicknameByUserId(Long userId) {
         return userProfileMapper.selectUserNicknameByUserId(userId);
     }

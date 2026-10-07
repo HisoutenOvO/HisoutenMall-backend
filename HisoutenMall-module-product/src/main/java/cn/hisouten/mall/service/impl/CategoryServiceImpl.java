@@ -10,12 +10,15 @@ import cn.hisouten.mall.pojo.vo.category.*;
 import cn.hisouten.mall.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
+import static cn.hisouten.mall.constant.RedisConstant.*;
 import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
 
 @Service
@@ -30,6 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @return 返回分类列表
      */
     @Override
+    @Cacheable(cacheNames = CACHE_CATEGORY_PREFIX, key = "'list'")
     public List<CategoryListVO> listQuery() {
        List<Category> categoryList = categoryMapper.selectList(null);
        List<CategoryListVO> categoryVOList = new ArrayList<>();
@@ -87,6 +91,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @return 返回值
      */
     @Override
+    @Cacheable(cacheNames = CACHE_CATEGORY_PREFIX, key = "'tree'")
     public List<CategoryTreeVO> treeQueryOthers() {
         List<Category> categoryList = categoryMapper.selectListWithoutRemove();
         //组装树结构，用抽取端方法递归
@@ -113,6 +118,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @param adminCategoryAddDTO 分类参数
      */
     @Override
+    @CacheEvict(value = CACHE_CATEGORY_PREFIX, allEntries = true)
     public void addCategory(AdminCategoryAddDTO adminCategoryAddDTO) {
         //同级同名校验
         String existedName = categoryMapper.selectExistCategoryName(adminCategoryAddDTO.getName(),adminCategoryAddDTO.getParentId(),null);
@@ -146,6 +152,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @param adminCategoryUpdateDTO 修改分类参数
      */
     @Override
+    @CacheEvict(value = CACHE_CATEGORY_PREFIX, allEntries = true)
     public void updateCategory(Long categoryId, AdminCategoryUpdateDTO adminCategoryUpdateDTO) {
         Category category = categoryMapper.selectById(categoryId);
         if(category == null){
@@ -167,6 +174,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @param status 状态
      */
     @Override
+    @CacheEvict(value = CACHE_CATEGORY_PREFIX, allEntries = true)
     public void changeStatus(Long categoryId, Integer status) {
         Category category = categoryMapper.selectById(categoryId);
         if(category == null){
@@ -181,6 +189,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @param categoryId 分类id
      */
     @Override
+    @CacheEvict(value = CACHE_CATEGORY_PREFIX, allEntries = true)
     public void logicDelete(Long categoryId) {
         Category category = categoryMapper.selectById(categoryId);
         if(category == null){
@@ -243,6 +252,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @return 分类名称
      */
     @Override
+    @Cacheable(cacheNames = CACHE_CATEGORY_NAME_PREFIX, key = "#categoryId")
     public String getCategoryNameByCategoryId(Long categoryId) {
         Category category = categoryMapper.selectById(categoryId);
         if(category == null){

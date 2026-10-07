@@ -12,9 +12,13 @@ import cn.hisouten.mall.user.pojo.vo.MerchantDetailVO;
 import cn.hisouten.mall.user.service.MerchantProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
+import static cn.hisouten.mall.constant.RedisConstant.CACHE_BRAND_NAME_PREFIX;
+import static cn.hisouten.mall.constant.RedisConstant.CACHE_MERCHANT_NAME_PREFIX;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +32,7 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
      * @return 商家名称
      */
     @Override
+    @Cacheable(cacheNames = CACHE_MERCHANT_NAME_PREFIX, key = "#merchantId")
     public String getMerchantNameByMerchantId(Long merchantId){
         return merchantProfileMapper.getMerchantNameByMerchantId(merchantId);
     }
@@ -66,6 +71,7 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
      * @param merchantUpdateDTO 修改参数
      */
     @Override
+    @CacheEvict(value = CACHE_MERCHANT_NAME_PREFIX, key = "#merchantId")
     public void updateInfo(Long merchantId, MerchantUpdateDTO merchantUpdateDTO) {
         MerchantProfile merchantProfile = merchantProfileMapper.selectProfileByMerchantId(merchantId);
         if(merchantProfile == null){
