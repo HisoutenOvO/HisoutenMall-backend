@@ -3,6 +3,8 @@ package cn.hisouten.mall.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.*;
+import cn.hisouten.mall.mq.dto.OrderTimeoutMessage;
+import cn.hisouten.mall.mq.producer.MqProducerService;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.CartItemListBO;
 import cn.hisouten.mall.pojo.dto.*;
@@ -16,6 +18,7 @@ import cn.hisouten.mall.user.service.UserAddressService;
 import cn.hisouten.mall.user.service.UserProfileService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,9 +35,11 @@ import java.util.stream.Collectors;
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.PayMethodConstant.WECHAT;
 import static cn.hisouten.mall.constant.StatusConstant.*;
+import static cn.hisouten.mall.mq.constant.MqConstant.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final CartItemMapper cartItemMapper;
@@ -45,6 +50,7 @@ public class OrderServiceImpl implements OrderService {
     private final ProductService productService;
     private final MerchantProfileService merchantProfileService;
     private final UserProfileService userProfileService;
+    private final MqProducerService mqProducerService;
 
 
     /**
@@ -365,6 +371,30 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
+     * 订单超时关闭逻辑
+     * @param orderNo 订单号
+     */
+    @Override
+    @Transactional
+    public void closeTimeoutOrder(String orderNo) {
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        //订单不存在，跳过
+        if (order == null) return;
+        // 已支付或已取消，跳过
+        if (order.getStatus() != PENDING_PAYMENT) return;
+        // 关单
+        order.setStatus(CANCELLED);
+        order.setCancelTime(LocalDateTime.now());
+        orderMapper.updateById(order);
+        // 回滚库存
+        List<OrderItem> items = orderItemMapper.selectByOrderId(order.getId());
+        for (OrderItem item : items) {
+            productService.restoreStock(item.getSkuId(), item.getQuantity());
+        }
+        log.info("[订单超时] 订单 {} 关闭成功，回滚 {} 个 SKU", orderNo, items.size());
+    }
+
+    /**
      * 核心下单逻辑
      * @param userId 用户id
      * @param addressId 地址id
@@ -433,6 +463,15 @@ public class OrderServiceImpl implements OrderService {
                 orderItemMapper.insert(orderItem);
                 }
                 orderNos.add(orderNo);
+            //发送订单创建消息
+            OrderTimeoutMessage message = new OrderTimeoutMessage();
+            message.setOrderNo(orderNo);
+            message.setSendTime(System.currentTimeMillis());
+            mqProducerService.sendDelay(
+                    ORDER_TIMEOUT_TOPIC,
+                    message,
+                    THIRTY_MINUTE_DELAY
+            );
             });
         //4. 清空购物车
         if (clearCartItemIds != null && !clearCartItemIds.isEmpty()) {

@@ -74,4 +74,10 @@ public interface OrderService {
      * @return 返回值
      */
     PageResult<AdminOrderPageResultVO> adminPageQuery(AdminOrderPageQueryDTO adminOrderPageResultDTO);
+
+    /**
+     * 订单超时关闭逻辑
+     * @param orderNo 订单号
+     */
+    void closeTimeoutOrder(String orderNo);
 }
