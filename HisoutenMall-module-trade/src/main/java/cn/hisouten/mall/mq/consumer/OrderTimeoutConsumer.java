@@ -3,6 +3,7 @@ package cn.hisouten.mall.mq.consumer;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mq.constant.MqConstant;
 import cn.hisouten.mall.mq.dto.OrderTimeoutMessage;
+import cn.hisouten.mall.mq.dto.SeckillOrderMessage;
 import cn.hisouten.mall.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,6 @@ public class OrderTimeoutConsumer implements RocketMQListener<OrderTimeoutMessag
         }catch (BizException e){
             // 业务异常(如订单不存在)，不需要重试，记录日志后返回成功
             log.warn("[订单超时消费] 业务异常，不重试 orderNo={}, msg={}", message.getOrderNo(), e.getMessage());
-            return;
         }catch (Exception e){
             // 系统异常(如数据库超时)，抛出触发重试
             log.error("[订单超时消费] 系统异常，将重试 orderNo={}", message.getOrderNo(), e);

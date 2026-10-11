@@ -4,7 +4,6 @@ package cn.hisouten.mall.constant;
  * 异常信息常量类
  */
 public class ExceptionMessageConstant {
-
     public static final String NO_PERMISSION = "无权执行该操作！";
     public static final String SYSTEM_ERROR = "系统错误！";
     public static final String PRODUCT_NOT_FOUND = "商品不存在！";
@@ -45,6 +44,7 @@ public class ExceptionMessageConstant {
     public static final String PASSWORD_ERROR = "原密码错误！";
     public static final String SAME_PASSWORD = "新密码不能和原密码相同！";
     public static final String CHANGE_DEFAULT_ADDRESS_FIRST = "删除默认地址前，请先将其他地址设为默认！";
+    public static final String SET_DEFAULT_ADDRESS_FIRST = "请先设置默认地址！";
     public static final String CHECK_PRODUCT_FIRST = "请先勾选商品再进行结算！";
     public static final String ROLE_NOT_MERCHANT = "该用户角色不是商家，请确认";
     public static final String ROLE_NOT_USER = "该用户角色不是顾客，请确认";
@@ -52,4 +52,8 @@ public class ExceptionMessageConstant {
     public static final String PRODUCT_HAS_DISABLED = "该商品已被下架！";
     public static final String OUT_OF_STOCK = "库存不足！";
     public static final String OUT_OF_CART = "购物车已满！";
+    public static final String SECKILL_HAS_INTERRUPT = "秒杀请求被中断，请重试";
+    public static final String DO_NOT_CLICK_REPEATEDLY = "请勿重复点击过快！";
+    public static final String DO_NOT_ORDER_REPEATEDLY = "请勿重复下单！";
+    public static final String ACTIVITY_INVALID = "活动不在有效时间内";
 }

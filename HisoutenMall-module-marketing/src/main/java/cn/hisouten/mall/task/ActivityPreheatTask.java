@@ -1,0 +1,46 @@
+package cn.hisouten.mall.task;
+
+import cn.hisouten.mall.mapper.SeckillProductMapper;
+import cn.hisouten.mall.pojo.entity.SeckillProduct;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static cn.hisouten.mall.constant.RedisConstant.SECKILL_STOCK;
+
+/**
+ * 秒杀活动预热任务
+ */
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class ActivityPreheatTask {
+
+    private final SeckillProductMapper seckillProductMapper;
+    private final StringRedisTemplate stringRedisTemplate;
+
+
+    /**
+     * 每分钟扫描一次是否有秒杀活动需要预热进redis
+     */
+    @Scheduled(cron = "0 * * * * ?")
+    public void preheatActivity(){
+        log.info("扫描预热活动中……");
+        // 每分钟扫一次
+        List<SeckillProduct> list = seckillProductMapper.selectAboutToStart(5);  // 5分钟内开始的活动
+        for (SeckillProduct sp : list) {
+            String key = SECKILL_STOCK + sp.getSkuId();
+            // 幂等：只有 key 不存在才写
+            Boolean absent = stringRedisTemplate.opsForValue()
+                    .setIfAbsent(key, String.valueOf(sp.getSeckillStock()), 2, TimeUnit.HOURS);
+            if (Boolean.TRUE.equals(absent)) {
+                log.info("[预热] skuId={}, stock={}", sp.getSkuId(), sp.getSeckillStock());
+            }
+        }
+    }
+}

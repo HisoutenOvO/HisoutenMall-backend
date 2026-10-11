@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.hisouten.mall.mapper.SeckillProductMapper">
+    <select id="selectAboutToStart" resultType="cn.hisouten.mall.pojo.entity.SeckillProduct">
+        select sp.*
+        from seckill_product sp
+        left join seckill_activity sa
+        on sa.id = sp.activity_id
+        where TIMESTAMPDIFF(SECOND,NOW(),sa.start_time) &lt; #{time}
+    </select>
+    <select id="selectAllActive">
+        select sp.*
+        from seckill_product sp
+        left join seckill_activity sa
+        on sp.activity_id = sa.id
+        where sa.status = 1
+    </select>
+</mapper>

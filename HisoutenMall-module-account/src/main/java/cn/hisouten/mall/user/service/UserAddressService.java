@@ -56,4 +56,11 @@ public interface UserAddressService {
      * @return 返回值
      */
     UserAddress getById(Long addressId);
+
+    /**
+     * 根据用户id查询默认地址
+     * @param userId 用户id
+     * @return 返回值
+     */
+    UserAddress getDefaultByUserId(Long userId);
 }

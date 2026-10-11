@@ -44,6 +44,14 @@ public class RedisConstant {
     //用户名键前缀
     public static final String CACHE_USER_NICKNAME_PREFIX = "cache:user:nickname:";
 
+    //秒杀订单锁前缀
+    public static final String LOCK_SECKILL_ORDER_PREFIX = "lock:seckill:order:";
+
+    //秒杀库存
+    public static final String SECKILL_STOCK = "seckill:stock:";
+
+    //秒杀用户
+    public static final String SECKILL_USER = "seckill:user:";
 
     //设置空缓存的过期时间——单位是分钟
     public static final long CACHE_NULL_TTL = 2L;

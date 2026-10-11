@@ -171,5 +171,15 @@ public class UserAddressServiceImpl implements UserAddressService {
         return userAddressMapper.selectById(addressId);
     }
 
+    /**
+     * 根据用户id查询默认地址
+     * @param userId 用户id
+     * @return 返回值
+     */
+    @Override
+    public UserAddress getDefaultByUserId(Long userId) {
+        return userAddressMapper.selectDefaultByUserId(userId);
+    }
+
 
 }

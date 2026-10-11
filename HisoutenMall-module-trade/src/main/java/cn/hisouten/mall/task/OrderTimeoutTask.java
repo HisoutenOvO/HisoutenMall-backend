@@ -16,6 +16,9 @@ import java.util.List;
 
 import static cn.hisouten.mall.constant.StatusConstant.CANCELLED;
 
+/**
+ * 超时订单处理任务
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j

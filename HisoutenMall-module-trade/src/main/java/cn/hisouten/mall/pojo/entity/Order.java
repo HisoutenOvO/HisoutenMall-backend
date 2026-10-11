@@ -40,6 +40,8 @@ public class Order {
 
     private LocalDateTime finishTime;
 
+    private Integer source;
+
     @TableLogic
     private Integer deleted;
 }

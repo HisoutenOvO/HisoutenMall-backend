@@ -25,4 +25,12 @@ public interface UserAddressMapper extends BaseMapper<UserAddress> {
      */
     @Update("update user_address set is_default = 0 where user_id = #{userId}")
     void changeDefaultAddress(Long userId);
+
+    /**
+     * 根据用户id查询默认地址
+     * @param userId 用户id
+     * @return 返回值
+     */
+    @Select("select * from user_address where user_id = #{userId} and is_default = 1")
+    UserAddress selectDefaultByUserId(Long userId);
 }

@@ -4,6 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.*;
 import cn.hisouten.mall.mq.dto.OrderTimeoutMessage;
+import cn.hisouten.mall.mq.dto.SeckillOrderMessage;
 import cn.hisouten.mall.mq.producer.MqProducerService;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.CartItemListBO;
@@ -392,6 +393,24 @@ public class OrderServiceImpl implements OrderService {
             productService.restoreStock(item.getSkuId(), item.getQuantity());
         }
         log.info("[订单超时] 订单 {} 关闭成功，回滚 {} 个 SKU", orderNo, items.size());
+    }
+
+    /**
+     * 新增订单
+     * @param order 订单
+     */
+    @Override
+    public void insertOrder(Order order) {
+        orderMapper.insert(order);
+    }
+
+    /**
+     * 新增订单明细
+     * @param item 订单项
+     */
+    @Override
+    public void insertOrderItem(OrderItem item){
+        orderItemMapper.insert(item);
     }
 
     /**
