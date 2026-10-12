@@ -4,7 +4,6 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.*;
 import cn.hisouten.mall.mq.dto.OrderTimeoutMessage;
-import cn.hisouten.mall.mq.dto.SeckillOrderMessage;
 import cn.hisouten.mall.mq.producer.MqProducerService;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.CartItemListBO;

@@ -33,4 +33,8 @@ public class SeckillActivity {
     @TableLogic
     private Integer deleted;
 
+    //冗余字段，用于查询商品数量
+    @TableField(exist = false)
+    private Integer productCount;
+
 }

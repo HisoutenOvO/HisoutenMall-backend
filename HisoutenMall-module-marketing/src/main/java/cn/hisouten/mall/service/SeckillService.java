@@ -1,6 +1,9 @@
 package cn.hisouten.mall.service;
 
+import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.pojo.dto.MerchantSeckillActivityPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillActivitySaveDTO;
+import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityPageResultVO;
 
 public interface SeckillService {
 
@@ -16,4 +19,12 @@ public interface SeckillService {
      * @param merchantSeckillActivitySaveDTO 活动参数
      */
     void updateActivity(Long merchantId, Long activityId, MerchantSeckillActivitySaveDTO merchantSeckillActivitySaveDTO);
+
+    /**
+     * 商家端分页查询秒杀商品
+     * @param merchantId 商家id
+     * @param pageQueryDTO 分页参数
+     * @return 返回值
+     */
+    PageResult<MerchantSeckillActivityPageResultVO> pageQueryMerchant(Long merchantId, MerchantSeckillActivityPageQueryDTO pageQueryDTO);
 }

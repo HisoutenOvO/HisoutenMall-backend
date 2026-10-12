@@ -8,10 +8,10 @@
         left join merchant_profile m on o.merchant_id = m.user_id
         <where>
             <if test="dto.keyword != null and dto.keyword != ''">
-                and order_no = #{dto.keyword}
+                and order_no like concat('%', #{dto.keyword}, '%')
             </if>
             <if test="dto.status != null ">
-                and keyword = #{dto.status}
+                and status = #{dto.status}
             </if>
         and deleted = 0
         order by m.create_time desc
@@ -24,7 +24,7 @@
         left join user_profile u on o.user_id = u.user_id
         <where>
         <if test="dto.keyword != null and dto.keyword != ''">
-            and order_no = #{dto.keyword}
+            and order_no like concat('%', #{dto.keyword}, '%')
         </if>
         <if test="dto.status != null ">
             and status = #{dto.status}
@@ -42,10 +42,10 @@
         left join user_profile u on o.user_id = u.user_id
         <where>
             <if test="dto.keyword != null and dto.keyword != ''">
-                and keyword = #{dto.keyword}
+                and order_no like concat('%', #{dto.keyword}, '%')
             </if>
             <if test="dto.status != null ">
-                and keyword = #{dto.status}
+                and status = #{dto.status}
             </if>
             and o.deleted = 0
             order by m.create_time desc

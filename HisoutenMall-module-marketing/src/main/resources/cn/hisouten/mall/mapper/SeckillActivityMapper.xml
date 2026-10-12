@@ -2,4 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.hisouten.mall.mapper.SeckillActivityMapper">
 
+    <select id="pageQuery" resultType="cn.hisouten.mall.pojo.entity.SeckillActivity">
+        select sa.*,sum(sp.seckill_stock) as productCount from seckill_activity sa
+        left join seckill_product sp
+        on sp.activity_id = sa.id
+        <where>
+            and merchant_id = #{merchantId}
+            <if test="pageQueryDTO.keyword != null and pageQueryDTO.keyword != ''">
+                and name like concat('%', #{pageQueryDTO.keyword}, '%')
+            </if>
+        <if test="pageQueryDTO.status != null">
+            and status = #{pageQueryDTO.status}
+        </if>
+        <if test="pageQueryDTO.deleted != null">
+            and deleted = #{pageQueryDTO.deleted}
+        </if>
+        </where>
+        group by sa.id
+    </select>
 </mapper>

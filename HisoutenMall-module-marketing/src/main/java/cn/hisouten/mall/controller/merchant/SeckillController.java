@@ -1,8 +1,11 @@
 package cn.hisouten.mall.controller.merchant;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.pojo.dto.MerchantSeckillActivityPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillActivitySaveDTO;
+import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityPageResultVO;
 import cn.hisouten.mall.service.SeckillOrderService;
 import cn.hisouten.mall.service.SeckillService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +23,20 @@ public class SeckillController {
     private final SeckillOrderService seckillOrderService;
     private final SeckillService seckillService;
 
+
+    /**
+     * 分页查询秒杀活动
+     * @param pageQueryDTO 分页参数
+     * @return 返回值
+     */
+    @GetMapping("/activity/page")
+    @Operation(summary = "分页查询秒杀活动")
+    public Result<PageResult<MerchantSeckillActivityPageResultVO>> pageQuery(MerchantSeckillActivityPageQueryDTO pageQueryDTO){
+        Long merchantId = StpUtil.getLoginIdAsLong();
+        log.info("商家:{}分页查询秒杀活动",merchantId);
+        PageResult<MerchantSeckillActivityPageResultVO> pageResult = seckillService.pageQueryMerchant(merchantId,pageQueryDTO);
+        return Result.success(pageResult);
+    }
 
     /**
      * 新增秒杀活动
