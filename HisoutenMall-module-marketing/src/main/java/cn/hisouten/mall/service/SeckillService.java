@@ -4,6 +4,7 @@ import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillActivityPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillActivitySaveDTO;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillProductAddDTO;
+import cn.hisouten.mall.pojo.dto.MerchantSeckillProductUpdateDTO;
 import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityDetailVO;
 import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityPageResultVO;
 
@@ -51,4 +52,12 @@ public interface SeckillService {
      * @param addDTO 商品参数
      */
     void addProduct(Long merchantId, MerchantSeckillProductAddDTO addDTO);
+
+    /**
+     * 商家端修改秒杀商品
+     * @param merchantId 商家id
+     * @param productId 秒杀商品id
+     * @param updateDTO 修改参数
+     */
+    void updateProduct(Long merchantId, Long productId, MerchantSeckillProductUpdateDTO updateDTO);
 }

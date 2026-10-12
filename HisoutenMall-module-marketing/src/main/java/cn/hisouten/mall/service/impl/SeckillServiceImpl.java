@@ -7,6 +7,7 @@ import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillActivityPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillActivitySaveDTO;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillProductAddDTO;
+import cn.hisouten.mall.pojo.dto.MerchantSeckillProductUpdateDTO;
 import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.entity.ProductSku;
 import cn.hisouten.mall.pojo.entity.SeckillActivity;
@@ -202,6 +203,42 @@ public class SeckillServiceImpl implements SeckillService {
                     .build();
             seckillProductMapper.insert(seckillProduct);
         }
+    }
+
+    /**
+     * 商家端修改秒杀商品
+     * @param merchantId 商家id
+     * @param productId 秒杀商品id
+     * @param updateDTO 修改参数
+     */
+    @Override
+    public void updateProduct(Long merchantId, Long productId, MerchantSeckillProductUpdateDTO updateDTO) {
+        SeckillProduct seckillProduct = seckillProductMapper.selectById(productId);
+        if(seckillProduct == null){
+            throw new BizException(PRODUCT_NOT_FOUND);
+        }
+        ProductSku sku = productService.getSkuBySkuId(seckillProduct.getSkuId());
+        SeckillActivity seckillActivity = checkValidAndTime(merchantId,seckillProduct.getActivityId());
+
+        //校验价格合理且小于原价
+        if(updateDTO.getSeckillPrice().longValue() <= 0 || updateDTO.getSeckillPrice().longValue() >= sku.getPrice().longValue()){
+            throw new BizException(SECKILL_PRICE_INVALID);
+        }
+
+        //校验库存大于0且小于等于总库存
+        if(updateDTO.getSeckillStock() <= 0 || updateDTO.getSeckillStock() > sku.getStock()){
+            throw new BizException(SECKILL_STOCK_INVALID);
+        }
+
+        //校验限购大于等于1
+        if(updateDTO.getLimitPerUser() < 1){
+            throw new BizException(SECKILL_LIMIT_INVALID);
+        }
+
+        seckillProduct.setSeckillPrice(updateDTO.getSeckillPrice());
+        seckillProduct.setSeckillStock(updateDTO.getSeckillStock());
+        seckillProduct.setLimitPerUser(updateDTO.getLimitPerUser());
+        seckillProductMapper.updateById(seckillProduct);
     }
 
     /**
