@@ -4,6 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.SeckillExecuteDTO;
 import cn.hisouten.mall.pojo.vo.UserSeckillActivityListVO;
+import cn.hisouten.mall.pojo.vo.UserSeckillActivityDetailVO;
 import cn.hisouten.mall.service.SeckillOrderService;
 import cn.hisouten.mall.service.SeckillService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,7 +47,21 @@ public class SeckillController {
     public Result<List<UserSeckillActivityListVO>> listQuery(){
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户:{} 列表查询秒杀活动",userId);
-        List<UserSeckillActivityListVO> voList = seckillService.listQuery(userId);
+        List<UserSeckillActivityListVO> voList = seckillService.listQuery();
         return Result.success();
+    }
+
+    /**
+     * 查询秒杀活动详情
+     * @param activityId 活动id
+     * @return 返回值
+     */
+    @GetMapping("/activity/{activityId}")
+    @Operation(summary = "查询秒杀活动详情")
+    public Result<UserSeckillActivityDetailVO> detailQuery(@PathVariable Long activityId){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 查询秒杀活动详情:{}",userId,activityId);
+        UserSeckillActivityDetailVO detailVO = seckillService.userDetailQuery(activityId);
+        return Result.success(detailVO);
     }
 }

@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 /**
- * 商家查询秒杀商品详情返回值
+ * 商家端查询秒杀商品项详情返回值
  */
 @Data
 @NoArgsConstructor

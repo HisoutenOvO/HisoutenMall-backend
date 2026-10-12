@@ -4,6 +4,7 @@ import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.SeckillActivityMapper;
 import cn.hisouten.mall.mapper.SeckillProductMapper;
 import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.pojo.bo.SeckillProductBO;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillActivityPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillActivitySaveDTO;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillProductAddDTO;
@@ -12,16 +13,15 @@ import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.entity.ProductSku;
 import cn.hisouten.mall.pojo.entity.SeckillActivity;
 import cn.hisouten.mall.pojo.entity.SeckillProduct;
-import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityDetailVO;
-import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityPageResultVO;
-import cn.hisouten.mall.pojo.vo.MerchantSeckillProductVO;
-import cn.hisouten.mall.pojo.vo.UserSeckillActivityListVO;
+import cn.hisouten.mall.pojo.vo.*;
 import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.service.SeckillService;
 import cn.hisouten.mall.user.service.MerchantProfileService;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
+import static cn.hisouten.mall.constant.RedisConstant.SECKILL_STOCK;
 import static cn.hisouten.mall.constant.SeckillConstant.*;
 import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
 import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
@@ -45,6 +46,8 @@ public class SeckillServiceImpl implements SeckillService {
 
     private final MerchantProfileService merchantProfileService;
     private final ProductService productService;
+
+    private StringRedisTemplate stringRedisTemplate;
 
     /**
      * 商家端新增秒杀活动
@@ -113,12 +116,13 @@ public class SeckillServiceImpl implements SeckillService {
      * @return 返回值
      */
     @Override
-    public MerchantSeckillActivityDetailVO detailQuery(Long merchantId, Long activityId) {
+    public MerchantSeckillActivityDetailVO merchantDetailQuery(Long merchantId, Long activityId) {
         SeckillActivity seckillActivity = checkValid(merchantId,activityId);
         MerchantSeckillActivityDetailVO detailVO = new MerchantSeckillActivityDetailVO();
         BeanUtils.copyProperties(seckillActivity,detailVO);
         //查询秒杀商品列表
-        List<MerchantSeckillProductVO> productItemVOList = seckillProductMapper.selectSkusByActivityId(activityId);
+        List<SeckillProductBO> boList = seckillProductMapper.selectSkusByActivityId(activityId);
+        List<MerchantSeckillProductVO> productItemVOList = BeanUtil.copyToList(boList,MerchantSeckillProductVO.class);
         //拼装商品列表
         detailVO.setProducts(productItemVOList);
         return detailVO;
@@ -256,11 +260,10 @@ public class SeckillServiceImpl implements SeckillService {
 
     /**
      * 用户端列表查询秒杀活动
-     * @param userId 用户id
      * @return 返回值
      */
     @Override
-    public List<UserSeckillActivityListVO> listQuery(Long userId) {
+    public List<UserSeckillActivityListVO> listQuery() {
         List<SeckillActivity> activityList = seckillActivityMapper.selectValidActivityList();
         List<UserSeckillActivityListVO> voList = new ArrayList<>();
         for (SeckillActivity activity : activityList) {
@@ -275,6 +278,47 @@ public class SeckillServiceImpl implements SeckillService {
             voList.add(vo);
         }
         return voList;
+    }
+
+
+    /**
+     * 用户端查询秒杀活动详情
+     * @param activityId 活动id
+     * @return 返回值
+     */
+    @Override
+    public UserSeckillActivityDetailVO userDetailQuery(Long activityId) {
+        SeckillActivity seckillActivity = seckillActivityMapper.selectById(activityId);
+        if(seckillActivity == null || seckillActivity.getStatus() == COMPLETED){
+            throw new BizException(ACTIVITY_NOT_FOUND);
+        }
+        UserSeckillActivityDetailVO detailVO = new UserSeckillActivityDetailVO();
+        BeanUtils.copyProperties(seckillActivity,detailVO);
+        //查询秒杀商品列表
+        List<SeckillProductBO> productItemVOList = seckillProductMapper.selectSkusByActivityId(activityId);
+        List<UserSeckillProductVO> voList = new ArrayList<>();
+        for (SeckillProductBO bo : productItemVOList) {
+            UserSeckillProductVO vo = UserSeckillProductVO.builder()
+                    .skuId(bo.getSkuId())
+                    .productName(bo.getProductName())
+                    .skuSpecs(bo.getSkuSpecs())
+                    .image(bo.getImage())
+                    .originalPrice(bo.getOriginalPrice())
+                    .seckillPrice(bo.getSeckillPrice())
+                    .limitPerUser(bo.getLimitPerUser())
+                    .build();
+            //从缓存里直接取库存
+            String stock = stringRedisTemplate.opsForValue().get(SECKILL_STOCK + bo.getSkuId());
+            if(stock != null){
+                vo.setSeckillStock(Integer.parseInt(stock));
+            }
+            //失败则返回数据库库存
+            vo.setSeckillStock(bo.getSeckillStock());
+            voList.add(vo);
+        }
+        //拼装商品列表
+        detailVO.setProducts(voList);
+        return detailVO;
     }
 
     /**

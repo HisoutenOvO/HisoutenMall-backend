@@ -65,7 +65,7 @@ public class SeckillController {
     public Result<MerchantSeckillActivityDetailVO> detailQuery(@PathVariable Long activityId){
         Long merchantId = StpUtil.getLoginIdAsLong();
         log.info("商家:{} 查询秒杀活动:{} 详情",merchantId,activityId);
-        MerchantSeckillActivityDetailVO detailVO = seckillService.detailQuery(merchantId,activityId);
+        MerchantSeckillActivityDetailVO detailVO = seckillService.merchantDetailQuery(merchantId,activityId);
         return Result.success(detailVO);
     }
 
