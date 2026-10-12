@@ -112,7 +112,6 @@ public class SeckillController {
         return Result.success();
     }
 
-
     /**
      * 修改秒杀商品
      * @param productId 商品id
@@ -125,6 +124,21 @@ public class SeckillController {
         Long merchantId = StpUtil.getLoginIdAsLong();
         log.info("商家:{} 修改秒杀商品:{} ",merchantId,productId);
         seckillService.updateProduct(merchantId,productId,updateDTO);
+        return Result.success();
+    }
+
+
+    /**
+     * 删除秒杀商品
+     * @param productId 商品id
+     * @return 返回值
+     */
+    @DeleteMapping("/product/{productId}")
+    @Operation(summary = "删除秒杀商品")
+    public Result deleteProduct(@PathVariable Long productId){
+        Long merchantId = StpUtil.getLoginIdAsLong();
+        log.info("商家：{} 删除秒杀商品:{} ",merchantId,productId);
+        seckillService.deleteProduct(merchantId,productId);
         return Result.success();
     }
 }

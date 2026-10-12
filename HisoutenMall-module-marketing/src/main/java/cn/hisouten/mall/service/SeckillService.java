@@ -60,4 +60,11 @@ public interface SeckillService {
      * @param updateDTO 修改参数
      */
     void updateProduct(Long merchantId, Long productId, MerchantSeckillProductUpdateDTO updateDTO);
+
+    /**
+     * 商家端删除秒杀商品
+     * @param merchantId 商家id
+     * @param productId 商品id
+     */
+    void deleteProduct(Long merchantId, Long productId);
 }

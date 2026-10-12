@@ -242,6 +242,18 @@ public class SeckillServiceImpl implements SeckillService {
     }
 
     /**
+     * 商家端删除秒杀商品
+     * @param merchantId 商家id
+     * @param productId 商品id
+     */
+    @Override
+    public void deleteProduct(Long merchantId, Long productId) {
+        SeckillProduct seckillProduct = seckillProductMapper.selectById(productId);
+        SeckillActivity seckillActivity = checkValidAndTime(merchantId,seckillProduct.getActivityId());
+        seckillProductMapper.deleteById(productId);
+    }
+
+    /**
      * 抽取公共方法——校验活动归属及是否存在
      * @param merchantId 商家id
      * @param activityId 活动id
