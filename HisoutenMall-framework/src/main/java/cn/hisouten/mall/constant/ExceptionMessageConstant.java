@@ -12,6 +12,7 @@ public class ExceptionMessageConstant {
     public static final String ADDRESS_NOT_FOUND = "地址不存在！";
     public static final String CART_NOT_FOUND = "购物车项不存在！";
     public static final String ORDER_NOT_FOUND = "订单不存在！";
+    public static final String ACTIVITY_NOT_FOUND = "活动不存在！";
     public static final String MERCHANT_NOT_FOUND = "商家不存在！";
     public static final String PARENT_CATEGORY_NOT_FOUND = "父级分类不存在！";
     public static final String LEVEL_OVERFLOW = "分类层级溢出，最多三级，请修改子分类！";
@@ -57,4 +58,5 @@ public class ExceptionMessageConstant {
     public static final String DO_NOT_ORDER_REPEATEDLY = "请勿重复下单！";
     public static final String ACTIVITY_INVALID = "活动不在有效时间内";
     public static final String ACTIVITY_TIME_INVALID = "活动时间无效！请检查并重新设置时间！";
+    public static final String ACTIVITY_HAS_START = "活动已经开始，无法进行该操作！";
 }

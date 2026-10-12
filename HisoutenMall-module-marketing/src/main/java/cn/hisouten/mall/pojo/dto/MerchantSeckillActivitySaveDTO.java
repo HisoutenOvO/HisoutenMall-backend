@@ -5,10 +5,10 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 商家端新增秒杀活动参数
+ * 商家端新增或修改秒杀活动参数
  */
 @Data
-public class MerchantSeckillActivityAddDTO {
+public class MerchantSeckillActivitySaveDTO {
 
     private String name;
 
