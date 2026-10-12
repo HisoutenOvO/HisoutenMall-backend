@@ -23,6 +23,6 @@ public class MerchantSeckillActivityDetailVO {
 
     private Integer status;
 
-    private List<SeckillProductItemVO> products;   // 含秒杀商品列表
+    private List<MerchantSeckillProductVO> products;   // 含秒杀商品列表
 
 }

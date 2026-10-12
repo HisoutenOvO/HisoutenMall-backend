@@ -36,4 +36,11 @@ public interface SeckillService {
      * @return 返回值
      */
     MerchantSeckillActivityDetailVO detailQuery(Long merchantId, Long activityId);
+
+    /**
+     * 商家删除秒杀活动
+     * @param merchantId 商家id
+     * @param activityId 活动id
+     */
+    void delete(Long merchantId, Long activityId);
 }

@@ -6,11 +6,11 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 /**
- * 秒杀活动详情的成员变量秒杀商品项返回值
+ * 商家查询秒杀商品详情返回值
  */
 @Data
 @NoArgsConstructor
-public class SeckillProductItemVO {
+public class MerchantSeckillProductVO {
 
     private Long id;              // seckill_product.id
 
