@@ -7,7 +7,9 @@ import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillActivityPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillActivitySaveDTO;
 import cn.hisouten.mall.pojo.entity.SeckillActivity;
+import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityDetailVO;
 import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityPageResultVO;
+import cn.hisouten.mall.pojo.vo.SeckillProductItemVO;
 import cn.hisouten.mall.service.SeckillService;
 import cn.hisouten.mall.user.service.MerchantProfileService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -118,6 +120,31 @@ public class SeckillServiceImpl implements SeckillService {
             records.add(vo);
         }
         return new PageResult<>(total,records);
+    }
+
+    /**
+     * 商家端查询秒杀活动详情
+     * @param merchantId 商家id
+     * @param activityId 活动id
+     * @return 返回值
+     */
+    @Override
+    public MerchantSeckillActivityDetailVO detailQuery(Long merchantId, Long activityId) {
+        SeckillActivity seckillActivity = seckillActivityMapper.selectById(activityId);
+        if(seckillActivity == null){
+            throw new BizException(ACTIVITY_NOT_FOUND);
+        }
+        //校验归属
+        if(!seckillActivity.getMerchantId().equals(merchantId)){
+            throw new BizException(NO_PERMISSION);
+        }
+        MerchantSeckillActivityDetailVO detailVO = new MerchantSeckillActivityDetailVO();
+        BeanUtils.copyProperties(seckillActivity,detailVO);
+        //查询秒杀商品列表
+        List<SeckillProductItemVO> productItemVOList = seckillProductMapper.selectSkusByActivityId(activityId);
+        //拼装商品列表
+        detailVO.setProducts(productItemVOList);
+        return detailVO;
     }
 
 

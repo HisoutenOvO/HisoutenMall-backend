@@ -5,6 +5,7 @@ import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillActivityPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillActivitySaveDTO;
+import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityDetailVO;
 import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityPageResultVO;
 import cn.hisouten.mall.service.SeckillOrderService;
 import cn.hisouten.mall.service.SeckillService;
@@ -50,6 +51,20 @@ public class SeckillController {
         log.info("商家：{}创建秒杀活动",merchantId);
         seckillService.createActivity(merchantId, merchantSeckillActivitySaveDTO);
         return Result.success();
+    }
+
+    /**
+     * 查询秒杀活动详情
+     * @param activityId 活动id
+     * @return 返回值
+     */
+    @GetMapping("/activity/{activityId}")
+    @Operation(summary = "查询秒杀活动详情")
+    public Result<MerchantSeckillActivityDetailVO> detailQuery(@PathVariable Long activityId){
+        Long merchantId = StpUtil.getLoginIdAsLong();
+        log.info("商家:{}查询秒杀活动:{}详情",merchantId,activityId);
+        MerchantSeckillActivityDetailVO detailVO = seckillService.detailQuery(merchantId,activityId);
+        return Result.success(detailVO);
     }
 
     /**

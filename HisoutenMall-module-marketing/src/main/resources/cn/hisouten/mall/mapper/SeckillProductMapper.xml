@@ -15,4 +15,13 @@
         on sp.activity_id = sa.id
         where sa.status = 1
     </select>
+    <select id="selectSkusByActivityId" resultType="cn.hisouten.mall.pojo.vo.SeckillProductItemVO">
+        select sp.id, sp.sku_id, sp.seckill_price,sp.seckill_stock,sp.limit_per_user,
+               p.name as productName,
+               ps.specs as skuSpecs,ps.image, ps.price as originalPrice,ps.stock as skuStock
+        from seckill_product sp
+        left join product_sku ps on sp.sku_id = ps.id
+        left join product p on ps.product_id = p.id
+        where sp.activity_id = #{activityId}
+    </select>
 </mapper>
