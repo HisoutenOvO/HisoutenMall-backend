@@ -6,9 +6,11 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Mapper
 public interface SeckillActivityMapper extends BaseMapper<SeckillActivity> {
@@ -39,4 +41,12 @@ public interface SeckillActivityMapper extends BaseMapper<SeckillActivity> {
      * @return 返回值
      */
     Page<SeckillActivity> pageQuery(Long merchantId,Page<SeckillActivity> page, MerchantSeckillActivityPageQueryDTO pageQueryDTO);
+
+    /**
+     * 根据skuId查询秒杀活动，排出自己
+     * @param skuId skuId
+     * @param activityId 活动id
+     * @return 返回值
+     */
+    List<SeckillActivity> selectActivityListBySkuIdExceptSelf(Long skuId,Long activityId);
 }

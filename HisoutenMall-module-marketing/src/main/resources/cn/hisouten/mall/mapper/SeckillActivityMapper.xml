@@ -20,4 +20,10 @@
         </where>
         group by sa.id
     </select>
+    <select id="selectActivityListBySkuIdExceptSelf" resultType="cn.hisouten.mall.pojo.entity.SeckillActivity">
+        select * from seckill_activity sa
+        left join seckill_product sp
+        on sa.id = sp.activity_id
+        where sp.sku_id = #{skuId} and sa.id != #{activityId} and status != 2
+    </select>
 </mapper>

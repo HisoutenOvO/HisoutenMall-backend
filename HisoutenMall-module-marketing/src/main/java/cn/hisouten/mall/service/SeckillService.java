@@ -3,6 +3,7 @@ package cn.hisouten.mall.service;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillActivityPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillActivitySaveDTO;
+import cn.hisouten.mall.pojo.dto.MerchantSeckillProductAddDTO;
 import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityDetailVO;
 import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityPageResultVO;
 
@@ -43,4 +44,11 @@ public interface SeckillService {
      * @param activityId 活动id
      */
     void delete(Long merchantId, Long activityId);
+
+    /**
+     * 商家端批量新增秒杀商品
+     * @param merchantId 商家Id
+     * @param addDTO 商品参数
+     */
+    void addProduct(Long merchantId, MerchantSeckillProductAddDTO addDTO);
 }

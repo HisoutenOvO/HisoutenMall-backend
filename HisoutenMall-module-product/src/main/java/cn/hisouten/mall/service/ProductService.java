@@ -155,4 +155,11 @@ public interface ProductService {
      * @param quantity 回滚数量
      */
     void restoreStock(Long skuId, Integer quantity);
+
+    /**
+     * 根据skuIds获取sku列表
+     * @param skuIds skuId集合
+     * @return 返回sku列表
+     */
+    List<ProductSku> getSkuListBySkuIds(List<Long> skuIds);
 }

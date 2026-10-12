@@ -59,4 +59,8 @@ public class ExceptionMessageConstant {
     public static final String ACTIVITY_INVALID = "活动不在有效时间内";
     public static final String ACTIVITY_TIME_INVALID = "活动时间无效！请检查并重新设置时间！";
     public static final String ACTIVITY_HAS_START = "活动已经开始，无法进行该操作！";
+    public static final String SECKILL_PRICE_INVALID = "秒杀商品的价格应大于0且低于原价！";
+    public static final String SECKILL_STOCK_INVALID = "秒杀商品的库存应高于0且比总库存少！";
+    public static final String SECKILL_LIMIT_INVALID = "秒杀商品至少限购一件！";
+    public static final String SECKILL_PRODUCT_INVALID = "秒杀商品只能同时存在于一个未结束的秒杀活动中！";
 }

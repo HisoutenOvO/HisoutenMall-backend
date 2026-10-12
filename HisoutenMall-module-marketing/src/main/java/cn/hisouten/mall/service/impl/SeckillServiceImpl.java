@@ -6,10 +6,15 @@ import cn.hisouten.mall.mapper.SeckillProductMapper;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillActivityPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillActivitySaveDTO;
+import cn.hisouten.mall.pojo.dto.MerchantSeckillProductAddDTO;
+import cn.hisouten.mall.pojo.entity.Product;
+import cn.hisouten.mall.pojo.entity.ProductSku;
 import cn.hisouten.mall.pojo.entity.SeckillActivity;
+import cn.hisouten.mall.pojo.entity.SeckillProduct;
 import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityDetailVO;
 import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityPageResultVO;
 import cn.hisouten.mall.pojo.vo.MerchantSeckillProductVO;
+import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.service.SeckillService;
 import cn.hisouten.mall.user.service.MerchantProfileService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -21,11 +26,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.SeckillConstant.*;
 import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
+import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +42,7 @@ public class SeckillServiceImpl implements SeckillService {
     private final SeckillProductMapper seckillProductMapper;
 
     private final MerchantProfileService merchantProfileService;
+    private final ProductService productService;
 
     /**
      * 商家端新增秒杀活动
@@ -126,6 +135,73 @@ public class SeckillServiceImpl implements SeckillService {
         seckillActivityMapper.deleteById(activityId);
         //级联删除秒杀商品
         seckillProductMapper.deleteByActivityId(activityId);
+    }
+
+    /**
+     * 商家端批量新增秒杀商品
+     * @param merchantId 商家Id
+     * @param addDTO 商品参数
+     */
+    @Override
+    public void addProduct(Long merchantId, MerchantSeckillProductAddDTO addDTO) {
+        SeckillActivity seckillActivity = checkValidAndTime(merchantId,addDTO.getActivityId());
+        List<MerchantSeckillProductAddDTO.SeckillProductItem> seckillProductItems = addDTO.getItems();
+        //取出内部类的skuId集合，通过productService提供的列表查询返回所有sku
+        List<ProductSku> skuList = productService.getSkuListBySkuIds(seckillProductItems.stream().map(MerchantSeckillProductAddDTO.SeckillProductItem::getSkuId).collect(Collectors.toList()));
+        //提前将seckillProductItems集合转成map，以便通过id提取对应对象
+        Map<Long, MerchantSeckillProductAddDTO.SeckillProductItem> itemMap =
+                seckillProductItems.stream()
+                        .collect(Collectors.toMap(
+                                MerchantSeckillProductAddDTO.SeckillProductItem::getSkuId,// 定义key
+                                item -> item,                   //定义value
+                                (a, b) -> a  // 防止前端传重复 skuId 时抛异常
+                        ));
+        //通过将前端返回的数据和查找到返回的数据输数量进行对比，若少了肯定是有被逻辑删除的商品
+        if(seckillProductItems.size() != skuList.size()){
+            throw new BizException(SKU_NOT_FOUND);
+        }
+        for (ProductSku sku : skuList) {
+            //判断每个sku存在，未删除，状态启用
+            if(sku == null || sku.getStatus() != ENABLED){
+                throw new BizException(SKU_HAS_DISABLED);
+            }
+
+            //判断sku属于商家
+            Product product = productService.getProductByProductId(sku.getProductId());
+            if(!Objects.equals(product.getMerchantId(), merchantId)){
+                throw new BizException(NO_PERMISSION);
+            }
+
+            //校验价格合理且小于原价
+            MerchantSeckillProductAddDTO.SeckillProductItem item = itemMap.get(sku.getId());
+            if(item.getSeckillPrice().longValue() <= 0 || item.getSeckillPrice().longValue() >= sku.getPrice().longValue()){
+                throw new BizException(SECKILL_PRICE_INVALID);
+            }
+
+            //校验库存大于0且小于等于总库存
+            if(item.getSeckillStock() <= 0 || item.getSeckillStock() > sku.getStock()){
+                throw new BizException(SECKILL_STOCK_INVALID);
+            }
+
+            //校验限购大于等于1
+            if(item.getLimitPerUser() < 1){
+                throw new BizException(SECKILL_LIMIT_INVALID);
+            }
+
+            //校验同一sku不能同时存在于多个未结束的活动里
+            List<SeckillActivity> activityList = seckillActivityMapper.selectActivityListBySkuIdExceptSelf(sku.getId(),seckillActivity.getId());
+            if(!activityList.isEmpty()){
+                throw new BizException(SECKILL_PRODUCT_INVALID);
+            }
+            SeckillProduct seckillProduct = SeckillProduct.builder()
+                    .activityId(seckillActivity.getId())
+                    .skuId(sku.getId())
+                    .seckillPrice(item.getSeckillPrice())
+                    .seckillStock(item.getSeckillStock())
+                    .limitPerUser(item.getLimitPerUser())
+                    .build();
+            seckillProductMapper.insert(seckillProduct);
+        }
     }
 
     /**

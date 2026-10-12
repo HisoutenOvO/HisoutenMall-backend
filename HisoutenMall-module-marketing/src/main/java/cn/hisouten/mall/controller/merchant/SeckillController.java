@@ -5,6 +5,7 @@ import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillActivityPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillActivitySaveDTO;
+import cn.hisouten.mall.pojo.dto.MerchantSeckillProductAddDTO;
 import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityDetailVO;
 import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityPageResultVO;
 import cn.hisouten.mall.service.SeckillOrderService;
@@ -93,6 +94,20 @@ public class SeckillController {
         Long merchantId = StpUtil.getLoginIdAsLong();
         log.info("商家：{} 删除秒杀活动：{}",merchantId,activityId);
         seckillService.delete(merchantId,activityId);
+        return Result.success();
+    }
+
+    /**
+     * 批量新增秒杀商品
+     * @param addDTO 商品参数
+     * @return 返回值
+     */
+    @PostMapping("/product")
+    @Operation(summary = "（批量）新增秒杀商品")
+    public Result addProduct(@RequestBody MerchantSeckillProductAddDTO addDTO){
+        Long merchantId = StpUtil.getLoginIdAsLong();
+        log.info("商家:{} 批量新增秒杀商品",merchantId);
+        seckillService.addProduct(merchantId,addDTO);
         return Result.success();
     }
 }

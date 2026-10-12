@@ -398,6 +398,16 @@ public class ProductServiceImpl implements ProductService {
     public void restoreStock(Long skuId, Integer quantity) {
         productSkuMapper.restoreStock(skuId,quantity);
     }
+
+    /**
+     * 根据skuIds获取sku列表
+     * @param skuIds skuId集合
+     * @return 返回sku列表
+     */
+    @Override
+    public List<ProductSku> getSkuListBySkuIds(List<Long> skuIds) {
+        return productSkuMapper.selectBatchIds(skuIds);
+    }
     //=======================================用户端逻辑================================================
 
     /**
