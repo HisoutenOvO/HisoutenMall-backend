@@ -7,6 +7,9 @@ import cn.hisouten.mall.pojo.dto.MerchantSeckillProductAddDTO;
 import cn.hisouten.mall.pojo.dto.MerchantSeckillProductUpdateDTO;
 import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityDetailVO;
 import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityPageResultVO;
+import cn.hisouten.mall.pojo.vo.UserSeckillActivityListVO;
+
+import java.util.List;
 
 public interface SeckillService {
 
@@ -67,4 +70,11 @@ public interface SeckillService {
      * @param productId 商品id
      */
     void deleteProduct(Long merchantId, Long productId);
+
+    /**
+     * 用户端列表查询秒杀活动
+     * @param userId 用户id
+     * @return 返回值
+     */
+    List<UserSeckillActivityListVO> listQuery(Long userId);
 }

@@ -15,6 +15,7 @@ import cn.hisouten.mall.pojo.entity.SeckillProduct;
 import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityDetailVO;
 import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityPageResultVO;
 import cn.hisouten.mall.pojo.vo.MerchantSeckillProductVO;
+import cn.hisouten.mall.pojo.vo.UserSeckillActivityListVO;
 import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.service.SeckillService;
 import cn.hisouten.mall.user.service.MerchantProfileService;
@@ -251,6 +252,29 @@ public class SeckillServiceImpl implements SeckillService {
         SeckillProduct seckillProduct = seckillProductMapper.selectById(productId);
         SeckillActivity seckillActivity = checkValidAndTime(merchantId,seckillProduct.getActivityId());
         seckillProductMapper.deleteById(productId);
+    }
+
+    /**
+     * 用户端列表查询秒杀活动
+     * @param userId 用户id
+     * @return 返回值
+     */
+    @Override
+    public List<UserSeckillActivityListVO> listQuery(Long userId) {
+        List<SeckillActivity> activityList = seckillActivityMapper.selectValidActivityList();
+        List<UserSeckillActivityListVO> voList = new ArrayList<>();
+        for (SeckillActivity activity : activityList) {
+            UserSeckillActivityListVO vo = UserSeckillActivityListVO.builder()
+                    .id(activity.getId())
+                    .name(activity.getName())
+                    .startTime(activity.getStartTime())
+                    .endTime(activity.getEndTime())
+                    .status(activity.getStatus())
+                    .productCount(activity.getProductCount())
+                    .build();
+            voList.add(vo);
+        }
+        return voList;
     }
 
     /**
