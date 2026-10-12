@@ -56,4 +56,5 @@ public class ExceptionMessageConstant {
     public static final String DO_NOT_CLICK_REPEATEDLY = "请勿重复点击过快！";
     public static final String DO_NOT_ORDER_REPEATEDLY = "请勿重复下单！";
     public static final String ACTIVITY_INVALID = "活动不在有效时间内";
+    public static final String ACTIVITY_TIME_INVALID = "活动时间无效！请检查并重新设置时间！";
 }

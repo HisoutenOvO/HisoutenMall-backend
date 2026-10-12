@@ -107,6 +107,11 @@ public class ProductServiceImpl implements ProductService {
         );
     }
 
+    /**
+     * 用户查询商家详情回源方法
+     * @param productId 商家id
+     * @return 返回商家信息
+     */
     private MerchantProductDetailVO loadMerchantProductDetailFromDB(Long productId){
         Product product = checkProductOwnership(productId);
         MerchantProductDetailVO merchantProductDetailVO = new MerchantProductDetailVO();

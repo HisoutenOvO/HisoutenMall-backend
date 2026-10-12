@@ -86,7 +86,9 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
         try{
             //2. 判断活动和商品是否有效
             SeckillActivity seckillActivity = seckillActivityMapper.selectById(seckillExecuteDTO.getActivityId());
-            if(!Objects.equals(seckillActivity.getStatus(), RUNNING)){
+            LocalDateTime now = LocalDateTime.now();
+            if (seckillActivity == null || !Objects.equals(seckillActivity.getStatus(), RUNNING) || seckillActivity.getStartTime().isAfter(now)
+                    || seckillActivity.getEndTime().isBefore(now)) {
                 throw new BizException(ACTIVITY_INVALID);
             }
             SeckillProduct seckillProduct = seckillProductMapper.selectBySkuId(seckillExecuteDTO.getSkuId());
@@ -171,7 +173,6 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
         if (affected == 0) {
             log.error("[秒杀对账] 数据库库存不足，数据库与缓存数据错位，activityId={}, skuId={}, userId={}",
                     activityId, skuId, userId);
-            // 不调 rollbackRedisStock
             // 靠定时任务纠正
             return;
         }

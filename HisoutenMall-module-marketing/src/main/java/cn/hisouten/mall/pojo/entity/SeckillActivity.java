@@ -17,6 +17,8 @@ public class SeckillActivity {
     @TableId(type = IdType.AUTO)
     private Long id;
 
+    private Long merchantId;
+
     private String name;
 
     private LocalDateTime startTime;

@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.PayMethodConstant.WECHAT;
+import static cn.hisouten.mall.constant.SeckillConstant.NORMAL;
 import static cn.hisouten.mall.constant.StatusConstant.*;
 import static cn.hisouten.mall.mq.constant.MqConstant.*;
 
@@ -456,6 +457,7 @@ public class OrderServiceImpl implements OrderService {
             order.setReceiverName(userAddress.getReceiverName());
             order.setReceiverPhone(userAddress.getReceiverPhone());
             order.setReceiverAddress(receiverAddress);
+            order.setSource(NORMAL);
             orderMapper.insert(order);
             //扣除库存并插入订单明细表
             for (CartItemListBO item : bo) {
