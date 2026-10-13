@@ -69,4 +69,16 @@ public class FavoriteServiceImpl implements FavoriteService {
         long total = result.getTotal();
         return new PageResult<>(total,result.getRecords());
     }
+
+    /**
+     * 判断用户是否收藏商品
+     * @param userId 用户id
+     * @param productId 商品id
+     * @return 返回值
+     */
+    @Override
+    public Boolean checkFavorite(Long userId, Long productId) {
+        Integer count = favoriteMapper.selectCount(userId,productId);
+        return count > 0;
+    }
 }

@@ -26,4 +26,13 @@ public interface FavoriteMapper extends BaseMapper<Favorite> {
      * @return 返回值
      */
     Page<UserFavoritePageResultVO> pageQuery(Page<UserFavoritePageResultVO> page, Long userId);
+
+    /**
+     * 查询收藏数量
+     * @param userId 用户id
+     * @param productId 商品id
+     * @return 返回值
+     */
+    @Select("select count(*) from user_favorite where user_id = #{userId} and product_id = #{productId}")
+    Integer selectCount(Long userId, Long productId);
 }

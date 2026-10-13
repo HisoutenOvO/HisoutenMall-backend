@@ -60,4 +60,17 @@ public class FavoriteController {
         PageResult<UserFavoritePageResultVO> pageResult = favoriteService.pageQuery(pageQuery);
         return Result.success(pageResult);
     }
+
+    /**
+     * 判断是否收藏
+     * @param productId 商品id
+     * @return 返回值
+     */
+    @GetMapping("/check/{productId}")
+    @Operation(summary = "判断是否收藏")
+    public Result<Boolean> checkFavorite(@PathVariable Long productId){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户：{} 是否收藏:{} ?",userId,productId);
+        return Result.success(favoriteService.checkFavorite(userId,productId));
+    }
 }

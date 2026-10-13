@@ -25,4 +25,12 @@ public interface FavoriteService {
      * @return 返回值
      */
     PageResult<UserFavoritePageResultVO> pageQuery(BasePageQueryDTO pageQueryDTO);
+
+    /**
+     * 判断用户是否收藏商品
+     * @param userId 用户id
+     * @param productId 商品id
+     * @return 返回值
+     */
+    Boolean checkFavorite(Long userId, Long productId);
 }
