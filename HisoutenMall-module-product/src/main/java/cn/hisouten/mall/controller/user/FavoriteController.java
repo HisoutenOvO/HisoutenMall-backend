@@ -7,10 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user/favorite")
@@ -31,6 +28,20 @@ public class FavoriteController {
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户:{} 收藏商品:{} ",userId,productId);
         favoriteService.addFavorite(userId,productId);
+        return Result.success();
+    }
+
+    /**
+     * 取消收藏商品
+     * @param productId 商品id
+     * @return 返回值
+     */
+    @DeleteMapping("/{productId}")
+    @Operation(summary = "取消收藏商品")
+    public Result cancelFavorite(@PathVariable Long productId){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户：{} 取消收藏商品:{} ",userId,productId);
+        favoriteService.cancelFavorite(userId,productId);
         return Result.success();
     }
 }

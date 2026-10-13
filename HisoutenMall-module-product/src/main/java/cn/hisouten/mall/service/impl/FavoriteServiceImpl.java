@@ -38,4 +38,18 @@ public class FavoriteServiceImpl implements FavoriteService {
         favorite.setUserId(userId);
         favoriteMapper.insert(favorite);
     }
+
+    /**
+     * 用户取消收藏商品
+     * @param userId 用户id
+     * @param productId 商品id
+     */
+    @Override
+    public void cancelFavorite(Long userId, Long productId) {
+        Product product = productMapper.selectById(productId);
+        if(product == null){
+            return;
+        }
+        favoriteMapper.deleteById(productId);
+    }
 }

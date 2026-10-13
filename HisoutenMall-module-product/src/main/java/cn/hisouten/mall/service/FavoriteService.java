@@ -8,4 +8,11 @@ public interface FavoriteService {
      * @param productId 商品id
      */
     void addFavorite(Long userId, Long productId);
+
+    /**
+     * 用户取消收藏商品
+     * @param userId 用户id
+     * @param productId 商品id
+     */
+    void cancelFavorite(Long userId, Long productId);
 }
