@@ -8,7 +8,7 @@ import cn.hisouten.mall.pojo.BasePageQueryDTO;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.entity.UserFavorite;
 import cn.hisouten.mall.pojo.entity.Product;
-import cn.hisouten.mall.pojo.vo.product.UserFavoritePageResultVO;
+import cn.hisouten.mall.pojo.vo.favorite.UserFavoritePageResultVO;
 import cn.hisouten.mall.service.FavoriteService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;

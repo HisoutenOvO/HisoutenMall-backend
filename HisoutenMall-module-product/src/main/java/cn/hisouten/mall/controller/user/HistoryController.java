@@ -1,16 +1,16 @@
 package cn.hisouten.mall.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.pojo.BasePageQueryDTO;
+import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.pojo.vo.history.UserHistoryPageResultVO;
 import cn.hisouten.mall.service.HistoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user/history")
@@ -32,5 +32,19 @@ public class HistoryController {
         log.info("用户:{} 浏览商品:{} ",userId,productId);
         historyService.addHistory(userId,productId);
         return Result.success();
+    }
+
+    /**
+     * 分页查询浏览历史记录
+     * @param pageQueryDTO 分页参数
+     * @return 返回值
+     */
+    @GetMapping("/page")
+    @Operation(summary = "分页查询历史")
+    public Result<PageResult<UserHistoryPageResultVO>> pageQuery(BasePageQueryDTO pageQueryDTO){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 分页查询浏览记录",userId);
+        PageResult<UserHistoryPageResultVO> pageResult = historyService.pageQuery(userId,pageQueryDTO);
+        return Result.success(pageResult);
     }
 }

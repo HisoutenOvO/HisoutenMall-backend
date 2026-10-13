@@ -2,9 +2,13 @@ package cn.hisouten.mall.service.impl;
 
 import cn.hisouten.mall.mapper.HistoryMapper;
 import cn.hisouten.mall.mapper.ProductMapper;
+import cn.hisouten.mall.pojo.BasePageQueryDTO;
+import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.entity.UserBrowseHistory;
+import cn.hisouten.mall.pojo.vo.history.UserHistoryPageResultVO;
 import cn.hisouten.mall.service.HistoryService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,5 +32,18 @@ public class HistoryServiceImpl implements HistoryService {
             return;
         }
         historyMapper.upsert(userId,productId);
+    }
+
+    /**
+     * 用户分页查询历史记录
+     * @param userId 用户id
+     * @param pageQueryDTO 分页参数
+     * @return 返回值
+     */
+    @Override
+    public PageResult<UserHistoryPageResultVO> pageQuery(Long userId, BasePageQueryDTO pageQueryDTO) {
+        Page<UserHistoryPageResultVO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        Page<UserHistoryPageResultVO> result = historyMapper.pageQuery(userId,page);
+        return new PageResult<>(result.getTotal(), result.getRecords());
     }
 }

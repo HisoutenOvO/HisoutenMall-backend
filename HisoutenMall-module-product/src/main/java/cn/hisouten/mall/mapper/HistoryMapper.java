@@ -1,7 +1,9 @@
 package cn.hisouten.mall.mapper;
 
 import cn.hisouten.mall.pojo.entity.UserBrowseHistory;
+import cn.hisouten.mall.pojo.vo.history.UserHistoryPageResultVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -24,4 +26,12 @@ public interface HistoryMapper extends BaseMapper<UserBrowseHistory> {
      */
     @Insert("insert into user_browse_history (user_id, product_id, browse_time) values (#{userId}, #{productId}, NOW()) on duplicate key update browse_time = NOW()")
     void upsert(Long userId, Long productId);
+
+    /**
+     * 分页查询历史记录
+     * @param userId 用户id
+     * @param page 分页参数
+     * @return 返回值
+     */
+    Page<UserHistoryPageResultVO> pageQuery(Long userId, Page<UserHistoryPageResultVO> page);
 }

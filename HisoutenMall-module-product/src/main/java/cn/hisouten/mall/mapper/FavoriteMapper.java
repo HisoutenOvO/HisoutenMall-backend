@@ -2,7 +2,7 @@ package cn.hisouten.mall.mapper;
 
 import cn.hisouten.mall.pojo.entity.UserFavorite;
 import cn.hisouten.mall.pojo.entity.Product;
-import cn.hisouten.mall.pojo.vo.product.UserFavoritePageResultVO;
+import cn.hisouten.mall.pojo.vo.favorite.UserFavoritePageResultVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Delete;

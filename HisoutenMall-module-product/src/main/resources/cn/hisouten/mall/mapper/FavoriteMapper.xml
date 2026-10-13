@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.hisouten.mall.mapper.FavoriteMapper">
-    <select id="pageQuery" resultType="cn.hisouten.mall.pojo.vo.product.UserFavoritePageResultVO">
+    <select id="pageQuery" resultType="cn.hisouten.mall.pojo.vo.favorite.UserFavoritePageResultVO">
         select
             f.id, f.product_id, f.create_time,
             p.name as productName, p.main_image, p.status as productStatus,
