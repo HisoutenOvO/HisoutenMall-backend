@@ -33,4 +33,11 @@ public interface FavoriteService {
      * @return 返回值
      */
     Boolean checkFavorite(Long userId, Long productId);
+
+    /**
+     * 获取收藏数量
+     * @param userId 用户if
+     * @return 返回值
+     */
+    Integer count(Long userId);
 }

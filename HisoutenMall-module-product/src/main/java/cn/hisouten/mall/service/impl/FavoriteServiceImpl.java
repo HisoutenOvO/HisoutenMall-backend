@@ -81,4 +81,14 @@ public class FavoriteServiceImpl implements FavoriteService {
         Integer count = favoriteMapper.selectCount(userId,productId);
         return count > 0;
     }
+
+    /**
+     * 获取收藏数量
+     * @param userId 用户if
+     * @return 返回值
+     */
+    @Override
+    public Integer count(Long userId) {
+        return Math.toIntExact(favoriteMapper.selectCount(null));
+    }
 }

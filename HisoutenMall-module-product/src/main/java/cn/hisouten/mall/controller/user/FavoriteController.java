@@ -73,4 +73,16 @@ public class FavoriteController {
         log.info("用户：{} 是否收藏:{} ?",userId,productId);
         return Result.success(favoriteService.checkFavorite(userId,productId));
     }
+
+    /**
+     * 获取收藏数量
+     * @return 返回值
+     */
+    @GetMapping("/count")
+    @Operation(summary = "获取收藏数量")
+    public Result<Integer> count(){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 获取收藏数量",userId);
+        Integer count = favoriteService.count(userId);
+    }
 }
