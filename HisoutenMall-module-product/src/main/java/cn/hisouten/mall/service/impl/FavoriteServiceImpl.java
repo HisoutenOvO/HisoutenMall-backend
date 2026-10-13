@@ -51,11 +51,7 @@ public class FavoriteServiceImpl implements FavoriteService {
      */
     @Override
     public void cancelFavorite(Long userId, Long productId) {
-        Product product = productMapper.selectByProductId(userId,productId);
-        if(product == null){
-            return;
-        }
-        favoriteMapper.deleteById(productId);
+        favoriteMapper.deleteByProductId(userId,productId);
     }
 
     /**

@@ -5,6 +5,7 @@ import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.vo.product.UserFavoritePageResultVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -34,4 +35,13 @@ public interface FavoriteMapper extends BaseMapper<Favorite> {
      * @return 返回值
      */
     Integer selectCount(Long userId, Long productId);
+
+    /**
+     * 根据商品id取消收藏
+     * @param productId 商品id
+     * @param userId 用户id
+     * @return 返回值
+     */
+    @Delete("delete from user_favorite where product_id = #{productId} and user_id = #{userId}")
+    Product deleteByProductId(Long userId,Long productId);
 }
