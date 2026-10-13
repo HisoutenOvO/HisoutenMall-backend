@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.hisouten.mall.mapper.FavoriteMapper">
+    <select id="pageQuery" resultType="cn.hisouten.mall.pojo.vo.product.UserFavoritePageResultVO">
+        select
+            f.id, f.product_id, f.create_time,
+            p.name as productName, p.main_image, p.status as productStatus,
+            mp.shop_name as merchantName,
+            sku_agg.min_price as minPrice,
+            sku_agg.total_stock as totalStock
+        from user_favorite f
+                 left join product p on f.product_id = p.id
+                 left join merchant_profile mp on p.merchant_id = mp.user_id
+                 left join (
+            select product_id, MIN(price) as min_price, SUM(stock) as total_stock
+            from product_sku
+            where deleted = 0
+            group by product_id
+        ) sku_agg on p.id = sku_agg.product_id
+        where f.user_id = #{userId}
+          and p.deleted = 0
+        order by f.create_time desc
+    </select>
 </mapper>

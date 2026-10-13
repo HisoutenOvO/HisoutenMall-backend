@@ -1,6 +1,6 @@
 package cn.hisouten.mall.pojo.dto.product;
 
-import cn.hisouten.mall.pojo.BasePageQuery;
+import cn.hisouten.mall.pojo.BasePageQueryDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-public class MerchantProductPageQueryDTO extends BasePageQuery {
+public class MerchantProductPageQueryDTO extends BasePageQueryDTO {
 
     private String keyword;
 

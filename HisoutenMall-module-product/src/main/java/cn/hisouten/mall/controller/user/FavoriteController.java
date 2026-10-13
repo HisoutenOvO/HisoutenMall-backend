@@ -1,7 +1,10 @@
 package cn.hisouten.mall.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.pojo.BasePageQueryDTO;
+import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.pojo.vo.product.UserFavoritePageResultVO;
 import cn.hisouten.mall.service.FavoriteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -43,5 +46,18 @@ public class FavoriteController {
         log.info("用户：{} 取消收藏商品:{} ",userId,productId);
         favoriteService.cancelFavorite(userId,productId);
         return Result.success();
+    }
+
+    /**
+     * 分页查询收藏
+     * @return 返回值
+     */
+    @GetMapping("/page")
+    @Operation(summary = "分页查询收藏")
+    public Result<PageResult<UserFavoritePageResultVO>> pageQuery(BasePageQueryDTO pageQuery){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 分页查询收藏",userId);
+        PageResult<UserFavoritePageResultVO> pageResult = favoriteService.pageQuery(pageQuery);
+        return Result.success(pageResult);
     }
 }

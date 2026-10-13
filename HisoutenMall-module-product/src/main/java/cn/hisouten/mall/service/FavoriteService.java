@@ -1,5 +1,9 @@
 package cn.hisouten.mall.service;
 
+import cn.hisouten.mall.pojo.BasePageQueryDTO;
+import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.pojo.vo.product.UserFavoritePageResultVO;
+
 public interface FavoriteService {
 
     /**
@@ -15,4 +19,10 @@ public interface FavoriteService {
      * @param productId 商品id
      */
     void cancelFavorite(Long userId, Long productId);
+
+    /**
+     * 用户分页查询收藏
+     * @return 返回值
+     */
+    PageResult<UserFavoritePageResultVO> pageQuery(BasePageQueryDTO pageQueryDTO);
 }

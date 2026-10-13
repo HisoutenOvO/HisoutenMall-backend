@@ -1,11 +1,16 @@
 package cn.hisouten.mall.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.FavoriteMapper;
 import cn.hisouten.mall.mapper.ProductMapper;
+import cn.hisouten.mall.pojo.BasePageQueryDTO;
+import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.entity.Favorite;
 import cn.hisouten.mall.pojo.entity.Product;
+import cn.hisouten.mall.pojo.vo.product.UserFavoritePageResultVO;
 import cn.hisouten.mall.service.FavoriteService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -51,5 +56,17 @@ public class FavoriteServiceImpl implements FavoriteService {
             return;
         }
         favoriteMapper.deleteById(productId);
+    }
+
+    /**
+     * 用户分页查询收藏
+     * @return 返回值
+     */
+    @Override
+    public PageResult<UserFavoritePageResultVO> pageQuery(BasePageQueryDTO pageQueryDTO) {
+        Page<UserFavoritePageResultVO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        Page<UserFavoritePageResultVO> result = favoriteMapper.pageQuery(page, StpUtil.getLoginIdAsLong());
+        long total = result.getTotal();
+        return new PageResult<>(total,result.getRecords());
     }
 }
