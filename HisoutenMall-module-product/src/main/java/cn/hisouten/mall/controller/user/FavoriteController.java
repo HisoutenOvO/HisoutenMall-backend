@@ -84,5 +84,6 @@ public class FavoriteController {
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户:{} 获取收藏数量",userId);
         Integer count = favoriteService.count(userId);
+        return Result.success(count);
     }
 }
