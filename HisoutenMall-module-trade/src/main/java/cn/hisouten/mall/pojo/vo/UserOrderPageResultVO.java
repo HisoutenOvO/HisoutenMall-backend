@@ -31,4 +31,6 @@ public class UserOrderPageResultVO {
     private LocalDateTime createTime;
 
     private List<OrderItemVO> items;
+
+    private Integer source;
 }

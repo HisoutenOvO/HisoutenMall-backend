@@ -142,11 +142,23 @@ public class CacheClientUtils{
 
         //判断是否存在
         if(StrUtil.isBlank(json)){
-            //不存在，直接返回，不去进一步查数据库
-            return null;
+            //不存在，加空缓存防穿透
+            T dbObject = dbFallBack.apply(id);
+            if (dbObject == null) {
+                //缓存空值防穿透
+                stringRedisTemplate.opsForValue().set(key, "", CACHE_NULL_TTL, TimeUnit.MINUTES);
+                return null;
+            }
+            setWithLogic(key, dbObject, time, unit);
+            return dbObject;
         }
 
-        //命中，先反序列化为对象
+        //命中
+        // 缓存命中空值（防穿透）
+        if (json.isEmpty()) {
+            return null;
+        }
+        //先反序列化为对象
         RedisData redisData = JSONUtil.toBean(json,RedisData.class);
         //如果对象获取出现问题
         if (redisData == null || redisData.getExpire() == null || redisData.getData() == null) {

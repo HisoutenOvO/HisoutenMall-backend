@@ -32,6 +32,8 @@ public class UserOrderDetailVO {
 
     private LocalDateTime payTime;
 
+    private Integer source;
+
     // 商家信息
     private Long merchantId;
 

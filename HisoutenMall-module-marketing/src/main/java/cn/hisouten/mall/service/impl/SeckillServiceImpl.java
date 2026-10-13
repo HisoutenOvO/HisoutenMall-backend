@@ -17,10 +17,14 @@ import cn.hisouten.mall.pojo.vo.*;
 import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.service.SeckillService;
 import cn.hisouten.mall.user.service.MerchantProfileService;
+import cn.hisouten.mall.util.CacheClientUtils;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,10 +35,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
-import static cn.hisouten.mall.constant.RedisConstant.SECKILL_STOCK;
+import static cn.hisouten.mall.constant.RedisConstant.*;
 import static cn.hisouten.mall.constant.SeckillConstant.*;
 import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
 import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
@@ -49,12 +54,15 @@ public class SeckillServiceImpl implements SeckillService {
     private final ProductService productService;
 
     private final StringRedisTemplate stringRedisTemplate;
+    private final CacheClientUtils cacheClientUtils;
+    private final CacheManager cacheManager;
 
     /**
      * 商家端新增秒杀活动
      * @param merchantSeckillActivitySaveDTO 活动参数
      */
     @Override
+    @CacheEvict(value = CACHE_SECKILL_ACTIVITY_LIST, allEntries = true)
     public void createActivity(Long merchantId, MerchantSeckillActivitySaveDTO merchantSeckillActivitySaveDTO) {
         String activityName = checkValidTimeAndName(merchantId,merchantSeckillActivitySaveDTO);
         //创建时校验开始时间
@@ -83,6 +91,8 @@ public class SeckillServiceImpl implements SeckillService {
         seckillActivity.setStartTime(merchantSeckillActivitySaveDTO.getStartTime());
         seckillActivity.setEndTime(merchantSeckillActivitySaveDTO.getEndTime());
         seckillActivityMapper.updateById(seckillActivity);
+        //清理活动列表缓存记录
+        clearActivityCache(activityId);
     }
 
 
@@ -141,6 +151,8 @@ public class SeckillServiceImpl implements SeckillService {
         seckillActivityMapper.deleteById(activityId);
         //级联删除秒杀商品
         seckillProductMapper.deleteByActivityId(activityId);
+        //清理活动列表缓存记录
+        clearActivityCache(activityId);
     }
 
     /**
@@ -212,6 +224,8 @@ public class SeckillServiceImpl implements SeckillService {
             productService.deductStock(sku.getId(), item.getSeckillStock());
             seckillProductMapper.insert(seckillProduct);
         }
+        //清理活动列表缓存记录
+        clearActivityCache(addDTO.getActivityId());
     }
 
     /**
@@ -263,6 +277,8 @@ public class SeckillServiceImpl implements SeckillService {
         seckillProduct.setSeckillStock(updateDTO.getSeckillStock());
         seckillProduct.setLimitPerUser(updateDTO.getLimitPerUser());
         seckillProductMapper.updateById(seckillProduct);
+        //清理活动列表缓存记录
+        clearActivityCache(seckillActivity.getId());
     }
 
     /**
@@ -285,6 +301,8 @@ public class SeckillServiceImpl implements SeckillService {
         //回滚普通库存
         productService.restoreStock(sku.getId(),seckillProduct.getSeckillStock());
         seckillProductMapper.deleteById(productId);
+        //清理活动列表缓存记录
+        clearActivityCache(seckillActivity.getId());
     }
 
     /**
@@ -292,6 +310,7 @@ public class SeckillServiceImpl implements SeckillService {
      * @return 返回值
      */
     @Override
+    @Cacheable(value = CACHE_SECKILL_ACTIVITY_LIST, key = ALL, sync = true)
     public List<UserSeckillActivityListVO> listQuery() {
         List<SeckillActivity> activityList = seckillActivityMapper.selectValidActivityList();
         List<UserSeckillActivityListVO> voList = new ArrayList<>();
@@ -317,9 +336,40 @@ public class SeckillServiceImpl implements SeckillService {
      */
     @Override
     public UserSeckillActivityDetailVO userDetailQuery(Long activityId) {
+        UserSeckillActivityDetailVO vo = cacheClientUtils.queryWithLogicExpire(
+                CACHE_SECKILL_PRODUCT_DETAIL_PREFIX,
+                LOCK_SECKILL_PRODUCT_DETAIL_PREFIX,
+                activityId,
+                UserSeckillActivityDetailVO.class,
+                this::loadDetailFromDB,
+                CACHE_SECKILL_PRODUCT_DETAIL_TTL,
+                TimeUnit.MINUTES
+        );
+        // 缓存不存在
+        if (vo == null) {
+            throw new BizException(ACTIVITY_NOT_FOUND);
+        }
+        //从缓存里直接取库存
+        for (UserSeckillProductVO productVO : vo.getProducts()) {
+            String stock = stringRedisTemplate.opsForValue().get(SECKILL_STOCK + productVO.getSkuId());
+            if (stock != null) {
+                productVO.setSeckillStock(Integer.parseInt(stock));
+            } else {
+                productVO.setSeckillStock(productVO.getSeckillStock());
+            }
+        }
+        return vo;
+    }
+
+    /**
+     * 用户查询秒杀活动详情回源方法
+     * @param activityId 活动id
+     * @return 返回值
+     */
+    public UserSeckillActivityDetailVO loadDetailFromDB(Long activityId){
         SeckillActivity seckillActivity = seckillActivityMapper.selectById(activityId);
         if(seckillActivity == null || seckillActivity.getStatus() == COMPLETED){
-            throw new BizException(ACTIVITY_NOT_FOUND);
+            return null;
         }
         UserSeckillActivityDetailVO detailVO = new UserSeckillActivityDetailVO();
         BeanUtils.copyProperties(seckillActivity,detailVO);
@@ -336,13 +386,6 @@ public class SeckillServiceImpl implements SeckillService {
                     .seckillPrice(bo.getSeckillPrice())
                     .limitPerUser(bo.getLimitPerUser())
                     .build();
-            //从缓存里直接取库存
-            String stock = stringRedisTemplate.opsForValue().get(SECKILL_STOCK + bo.getSkuId());
-            if (stock != null) {
-                vo.setSeckillStock(Integer.parseInt(stock));
-            } else {
-                vo.setSeckillStock(bo.getSeckillStock());
-            }
             voList.add(vo);
         }
         //拼装商品列表
@@ -406,4 +449,14 @@ public class SeckillServiceImpl implements SeckillService {
     }
 
 
+    /**
+     * 清理活动缓存私有方法
+     * @param activityId 活动id
+     */
+    private void clearActivityCache(Long activityId) {
+        cacheManager.getCache(CACHE_SECKILL_ACTIVITY_LIST).clear();
+        if (activityId != null) {
+            cacheClientUtils.delete(CACHE_SECKILL_PRODUCT_DETAIL_PREFIX, activityId);
+        }
+    }
 }

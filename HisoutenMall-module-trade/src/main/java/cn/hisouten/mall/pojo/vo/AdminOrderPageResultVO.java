@@ -34,4 +34,6 @@ public class AdminOrderPageResultVO {
     private String payTime;
 
     private List<OrderItemVO> items;
+
+    private Integer source;
 }

@@ -34,4 +34,6 @@ public class MerchantOrderDetailVO {
 
     private List<OrderItemVO> items;
 
+    private Integer source;
+
 }

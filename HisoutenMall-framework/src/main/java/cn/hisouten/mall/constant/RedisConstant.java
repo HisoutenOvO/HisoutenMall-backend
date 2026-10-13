@@ -14,6 +14,15 @@ public class RedisConstant {
     //商品详情缓存过期时间
     public static final long CACHE_PRODUCT_DETAIL_TTL = 30L;
 
+    //秒杀商品详情键前缀
+    public static final String CACHE_SECKILL_PRODUCT_DETAIL_PREFIX = "cache:seckill:product:detail:";
+
+    //秒杀商品详情锁前缀
+    public static final String LOCK_SECKILL_PRODUCT_DETAIL_PREFIX = "lock:seckill:product:detail:";
+
+    //秒杀商品详情缓存过期时间
+    public static final long CACHE_SECKILL_PRODUCT_DETAIL_TTL = 30L;
+
     //用户详情键前缀
     public static final String CACHE_USER_DETAIL_PREFIX = "cache:user:detail:";
 
@@ -46,6 +55,12 @@ public class RedisConstant {
 
     //秒杀订单锁前缀
     public static final String LOCK_SECKILL_ORDER_PREFIX = "lock:seckill:order:";
+
+    //秒杀活动列表键前缀
+    public static final String CACHE_SECKILL_ACTIVITY_LIST = "cache:seckill:activity:list:";
+
+    //秒杀活动列表值
+    public static final String ALL = "'all'";
 
     //幂等订单取消键前缀
     public static final String MQ_IDEMPOTENT_ORDER_CANCEL = "mq:idempotent:order-cancel:";

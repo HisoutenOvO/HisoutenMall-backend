@@ -49,7 +49,7 @@ public class OrderCancelConsumer implements RocketMQListener<OrderCancelMessage>
 
         try {
             for (OrderCancelMessage.Item item : message.getItems()) {
-                // 2.1 回滚数据库秒杀库存（始终执行，DB 是权威）
+                // 2.1 回滚数据库秒杀库存
                 seckillProductMapper.restoreSeckillStock(item.getSkuId(), item.getQuantity());
 
                 // 2.2 判断活动状态，只有进行中才回滚 Redis

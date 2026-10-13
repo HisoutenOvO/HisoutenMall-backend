@@ -84,4 +84,11 @@ public interface SeckillService {
      * @return 返回值
      */
     UserSeckillActivityDetailVO userDetailQuery(Long activityId);
+
+    /**
+     * 用户查询秒杀活动详情回源方法
+     * @param activityId 活动id
+     * @return 返回值
+     */
+    UserSeckillActivityDetailVO loadDetailFromDB(Long activityId);
 }

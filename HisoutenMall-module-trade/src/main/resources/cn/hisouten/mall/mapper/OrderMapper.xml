@@ -3,7 +3,7 @@
 <mapper namespace="cn.hisouten.mall.mapper.OrderMapper">
     <select id="pageQuery" resultType="cn.hisouten.mall.pojo.vo.UserOrderPageResultVO">
         select o.id , o.order_no as orderNo,o.merchant_id as merchantId,m.name as merchantName,
-               o.pay_amount as payAmount,o.status,o.create_time as createTime
+               o.pay_amount as payAmount,o.status,o.create_time as createTime,o.source
         from `order` o
         left join merchant_profile m on o.merchant_id = m.user_id
         <where>
@@ -13,13 +13,16 @@
             <if test="dto.status != null ">
                 and status = #{dto.status}
             </if>
+            <if test="dto.source != null">
+                and o.source = #{dto.source}
+            </if>
         and deleted = 0
         order by m.create_time desc
         </where>
     </select>
     <select id="MerchantPageQuery" resultType="cn.hisouten.mall.pojo.vo.MerchantOrderPageResultVO">
         select o.id,o.order_no as orderNo,o.pay_amount as payAmount,o.status,o.create_time as createTime,
-               u.nickname as buyerName
+               u.nickname as buyerName,o.source
         from `order` o
         left join user_profile u on o.user_id = u.user_id
         <where>
@@ -29,6 +32,9 @@
         <if test="dto.status != null ">
             and status = #{dto.status}
         </if>
+        <if test="dto.source != null">
+            and o.source = #{dto.source}
+        </if>
         and deleted = 0 and o.merchant_id = #{merchantId}
         order by o.create_time desc
         </where>
@@ -36,7 +42,7 @@
     <select id="AdminPageQuery" resultType="cn.hisouten.mall.pojo.vo.AdminOrderPageResultVO">
         select o.id,o.order_no as orderNo,o.pay_amount as payAmount,o.status,o.create_time as createTime,
                u.nickname as buyerName,m.shop_name as merchantName,o.receiver_name as receiverName,
-               o.receiver_address as receiverAddress,o.receiver_phone as receiverPhone,o.pay_time as payTime
+               o.receiver_address as receiverAddress,o.receiver_phone as receiverPhone,o.pay_time as payTime,o.source
         from `order` o
         left join merchant_profile m on m.user_id = o.merchant_id
         left join user_profile u on o.user_id = u.user_id
@@ -46,6 +52,9 @@
             </if>
             <if test="dto.status != null ">
                 and status = #{dto.status}
+            </if>
+            <if test="dto.source != null">
+                and o.source = #{source}
             </if>
             and o.deleted = 0
             order by m.create_time desc

@@ -11,4 +11,6 @@ public class UserOrderPageQueryDTO extends BasePageQuery {
     private String keyword;
 
     private Integer status;
+
+    private Integer source;
 }

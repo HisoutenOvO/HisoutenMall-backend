@@ -26,4 +26,6 @@ public class MerchantOrderPageResultVO {
 
     private List<OrderItemVO> items;
 
+    private Integer source;
+
 }
