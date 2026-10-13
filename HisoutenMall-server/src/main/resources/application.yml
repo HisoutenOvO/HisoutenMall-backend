@@ -27,7 +27,7 @@ spring:
           max-idle: 8     # 最大空闲连接
           min-idle: 0     # 最小空闲连接
 rocketmq:
-  name-server: localhost:9876;localhost:9877
+  name-server: 10.143.171.30:9876;10.143.171.30:9877
   producer:
     group: mall-producer-group
 knife4j:

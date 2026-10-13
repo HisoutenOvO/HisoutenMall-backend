@@ -178,18 +178,20 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.updateById(order);
 
         List<OrderItem> items = orderItemMapper.selectByOrderId(order.getId());
-        // 只回滚普通库存
-        for (OrderItem item : items) {
-            productService.restoreStock(item.getSkuId(), item.getQuantity());
-        }
 
-        // 如果是秒杀订单，发 MQ 通知 marketing 回滚秒杀库存
         if (Objects.equals(order.getSource(), SECKILL)) {
+            // 秒杀订单：不回滚普通库存，发 MQ 回滚秒杀库存 + Redis
             OrderCancelMessage msg = new OrderCancelMessage();
             msg.setOrderNo(order.getOrderNo());
+            msg.setUserId(order.getUserId());
             msg.setItems(items.stream().map(i ->
                     new OrderCancelMessage.Item(i.getSkuId(), i.getQuantity())).toList());
             mqProducerService.send(ORDER_CANCEL_TOPIC, msg);
+        } else {
+            // 普通订单：回滚普通库存
+            for (OrderItem item : items) {
+                productService.restoreStock(item.getSkuId(), item.getQuantity());
+            }
         }
     }
 
@@ -401,22 +403,23 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.updateById(order);
 
         List<OrderItem> items = orderItemMapper.selectByOrderId(order.getId());
-        order.setStatus(CANCELLED);
-        orderMapper.updateById(order);
 
-        // 只回滚普通库存
-        for (OrderItem item : items) {
-            productService.restoreStock(item.getSkuId(), item.getQuantity());
-        }
-
-        // 如果是秒杀订单，发 MQ 通知 marketing 回滚秒杀库存
         if (Objects.equals(order.getSource(), SECKILL)) {
+            // 秒杀订单：不回滚普通库存（秒杀时没扣普通库存），发 MQ 通知 marketing 回滚秒杀库存 + Redis
             OrderCancelMessage msg = new OrderCancelMessage();
             msg.setOrderNo(order.getOrderNo());
+            msg.setUserId(order.getUserId());
             msg.setItems(items.stream().map(i ->
                     new OrderCancelMessage.Item(i.getSkuId(), i.getQuantity())).toList());
             mqProducerService.send(ORDER_CANCEL_TOPIC, msg);
+        } else {
+            // 普通订单：回滚普通库存
+            for (OrderItem item : items) {
+                productService.restoreStock(item.getSkuId(), item.getQuantity());
+            }
         }
+
+        log.info("[订单超时] 订单 {} 关闭成功，来源={}", orderNo, order.getSource());
     }
 
     /**

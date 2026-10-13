@@ -2,24 +2,21 @@ package cn.hisouten.mall.task;
 
 import cn.hisouten.mall.mapper.SeckillActivityMapper;
 import cn.hisouten.mall.mapper.SeckillProductMapper;
-import cn.hisouten.mall.pojo.bo.SeckillProductBO;
 import cn.hisouten.mall.pojo.entity.SeckillActivity;
 import cn.hisouten.mall.pojo.entity.SeckillProduct;
 import cn.hisouten.mall.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static cn.hisouten.mall.constant.RedisConstant.SECKILL_STOCK;
-import static cn.hisouten.mall.constant.RedisConstant.SECKILL_USER;
+import static cn.hisouten.mall.constant.RedisConstant.SECKILL_USERS;
 import static cn.hisouten.mall.constant.SeckillConstant.COMPLETED;
 import static cn.hisouten.mall.constant.SeckillConstant.PENDING;
 
@@ -59,7 +56,7 @@ public class ChangeActivityStatusTask {
                 }
                 // 清理 Redis 缓存
                 stringRedisTemplate.delete(SECKILL_STOCK + sp.getSkuId());
-                stringRedisTemplate.delete(SECKILL_USER + sp.getSkuId());
+                stringRedisTemplate.delete(SECKILL_USERS + sp.getSkuId());
             }
 
             // 改活动状态

@@ -34,6 +34,7 @@ import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.RedisConstant.*;
 import static cn.hisouten.mall.constant.SeckillConstant.*;
 import static cn.hisouten.mall.constant.StatusConstant.PENDING_PAYMENT;
+import static cn.hisouten.mall.mq.constant.MQExceptionConstant.MESSAGE_SEND_FAILED;
 import static cn.hisouten.mall.mq.constant.MqConstant.*;
 
 @Service
@@ -67,6 +68,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
      * @return 返回下单成功
      */
     @Override
+    @Transactional
     public String seckillProduct(Long userId, SeckillExecuteDTO seckillExecuteDTO) {
         //1. 先获取Redisson锁对象
         String key = LOCK_SECKILL_ORDER_PREFIX + userId + ":" +seckillExecuteDTO.getSkuId();
@@ -105,7 +107,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
             List<String> keys = new ArrayList<>();
             //规定KEYS[1]和KEYS[2]
             keys.add(SECKILL_STOCK + seckillExecuteDTO.getSkuId());
-            keys.add(SECKILL_USER + seckillExecuteDTO.getSkuId());
+            keys.add(SECKILL_USERS + seckillExecuteDTO.getSkuId());
             long result = stringRedisTemplate.execute(
                     SECKILL_SCRIPT,
                     keys,
@@ -116,6 +118,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
             //判断返回值
             if (result == 1) throw new BizException(OUT_OF_STOCK);
             if (result == 2) throw new BizException(DO_NOT_ORDER_REPEATEDLY);
+
         }finally {
             lock.unlock();
         }
@@ -125,7 +128,14 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
         msg.setSkuId(seckillExecuteDTO.getSkuId());
         msg.setActivityId(seckillExecuteDTO.getActivityId());
         msg.setSendTime(System.currentTimeMillis());
-        mqProducerService.send(SECKILL_ORDER_TOPIC, msg);
+        try {
+            mqProducerService.send(SECKILL_ORDER_TOPIC, msg);
+        } catch (Exception e) {
+            // MQ 发送失败，回滚 Redis
+            stringRedisTemplate.opsForValue().increment(SECKILL_STOCK + seckillExecuteDTO.getSkuId(), 1);
+            stringRedisTemplate.opsForHash().delete(SECKILL_USERS + seckillExecuteDTO.getSkuId(), userId.toString());
+            throw new BizException(MESSAGE_SEND_FAILED);
+        }
 
         //返回成功
         return ORDER_COMPLETED;
@@ -142,70 +152,98 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
         Long activityId = message.getActivityId();
         Long skuId = message.getSkuId();
 
-        //查询商品和sku
-        // 活动不存在
-        SeckillActivity seckillActivity = seckillActivityMapper.selectById(activityId);
-        if (seckillActivity == null || !Objects.equals(seckillActivity.getStatus(), RUNNING)) {
-            throw new BizException(ACTIVITY_INVALID);
-        }
-        LocalDateTime now = LocalDateTime.now();
-        if (seckillActivity.getStartTime().isAfter(now) || seckillActivity.getEndTime().isBefore(now)) {
-            throw new BizException(ACTIVITY_INVALID);
-        }
-        ProductSku productSku = productService.getSkuBySkuId(skuId);
-        if (productSku == null) {
-            log.error("[秒杀对账] SKU不存在,skuId={}", skuId);
-            return;
-        }
-        Product product = productService.getProductByProductId(productSku.getProductId());
-        if(product == null){
-            log.error("[秒杀对账] sku对应商品不存在,skuId={}", skuId);
-            return;
-        }
-        //校验商品是否是秒杀商品
-        SeckillProduct seckillProduct = seckillProductMapper.selectBySkuId(skuId);
-        if (seckillProduct == null || !seckillProduct.getActivityId().equals(message.getActivityId())) {
-            throw new BizException(PRODUCT_NOT_FOUND);
-        }
-        UserAddress userAddress = userAddressService.getDefaultByUserId(userId);
+        // 分布式锁：同一用户同一 SKU 串行处理
+        String lockKey = "lock:seckill:create:" + userId + ":" + skuId;
+        RLock lock = redissonClient.getLock(lockKey);
+        boolean isLock = false;
+        try {
+            isLock = lock.tryLock(3, 10, TimeUnit.SECONDS);
+            if (!isLock) {
+                log.warn("[秒杀创建] 获取锁失败: userId={}, skuId={}", userId, skuId);
+                throw new BizException(SYSTEM_ERROR);
+            }
 
-        //乐观锁扣减库存
-        int seckillAffected = seckillProductMapper.deductSeckillStock(seckillProduct.getId(), 1);
-        if (seckillAffected == 0) {
-            // 秒杀库存不够（Redis 和 DB 不一致），回滚
-            throw new BizException(OUT_OF_STOCK);
+            // 幂等校验（必须在锁内）
+            if (seckillProductMapper.countSeckillOrder(userId, skuId) > 0) {
+                log.warn("[秒杀幂等] 已存在订单，跳过: userId={}, skuId={}", userId, skuId);
+                return;
+            }
+
+            // 校验活动
+            SeckillActivity seckillActivity = seckillActivityMapper.selectById(activityId);
+            if (seckillActivity == null || !Objects.equals(seckillActivity.getStatus(), RUNNING)) {
+                throw new BizException(ACTIVITY_INVALID);
+            }
+            LocalDateTime now = LocalDateTime.now();
+            if (seckillActivity.getStartTime().isAfter(now) || seckillActivity.getEndTime().isBefore(now)) {
+                throw new BizException(ACTIVITY_INVALID);
+            }
+
+            // 校验 SKU 和商品
+            ProductSku productSku = productService.getSkuBySkuId(skuId);
+            if (productSku == null) {
+                log.error("[秒杀对账] SKU不存在,skuId={}", skuId);
+                return;
+            }
+            Product product = productService.getProductByProductId(productSku.getProductId());
+            if (product == null) {
+                log.error("[秒杀对账] sku对应商品不存在,skuId={}", skuId);
+                return;
+            }
+
+            // 校验是否是秒杀商品
+            SeckillProduct seckillProduct = seckillProductMapper.selectBySkuId(skuId);
+            if (seckillProduct == null || !seckillProduct.getActivityId().equals(message.getActivityId())) {
+                throw new BizException(PRODUCT_NOT_FOUND);
+            }
+
+            UserAddress userAddress = userAddressService.getDefaultByUserId(userId);
+
+            // 乐观锁扣减秒杀库存
+            int seckillAffected = seckillProductMapper.deductSeckillStock(seckillProduct.getId(), 1);
+            if (seckillAffected == 0) {
+                throw new BizException(OUT_OF_STOCK);
+            }
+
+            // 创建订单
+            Order order = new Order();
+            order.setOrderNo(System.currentTimeMillis()
+                    + String.format("%04d", ThreadLocalRandom.current().nextInt(10000)));
+            order.setUserId(userId);
+            order.setMerchantId(product.getMerchantId());
+            order.setTotalAmount(seckillProduct.getSeckillPrice());
+            order.setPayAmount(seckillProduct.getSeckillPrice());
+            order.setStatus(PENDING_PAYMENT);
+            order.setReceiverName(userAddress.getReceiverName());
+            order.setReceiverPhone(userAddress.getReceiverPhone());
+            order.setReceiverAddress(userAddress.getProvince() + userAddress.getCity() + userAddress.getDistrict() + userAddress.getDetail());
+            order.setSource(SECKILL);
+            orderService.insertOrder(order);
+
+            // 创建订单明细
+            OrderItem item = new OrderItem();
+            item.setOrderId(order.getId());
+            item.setProductId(product.getId());
+            item.setSkuId(skuId);
+            item.setProductName(product.getName());
+            item.setSkuSpecs(productSku.getSpecs());
+            item.setPrice(seckillProduct.getSeckillPrice());
+            item.setQuantity(1);
+            item.setTotalPrice(seckillProduct.getSeckillPrice());
+            orderService.insertOrderItem(item);
+
+            // 发延时消息（订单超时关闭）
+            OrderTimeoutMessage timeoutMsg = new OrderTimeoutMessage();
+            timeoutMsg.setOrderNo(order.getOrderNo());
+            mqProducerService.sendDelay(ORDER_TIMEOUT_TOPIC, timeoutMsg, THIRTY_MINUTE_DELAY);
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new BizException(SYSTEM_ERROR);
+        } finally {
+            if (isLock && lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
         }
-
-        //创建订单（走已有的订单创建逻辑）
-        Order order = new Order();
-        order.setOrderNo(System.currentTimeMillis()
-                + String.format("%04d", ThreadLocalRandom.current().nextInt(10000)));
-        order.setUserId(userId);
-        order.setMerchantId(product.getMerchantId());
-        order.setTotalAmount(seckillProduct.getSeckillPrice());
-        order.setPayAmount(seckillProduct.getSeckillPrice());
-        order.setStatus(PENDING_PAYMENT);
-        order.setReceiverName(userAddress.getReceiverName());
-        order.setReceiverPhone(userAddress.getReceiverPhone());
-        order.setReceiverAddress(userAddress.getProvince() + userAddress.getCity() + userAddress.getDistrict() +userAddress.getDetail());
-        order.setSource(SECKILL);
-        orderService.insertOrder(order);
-
-        //创建订单明细
-        OrderItem item = new OrderItem();
-        item.setOrderId(order.getId());
-        item.setProductId(product.getId());
-        item.setSkuId(skuId);
-        item.setProductName(product.getName());
-        item.setSkuSpecs(productSku.getSpecs());
-        item.setPrice(seckillProduct.getSeckillPrice());
-        item.setQuantity(1);
-        item.setTotalPrice(seckillProduct.getSeckillPrice());
-        orderService.insertOrderItem(item);
-
-        //发延时消息（订单超时关闭）
-        OrderTimeoutMessage timeoutMsg = new OrderTimeoutMessage();
-        timeoutMsg.setOrderNo(order.getOrderNo());
-        mqProducerService.sendDelay(ORDER_TIMEOUT_TOPIC, timeoutMsg, THIRTY_MINUTE_DELAY);
     }
 }

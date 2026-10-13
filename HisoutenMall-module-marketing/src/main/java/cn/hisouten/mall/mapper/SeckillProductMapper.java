@@ -69,6 +69,17 @@ public interface SeckillProductMapper extends BaseMapper<SeckillProduct> {
      * @param skuId skuId
      * @param quantity 回滚数量
      */
-    @Update("UPDATE seckill_product SET seckill_stock = seckill_stock + #{num} WHERE sku_id = #{skuId}")
+    @Update("UPDATE seckill_product SET seckill_stock = seckill_stock + #{quantity} WHERE sku_id = #{skuId}")
     void restoreSeckillStock(Long skuId, Integer quantity);
+
+    /**
+     * 查询秒杀订单数
+     * @param userId 用户id
+     * @param skuId skuId
+     * @return 返回值
+     */
+    @Select("SELECT COUNT(1) FROM `order` o " +
+            "INNER JOIN order_item oi ON o.id = oi.order_id " +
+            "WHERE o.user_id = #{userId} AND o.source = 1 AND oi.sku_id = #{skuId} AND o.deleted = 0 AND o.status != 2")
+    int countSeckillOrder(Long userId, Long skuId);
 }

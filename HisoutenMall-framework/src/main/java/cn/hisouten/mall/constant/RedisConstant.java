@@ -54,7 +54,7 @@ public class RedisConstant {
     public static final String SECKILL_STOCK = "seckill:stock:";
 
     //秒杀用户
-    public static final String SECKILL_USER = "seckill:user:";
+    public static final String SECKILL_USERS = "seckill:users:";
 
     //设置空缓存的过期时间——单位是分钟
     public static final long CACHE_NULL_TTL = 2L;

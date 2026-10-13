@@ -19,6 +19,7 @@ public class OrderCancelMessage implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String orderNo;
+    private Long userId;
     private Integer source;   // 0-普通 1-秒杀
     private List<Item> items;
 
