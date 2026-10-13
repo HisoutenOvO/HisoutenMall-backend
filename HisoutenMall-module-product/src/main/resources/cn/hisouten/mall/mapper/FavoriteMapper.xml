@@ -21,4 +21,13 @@
           and p.deleted = 0
         order by f.create_time desc
     </select>
+    <select id="selectCount" resultType="java.lang.Integer">
+        select count(*) from user_favorite
+        <where>
+            and user_id = #{userId}
+            <if test="productId != null">
+                and product_id = #{productId}
+            </if>
+        </where>
+    </select>
 </mapper>

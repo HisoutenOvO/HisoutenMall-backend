@@ -33,6 +33,5 @@ public interface FavoriteMapper extends BaseMapper<Favorite> {
      * @param productId 商品id
      * @return 返回值
      */
-    @Select("select count(*) from user_favorite where user_id = #{userId} and product_id = #{productId}")
     Integer selectCount(Long userId, Long productId);
 }

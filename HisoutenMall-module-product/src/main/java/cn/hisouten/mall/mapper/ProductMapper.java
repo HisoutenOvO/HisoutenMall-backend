@@ -95,4 +95,13 @@ public interface ProductMapper extends BaseMapper<Product> {
      */
     @Update("update product set status = 0 where merchant_id = #{merchanId}")
     void removeAllProductsByMerchantId(Long merchantId);
+
+    /**
+     * 根据商品id取消收藏
+     * @param productId 商品id
+     * @param userId 用户id
+     * @return 返回值
+     */
+    @Delete("delete from user_favorite where product_id = #{productId} and user_id = #{userId}")
+    Product selectByProductId(Long userId,Long productId);
 }

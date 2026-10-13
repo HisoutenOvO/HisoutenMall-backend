@@ -51,7 +51,7 @@ public class FavoriteServiceImpl implements FavoriteService {
      */
     @Override
     public void cancelFavorite(Long userId, Long productId) {
-        Product product = productMapper.selectById(productId);
+        Product product = productMapper.selectByProductId(userId,productId);
         if(product == null){
             return;
         }
@@ -79,7 +79,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     @Override
     public Boolean checkFavorite(Long userId, Long productId) {
         Integer count = favoriteMapper.selectCount(userId,productId);
-        return count > 0;
+        return count != null && count > 0;
     }
 
     /**
@@ -89,6 +89,6 @@ public class FavoriteServiceImpl implements FavoriteService {
      */
     @Override
     public Integer count(Long userId) {
-        return Math.toIntExact(favoriteMapper.selectCount(null));
+        return Math.toIntExact(favoriteMapper.selectCount(userId,null));
     }
 }
