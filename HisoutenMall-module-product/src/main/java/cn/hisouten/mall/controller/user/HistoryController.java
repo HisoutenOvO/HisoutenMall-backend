@@ -47,4 +47,18 @@ public class HistoryController {
         PageResult<UserHistoryPageResultVO> pageResult = historyService.pageQuery(userId,pageQueryDTO);
         return Result.success(pageResult);
     }
+
+    /**
+     * 删除历史记录
+     * @param productId 商品id
+     * @return 返回值
+     */
+    @DeleteMapping("/{productId}")
+    @Operation(summary = "删除历史记录")
+    public Result deleteHistory(@PathVariable Long productId){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 删除历史记录商品:{} ",userId,productId);
+        historyService.deleteHistory(userId,productId);
+        return Result.success();
+    }
 }

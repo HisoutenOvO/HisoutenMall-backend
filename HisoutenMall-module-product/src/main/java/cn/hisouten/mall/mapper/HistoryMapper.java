@@ -4,6 +4,7 @@ import cn.hisouten.mall.pojo.entity.UserBrowseHistory;
 import cn.hisouten.mall.pojo.vo.history.UserHistoryPageResultVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -34,4 +35,11 @@ public interface HistoryMapper extends BaseMapper<UserBrowseHistory> {
      * @return 返回值
      */
     Page<UserHistoryPageResultVO> pageQuery(Long userId, Page<UserHistoryPageResultVO> page);
+
+    /**
+     * 删掉用户除了最近默认条之外的所有浏览记录
+     * @param userId 用户id
+     * @param limit 上限
+     */
+    void deleteExcess(Long userId, Integer limit);
 }

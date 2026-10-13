@@ -1,5 +1,6 @@
 package cn.hisouten.mall.service.impl;
 
+import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.HistoryMapper;
 import cn.hisouten.mall.mapper.ProductMapper;
 import cn.hisouten.mall.pojo.BasePageQueryDTO;
@@ -13,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+
+import static cn.hisouten.mall.constant.CommonConstant.DEFAULT_HISTORY_LIMIT;
+import static cn.hisouten.mall.constant.ExceptionMessageConstant.NO_PERMISSION;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +36,8 @@ public class HistoryServiceImpl implements HistoryService {
             return;
         }
         historyMapper.upsert(userId,productId);
+        //若超出100条则删除最早的记录
+        historyMapper.deleteExcess(userId, DEFAULT_HISTORY_LIMIT);
     }
 
     /**
@@ -45,5 +51,19 @@ public class HistoryServiceImpl implements HistoryService {
         Page<UserHistoryPageResultVO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
         Page<UserHistoryPageResultVO> result = historyMapper.pageQuery(userId,page);
         return new PageResult<>(result.getTotal(), result.getRecords());
+    }
+
+    /**
+     * 用户删除单条历史记录
+     * @param userId 用户id
+     * @param productId 商品id
+     */
+    @Override
+    public void deleteHistory(Long userId, Long productId) {
+        UserBrowseHistory history = historyMapper.selectByProductId(userId,productId);
+        if(!history.getUserId().equals(userId)){
+            throw new BizException(NO_PERMISSION);
+        }
+        historyMapper.deleteById(history);
     }
 }

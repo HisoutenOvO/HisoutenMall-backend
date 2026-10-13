@@ -20,4 +20,11 @@ public interface HistoryService {
      * @return 返回值
      */
     PageResult<UserHistoryPageResultVO> pageQuery(Long userId, BasePageQueryDTO pageQueryDTO);
+
+    /**
+     * 用户删除单条历史记录
+     * @param userId 用户id
+     * @param productId 商品id
+     */
+    void deleteHistory(Long userId, Long productId);
 }
