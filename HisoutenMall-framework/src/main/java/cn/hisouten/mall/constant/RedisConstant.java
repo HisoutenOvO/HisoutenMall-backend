@@ -47,6 +47,9 @@ public class RedisConstant {
     //秒杀订单锁前缀
     public static final String LOCK_SECKILL_ORDER_PREFIX = "lock:seckill:order:";
 
+    //幂等订单取消键前缀
+    public static final String MQ_IDEMPOTENT_ORDER_CANCEL = "mq:idempotent:order-cancel:";
+
     //秒杀库存
     public static final String SECKILL_STOCK = "seckill:stock:";
 

@@ -28,18 +28,19 @@ public class CheckStockTask {
      * 每分钟对账一次
      */
     @Scheduled(cron = "0 * * * * ?")
-    public void checkStock(){
+    public void checkStock() {
         for (SeckillProduct sp : seckillProductMapper.selectAllActive()) {
             String key = SECKILL_STOCK + sp.getSkuId();
             String redisStock = stringRedisTemplate.opsForValue().get(key);
             if (redisStock == null) continue;
 
-            ProductSku sku = productService.getSkuBySkuId(sp.getSkuId());
-            int dbStock = sku == null ? 0 : sku.getStock();
+            SeckillProduct db = seckillProductMapper.selectById(sp.getId());
+            if (db == null) continue;
 
-            if (Integer.parseInt(redisStock) != dbStock) {
-                log.warn("[对账] 不一致 skuId={}, Redis={}, DB={}", sp.getSkuId(), redisStock, dbStock);
-                stringRedisTemplate.opsForValue().set(key, String.valueOf(dbStock));
+            if (Integer.parseInt(redisStock) != db.getSeckillStock()) {
+                log.warn("[对账] skuId={}, Redis={}, DB={}",
+                        sp.getSkuId(), redisStock, db.getSeckillStock());
+                stringRedisTemplate.opsForValue().set(key, String.valueOf(db.getSeckillStock()));
             }
         }
     }

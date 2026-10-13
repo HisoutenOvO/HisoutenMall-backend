@@ -9,6 +9,10 @@ public class MqConstant {
     public static final String ORDER_TIMEOUT_TOPIC = "order-timeout-topic";
     public static final String ORDER_TIMEOUT_GROUP = "order-timeout-consumer-group";
 
+    // ========== 取消订单 ==========
+    public static final String ORDER_CANCEL_TOPIC = "order-cancel-topic";
+    public static final String ORDER_CANCEL_GROUP = "order-cancel-consumer-group";
+
     // ========== 秒杀异步下单 ==========
     public static final String SECKILL_ORDER_TOPIC = "seckill-order-topic";
     public static final String SECKILL_ORDER_GROUP = "seckill-order-consumer-group";

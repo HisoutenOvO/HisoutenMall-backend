@@ -24,6 +24,15 @@
         select * from seckill_activity sa
         left join seckill_product sp
         on sa.id = sp.activity_id
-        where sp.sku_id = #{skuId} and sa.id != #{activityId} and status != 2
+        where sp.sku_id = #{skuId} and sa.id != #{activityId} and status != 2 and sa.deleted = 0
+    </select>
+    <select id="selectValidActivityList" resultType="cn.hisouten.mall.pojo.entity.SeckillActivity">
+        select sa.id, sa.name, sa.start_time, sa.end_time, sa.status, sa.merchant_id,
+               sum(sp.seckill_stock) as productCount
+        from seckill_activity sa
+                 left join seckill_product sp on sa.id = sp.activity_id
+        where sa.status in (0,1) and sa.deleted = 0
+        group by sa.id, sa.name, sa.start_time, sa.end_time, sa.status, sa.merchant_id
+        order by sa.status desc, sa.start_time
     </select>
 </mapper>

@@ -2,7 +2,7 @@ package cn.hisouten.mall.mq.consumer;
 
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mq.constant.MqConstant;
-import cn.hisouten.mall.mq.dto.OrderTimeoutMessage;
+import cn.hisouten.mall.mq.message.OrderTimeoutMessage;
 import cn.hisouten.mall.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -3,7 +3,8 @@ package cn.hisouten.mall.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.*;
-import cn.hisouten.mall.mq.dto.OrderTimeoutMessage;
+import cn.hisouten.mall.mq.message.OrderCancelMessage;
+import cn.hisouten.mall.mq.message.OrderTimeoutMessage;
 import cn.hisouten.mall.mq.producer.MqProducerService;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.CartItemListBO;
@@ -20,6 +21,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +37,7 @@ import java.util.stream.Collectors;
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.PayMethodConstant.WECHAT;
 import static cn.hisouten.mall.constant.SeckillConstant.NORMAL;
+import static cn.hisouten.mall.constant.SeckillConstant.SECKILL;
 import static cn.hisouten.mall.constant.StatusConstant.*;
 import static cn.hisouten.mall.mq.constant.MqConstant.*;
 
@@ -52,6 +55,8 @@ public class OrderServiceImpl implements OrderService {
     private final MerchantProfileService merchantProfileService;
     private final UserProfileService userProfileService;
     private final MqProducerService mqProducerService;
+
+    private final StringRedisTemplate stringRedisTemplate;
 
 
     /**
@@ -162,20 +167,29 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void cancelPay(Long userId, String orderNo) {
         Order order = orderMapper.selectByOrderNo(orderNo);
-        if(order == null || !Objects.equals(order.getUserId(), userId)){
+        if (order == null || !Objects.equals(order.getUserId(), userId)) {
             throw new BizException(ORDER_NOT_FOUND);
         }
-        if(order.getStatus() != PENDING_PAYMENT){
+        if (!Objects.equals(order.getStatus(), PENDING_PAYMENT)) {
             throw new BizException(ORDER_STATUS_ERROR);
         }
-        //改订单状态
         order.setStatus(CANCELLED);
         order.setCancelTime(LocalDateTime.now());
         orderMapper.updateById(order);
-        //给各订单项回滚库存
-        List<OrderItem> itemList = orderItemMapper.selectByOrderId(order.getId());
-        for (OrderItem item : itemList) {
-            productService.restoreStock(item.getSkuId(),item.getQuantity());
+
+        List<OrderItem> items = orderItemMapper.selectByOrderId(order.getId());
+        // 只回滚普通库存
+        for (OrderItem item : items) {
+            productService.restoreStock(item.getSkuId(), item.getQuantity());
+        }
+
+        // 如果是秒杀订单，发 MQ 通知 marketing 回滚秒杀库存
+        if (Objects.equals(order.getSource(), SECKILL)) {
+            OrderCancelMessage msg = new OrderCancelMessage();
+            msg.setOrderNo(order.getOrderNo());
+            msg.setItems(items.stream().map(i ->
+                    new OrderCancelMessage.Item(i.getSkuId(), i.getQuantity())).toList());
+            mqProducerService.send(ORDER_CANCEL_TOPIC, msg);
         }
     }
 
@@ -379,20 +393,30 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void closeTimeoutOrder(String orderNo) {
         Order order = orderMapper.selectByOrderNo(orderNo);
-        //订单不存在，跳过
         if (order == null) return;
-        // 已支付或已取消，跳过
-        if (order.getStatus() != PENDING_PAYMENT) return;
-        // 关单
+        if (!Objects.equals(order.getStatus(), PENDING_PAYMENT)) return;
+
         order.setStatus(CANCELLED);
         order.setCancelTime(LocalDateTime.now());
         orderMapper.updateById(order);
-        // 回滚库存
+
         List<OrderItem> items = orderItemMapper.selectByOrderId(order.getId());
+        order.setStatus(CANCELLED);
+        orderMapper.updateById(order);
+
+        // 只回滚普通库存
         for (OrderItem item : items) {
             productService.restoreStock(item.getSkuId(), item.getQuantity());
         }
-        log.info("[订单超时] 订单 {} 关闭成功，回滚 {} 个 SKU", orderNo, items.size());
+
+        // 如果是秒杀订单，发 MQ 通知 marketing 回滚秒杀库存
+        if (Objects.equals(order.getSource(), SECKILL)) {
+            OrderCancelMessage msg = new OrderCancelMessage();
+            msg.setOrderNo(order.getOrderNo());
+            msg.setItems(items.stream().map(i ->
+                    new OrderCancelMessage.Item(i.getSkuId(), i.getQuantity())).toList());
+            mqProducerService.send(ORDER_CANCEL_TOPIC, msg);
+        }
     }
 
     /**

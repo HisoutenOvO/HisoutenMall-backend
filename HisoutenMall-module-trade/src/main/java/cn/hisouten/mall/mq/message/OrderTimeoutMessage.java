@@ -1,4 +1,4 @@
-package cn.hisouten.mall.mq.dto;
+package cn.hisouten.mall.mq.message;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

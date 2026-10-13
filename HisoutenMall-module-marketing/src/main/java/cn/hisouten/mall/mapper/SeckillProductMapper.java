@@ -2,11 +2,11 @@ package cn.hisouten.mall.mapper;
 
 import cn.hisouten.mall.pojo.bo.SeckillProductBO;
 import cn.hisouten.mall.pojo.entity.SeckillProduct;
-import cn.hisouten.mall.pojo.vo.MerchantSeckillProductVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ public interface SeckillProductMapper extends BaseMapper<SeckillProduct> {
     SeckillProduct[] selectAllActive();
 
     /**
-     * 根据秒杀活动id查询对应的秒杀商品
+     * 根据秒杀活动id查询对应的秒杀商品BO
      * @param activityId 活动id
      * @return 返回值
      */
@@ -46,4 +46,29 @@ public interface SeckillProductMapper extends BaseMapper<SeckillProduct> {
      */
     @Delete("delete from seckill_product where activity_id = #{activityId}")
     void deleteByActivityId(Long activityId);
+
+    /**
+     * 扣减秒杀商品库存
+     * @param seckillSkuId 秒杀商品id
+     * @param quantity 扣减数量
+     * @return 返回影响数
+     */
+    @Update("update seckill_product set seckill_stock = seckill_stock - #{quantity} where id = #{seckillSkuId} and seckill_stock >= #{quantity}")
+    int deductSeckillStock(Long seckillSkuId, int quantity);
+
+    /**
+     * 根据活动id查询对应秒杀商品
+     * @param activityId 活动id
+     * @return 返回值
+     */
+    @Select("select * from seckill_product where activity_id = #{activityId}")
+    List<SeckillProduct> selectByActivityId(Long activityId);
+
+    /**
+     * 回滚秒杀商品库存方法
+     * @param skuId skuId
+     * @param quantity 回滚数量
+     */
+    @Update("UPDATE seckill_product SET seckill_stock = seckill_stock + #{num} WHERE sku_id = #{skuId}")
+    void restoreSeckillStock(Long skuId, Integer quantity);
 }

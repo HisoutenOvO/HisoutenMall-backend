@@ -99,7 +99,6 @@ public interface ProductService {
      * 修改sku上下架状态
      * @param skuId skuId
      * @param status 状态
-     * @return 返回值
      */
     void changeSkuStatus(Long skuId, Integer status);
 

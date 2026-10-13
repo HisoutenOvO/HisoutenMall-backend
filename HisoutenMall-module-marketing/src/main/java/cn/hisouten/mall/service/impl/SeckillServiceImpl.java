@@ -25,6 +25,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ public class SeckillServiceImpl implements SeckillService {
     private final MerchantProfileService merchantProfileService;
     private final ProductService productService;
 
-    private StringRedisTemplate stringRedisTemplate;
+    private final StringRedisTemplate stringRedisTemplate;
 
     /**
      * 商家端新增秒杀活动
@@ -86,7 +87,7 @@ public class SeckillServiceImpl implements SeckillService {
 
 
     /**
-     * 商家端分页查询秒杀商品
+     * 商家端分页查询秒杀活动
      * @param merchantId 商家id
      * @param pageQueryDTO 分页参数
      * @return 返回值
@@ -128,7 +129,6 @@ public class SeckillServiceImpl implements SeckillService {
         return detailVO;
     }
 
-
     /**
      * 商家删除秒杀活动
      * @param merchantId 商家id
@@ -149,6 +149,7 @@ public class SeckillServiceImpl implements SeckillService {
      * @param addDTO 商品参数
      */
     @Override
+    @Transactional
     public void addProduct(Long merchantId, MerchantSeckillProductAddDTO addDTO) {
         SeckillActivity seckillActivity = checkValidAndTime(merchantId,addDTO.getActivityId());
         List<MerchantSeckillProductAddDTO.SeckillProductItem> seckillProductItems = addDTO.getItems();
@@ -180,7 +181,8 @@ public class SeckillServiceImpl implements SeckillService {
 
             //校验价格合理且小于原价
             MerchantSeckillProductAddDTO.SeckillProductItem item = itemMap.get(sku.getId());
-            if(item.getSeckillPrice().longValue() <= 0 || item.getSeckillPrice().longValue() >= sku.getPrice().longValue()){
+            if (item.getSeckillPrice().compareTo(BigDecimal.ZERO) <= 0
+                    || item.getSeckillPrice().compareTo(sku.getPrice()) >= 0) {
                 throw new BizException(SECKILL_PRICE_INVALID);
             }
 
@@ -206,6 +208,8 @@ public class SeckillServiceImpl implements SeckillService {
                     .seckillStock(item.getSeckillStock())
                     .limitPerUser(item.getLimitPerUser())
                     .build();
+            // 预扣普通库存
+            productService.deductStock(sku.getId(), item.getSeckillStock());
             seckillProductMapper.insert(seckillProduct);
         }
     }
@@ -217,16 +221,21 @@ public class SeckillServiceImpl implements SeckillService {
      * @param updateDTO 修改参数
      */
     @Override
+    @Transactional
     public void updateProduct(Long merchantId, Long productId, MerchantSeckillProductUpdateDTO updateDTO) {
         SeckillProduct seckillProduct = seckillProductMapper.selectById(productId);
         if(seckillProduct == null){
             throw new BizException(PRODUCT_NOT_FOUND);
         }
         ProductSku sku = productService.getSkuBySkuId(seckillProduct.getSkuId());
+        if (sku == null) {
+            throw new BizException(SKU_NOT_FOUND);
+        }
         SeckillActivity seckillActivity = checkValidAndTime(merchantId,seckillProduct.getActivityId());
 
         //校验价格合理且小于原价
-        if(updateDTO.getSeckillPrice().longValue() <= 0 || updateDTO.getSeckillPrice().longValue() >= sku.getPrice().longValue()){
+        if (updateDTO.getSeckillPrice().compareTo(BigDecimal.ZERO) <= 0
+                || updateDTO.getSeckillPrice().compareTo(sku.getPrice()) >= 0) {
             throw new BizException(SECKILL_PRICE_INVALID);
         }
 
@@ -238,6 +247,16 @@ public class SeckillServiceImpl implements SeckillService {
         //校验限购大于等于1
         if(updateDTO.getLimitPerUser() < 1){
             throw new BizException(SECKILL_LIMIT_INVALID);
+        }
+
+        //动态调整秒杀库存对普通库存的影响
+        Integer oriStock = seckillProduct.getSeckillStock();
+        Integer aftStock = updateDTO.getSeckillStock();
+        if(oriStock > aftStock){
+            //原来秒杀库存比现在秒杀库存多，即秒杀库存变少，回滚普通库存
+            productService.restoreStock(sku.getId(),oriStock - aftStock);
+        }else if(aftStock > oriStock){
+            productService.deductStock(sku.getId(),aftStock - oriStock);
         }
 
         seckillProduct.setSeckillPrice(updateDTO.getSeckillPrice());
@@ -252,9 +271,19 @@ public class SeckillServiceImpl implements SeckillService {
      * @param productId 商品id
      */
     @Override
+    @Transactional
     public void deleteProduct(Long merchantId, Long productId) {
         SeckillProduct seckillProduct = seckillProductMapper.selectById(productId);
+        if (seckillProduct == null) {
+            throw new BizException(PRODUCT_NOT_FOUND);
+        }
         SeckillActivity seckillActivity = checkValidAndTime(merchantId,seckillProduct.getActivityId());
+        ProductSku sku = productService.getSkuBySkuId(seckillProduct.getSkuId());
+        if(sku == null){
+            throw new BizException(SKU_NOT_FOUND);
+        }
+        //回滚普通库存
+        productService.restoreStock(sku.getId(),seckillProduct.getSeckillStock());
         seckillProductMapper.deleteById(productId);
     }
 
@@ -309,11 +338,11 @@ public class SeckillServiceImpl implements SeckillService {
                     .build();
             //从缓存里直接取库存
             String stock = stringRedisTemplate.opsForValue().get(SECKILL_STOCK + bo.getSkuId());
-            if(stock != null){
+            if (stock != null) {
                 vo.setSeckillStock(Integer.parseInt(stock));
+            } else {
+                vo.setSeckillStock(bo.getSeckillStock());
             }
-            //失败则返回数据库库存
-            vo.setSeckillStock(bo.getSeckillStock());
             voList.add(vo);
         }
         //拼装商品列表

@@ -48,7 +48,7 @@ public class SeckillController {
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户:{} 列表查询秒杀活动",userId);
         List<UserSeckillActivityListVO> voList = seckillService.listQuery();
-        return Result.success();
+        return Result.success(voList);
     }
 
     /**

@@ -3,7 +3,7 @@ package cn.hisouten.mall.service.impl;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.SeckillActivityMapper;
 import cn.hisouten.mall.mapper.SeckillProductMapper;
-import cn.hisouten.mall.mq.dto.OrderTimeoutMessage;
+import cn.hisouten.mall.mq.message.OrderTimeoutMessage;
 import cn.hisouten.mall.mq.dto.SeckillOrderMessage;
 import cn.hisouten.mall.mq.producer.MqProducerService;
 import cn.hisouten.mall.pojo.dto.SeckillExecuteDTO;
@@ -168,13 +168,12 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
             throw new BizException(PRODUCT_NOT_FOUND);
         }
         UserAddress userAddress = userAddressService.getDefaultByUserId(userId);
+
         //乐观锁扣减库存
-        int affected = productService.deductStock(skuId, 1);
-        if (affected == 0) {
-            log.error("[秒杀对账] 数据库库存不足，数据库与缓存数据错位，activityId={}, skuId={}, userId={}",
-                    activityId, skuId, userId);
-            // 靠定时任务纠正
-            return;
+        int seckillAffected = seckillProductMapper.deductSeckillStock(seckillProduct.getId(), 1);
+        if (seckillAffected == 0) {
+            // 秒杀库存不够（Redis 和 DB 不一致），回滚
+            throw new BizException(OUT_OF_STOCK);
         }
 
         //创建订单（走已有的订单创建逻辑）

@@ -54,10 +54,14 @@ public interface SeckillActivityMapper extends BaseMapper<SeckillActivity> {
      * 查询未开始或进行中的秒杀活动
      * @return 返回值
      */
-    @Select("select *,sum(sp.seckill_stock) as productCount from seckill_activity sa" +
-            " left join seckill_product sp on sa.id = sp.activity_id " +
-            "where status in (0,1) and deleted = 0 " +
-            "group by sa.id , status,start_time" +
-            " order by status desc, start_time ")
     List<SeckillActivity> selectValidActivityList();
+
+    /**
+     * 查询已结束但还没来得及修改状态的活动
+     * @param now 现在时间
+     * @return 返回值
+     */
+    @Select("select * from seckill_activity " +
+            "where status = 1 and end_time <= #{now} and deleted = 0")
+    List<SeckillActivity> selectEndingActivities(LocalDateTime now);
 }
