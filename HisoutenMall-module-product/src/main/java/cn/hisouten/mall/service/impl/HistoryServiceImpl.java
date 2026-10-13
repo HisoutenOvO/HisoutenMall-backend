@@ -1,6 +1,5 @@
 package cn.hisouten.mall.service.impl;
 
-import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.HistoryMapper;
 import cn.hisouten.mall.mapper.ProductMapper;
 import cn.hisouten.mall.pojo.BasePageQueryDTO;
@@ -12,11 +11,10 @@ import cn.hisouten.mall.service.HistoryService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 
 import static cn.hisouten.mall.constant.CommonConstant.DEFAULT_HISTORY_LIMIT;
-import static cn.hisouten.mall.constant.ExceptionMessageConstant.NO_PERMISSION;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +28,7 @@ public class HistoryServiceImpl implements HistoryService {
      * @param productId 商品id
      */
     @Override
+    @Transactional
     public void addHistory(Long userId, Long productId) {
         Product product = productMapper.selectById(productId);
         if(product == null){
@@ -61,9 +60,15 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     public void deleteHistory(Long userId, Long productId) {
         UserBrowseHistory history = historyMapper.selectByProductId(userId,productId);
-        if(!history.getUserId().equals(userId)){
-            throw new BizException(NO_PERMISSION);
-        }
         historyMapper.deleteById(history);
+    }
+
+    /**
+     * 用户删除所有历史记录
+     * @param userId 用户id
+     */
+    @Override
+    public void deleteAll(Long userId) {
+        historyMapper.deleteAll(userId);
     }
 }

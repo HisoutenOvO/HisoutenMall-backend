@@ -61,4 +61,17 @@ public class HistoryController {
         historyService.deleteHistory(userId,productId);
         return Result.success();
     }
+
+    /**
+     * 删除所有历史记录
+     * @return 返回值
+     */
+    @DeleteMapping
+    @Operation(summary = "删除所有历史记录")
+    public Result deleteAll(){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 删除所有历史记录",userId);
+        historyService.deleteAll(userId);
+        return Result.success();
+    }
 }

@@ -42,4 +42,11 @@ public interface HistoryMapper extends BaseMapper<UserBrowseHistory> {
      * @param limit 上限
      */
     void deleteExcess(Long userId, Integer limit);
+
+    /**
+     * 删除用户所有历史记录
+     * @param userId 用户id
+     */
+    @Delete("delete from user_browse_history where user_id = #{userId}")
+    void deleteAll(Long userId);
 }

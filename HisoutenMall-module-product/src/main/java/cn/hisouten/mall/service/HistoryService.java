@@ -27,4 +27,10 @@ public interface HistoryService {
      * @param productId 商品id
      */
     void deleteHistory(Long userId, Long productId);
+
+    /**
+     * 用户删除所有历史记录
+     * @param userId 用户id
+     */
+    void deleteAll(Long userId);
 }
