@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Favorite {
+public class UserFavorite {
 
     @TableId(type = IdType.AUTO)
     private Long id;

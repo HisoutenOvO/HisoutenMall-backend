@@ -6,7 +6,7 @@ import cn.hisouten.mall.mapper.FavoriteMapper;
 import cn.hisouten.mall.mapper.ProductMapper;
 import cn.hisouten.mall.pojo.BasePageQueryDTO;
 import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.entity.Favorite;
+import cn.hisouten.mall.pojo.entity.UserFavorite;
 import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.vo.product.UserFavoritePageResultVO;
 import cn.hisouten.mall.service.FavoriteService;
@@ -38,10 +38,10 @@ public class FavoriteServiceImpl implements FavoriteService {
         if(existedProduct != null){
             throw new BizException(SYSTEM_ERROR);
         }
-        Favorite favorite = new Favorite();
-        favorite.setProductId(productId);
-        favorite.setUserId(userId);
-        favoriteMapper.insert(favorite);
+        UserFavorite userFavorite = new UserFavorite();
+        userFavorite.setProductId(productId);
+        userFavorite.setUserId(userId);
+        favoriteMapper.insert(userFavorite);
     }
 
     /**
