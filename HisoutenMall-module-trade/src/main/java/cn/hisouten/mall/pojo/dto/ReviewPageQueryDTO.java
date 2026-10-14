@@ -4,10 +4,10 @@ import cn.hisouten.mall.pojo.BasePageQueryDTO;
 import lombok.Data;
 
 /**
- * 用户分页查询商品评价参数
+ * 通用的分页查询商品评价参数
  */
 @Data
-public class UserReviewPageQueryDTO extends BasePageQueryDTO {
+public class ReviewPageQueryDTO extends BasePageQueryDTO {
     private Long productId;
     private Integer rating;
 }

@@ -4,8 +4,9 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.UserReviewAddDTO;
-import cn.hisouten.mall.pojo.dto.UserReviewPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.ReviewPageQueryDTO;
 import cn.hisouten.mall.pojo.vo.UserReviewPageResultVO;
+import cn.hisouten.mall.pojo.vo.UserSelfReviewPageResultVO;
 import cn.hisouten.mall.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,7 +43,7 @@ public class ReviewController {
      */
     @GetMapping("/page")
     @Operation(summary = "分页查询评价")
-    public Result<PageResult<UserReviewPageResultVO>> pageQuery(UserReviewPageQueryDTO pageQueryDTO){
+    public Result<PageResult<UserReviewPageResultVO>> pageQuery(ReviewPageQueryDTO pageQueryDTO){
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户:{} 分页查询评价",userId);
         PageResult<UserReviewPageResultVO> pageResult = reviewService.userPageResult(pageQueryDTO);
@@ -50,7 +51,18 @@ public class ReviewController {
 
     }
 
-
-
+    /**
+     * 用户分页查询自己发过的评价列表
+     * @param pageQueryDTO 查询参数
+     * @return 返回值
+     */
+    @GetMapping("/self/page")
+    @Operation(summary = "用户分页查询自己的评价")
+    public Result<PageResult<UserSelfReviewPageResultVO>> selfPageQuery(ReviewPageQueryDTO pageQueryDTO){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 分页查询自己发表过的评价",userId);
+        PageResult<UserSelfReviewPageResultVO> pageResult = reviewService.selfPageResult(userId,pageQueryDTO);
+        return Result.success(pageResult);
+    }
 
 }

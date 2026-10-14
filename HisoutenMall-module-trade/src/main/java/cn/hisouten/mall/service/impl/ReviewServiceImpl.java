@@ -8,12 +8,14 @@ import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.ReviewPageQueryBO;
 import cn.hisouten.mall.pojo.bo.ReviewPageResultBO;
 import cn.hisouten.mall.pojo.dto.UserReviewAddDTO;
-import cn.hisouten.mall.pojo.dto.UserReviewPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.ReviewPageQueryDTO;
 import cn.hisouten.mall.pojo.entity.Order;
 import cn.hisouten.mall.pojo.entity.OrderItem;
 import cn.hisouten.mall.pojo.entity.ProductReview;
 import cn.hisouten.mall.pojo.vo.UserReviewPageResultVO;
+import cn.hisouten.mall.pojo.vo.UserSelfReviewPageResultVO;
 import cn.hisouten.mall.service.ReviewService;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -81,7 +83,7 @@ public class ReviewServiceImpl implements ReviewService {
      * @return 返回值
      */
     @Override
-    public PageResult<UserReviewPageResultVO> userPageResult(UserReviewPageQueryDTO pageQueryDTO) {
+    public PageResult<UserReviewPageResultVO> userPageResult(ReviewPageQueryDTO pageQueryDTO) {
         Page<ReviewPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
         ReviewPageQueryBO pageQueryBO = new ReviewPageQueryBO();
         pageQueryBO.setProductId(pageQueryDTO.getProductId());
@@ -93,6 +95,37 @@ public class ReviewServiceImpl implements ReviewService {
         for (ReviewPageResultBO bo : boList) {
             UserReviewPageResultVO vo = new UserReviewPageResultVO();
             BeanUtils.copyProperties(bo,vo);
+            String image = bo.getImages();
+            List<String> images = StrUtil.split(image,",");
+            vo.setImages(images);
+            voList.add(vo);
+        }
+        return new PageResult<>(total,voList);
+    }
+
+    /**
+     * 用户分页查询自己发过的评价列表
+     * @param userId 用户id
+     * @param pageQueryDTO 分页参数
+     * @return 返回值
+     */
+    @Override
+    public PageResult<UserSelfReviewPageResultVO> selfPageResult(Long userId, ReviewPageQueryDTO pageQueryDTO) {
+        Page<ReviewPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        ReviewPageQueryBO pageQueryBO = new ReviewPageQueryBO();
+        pageQueryBO.setProductId(pageQueryDTO.getProductId());
+        pageQueryBO.setRating(pageQueryBO.getRating());
+        pageQueryBO.setUserId(userId);
+        Page<ReviewPageResultBO> result = reviewMapper.pageQuery(page,pageQueryBO);
+        long total = result.getTotal();
+        List<ReviewPageResultBO> boList = result.getRecords();
+        List<UserSelfReviewPageResultVO> voList = new ArrayList<>();
+        for (ReviewPageResultBO bo : boList) {
+            UserSelfReviewPageResultVO vo = new UserSelfReviewPageResultVO();
+            BeanUtils.copyProperties(bo,vo);
+            String image = bo.getImages();
+            List<String> images = StrUtil.split(image,",");
+            vo.setImages(images);
             voList.add(vo);
         }
         return new PageResult<>(total,voList);

@@ -2,8 +2,9 @@ package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.UserReviewAddDTO;
-import cn.hisouten.mall.pojo.dto.UserReviewPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.ReviewPageQueryDTO;
 import cn.hisouten.mall.pojo.vo.UserReviewPageResultVO;
+import cn.hisouten.mall.pojo.vo.UserSelfReviewPageResultVO;
 
 public interface ReviewService {
     /**
@@ -18,5 +19,13 @@ public interface ReviewService {
      * @param pageQueryDTO 分页查询参数
      * @return 返回值
      */
-    PageResult<UserReviewPageResultVO> userPageResult(UserReviewPageQueryDTO pageQueryDTO);
+    PageResult<UserReviewPageResultVO> userPageResult(ReviewPageQueryDTO pageQueryDTO);
+
+    /**
+     * 用户分页查询自己发过的评价列表
+     * @param userId 用户id
+     * @param pageQueryDTO 分页参数
+     * @return 返回值
+     */
+    PageResult<UserSelfReviewPageResultVO> selfPageResult(Long userId, ReviewPageQueryDTO pageQueryDTO);
 }

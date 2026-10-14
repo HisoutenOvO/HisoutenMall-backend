@@ -7,6 +7,9 @@
         left join user_profile up on p.user_id = up.user_id
         left join merchant_profile mp on p.user_id = mp.user_id
         <where>
+            <if test="pageQueryBO.userId != null">
+            and up.user_id = #{pageQueryBO.userId}
+            </if>
             <if test="pageQueryBO.merchantId != null">
                 and mp.user_id = #{pageQueryBO.merchantId}
             </if>

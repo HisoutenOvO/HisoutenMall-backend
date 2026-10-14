@@ -11,4 +11,5 @@ public class ReviewPageQueryBO extends BasePageQueryDTO {
     private Long productId;
     private Integer rating;
     private Long merchantId;
+    private Long userId;
 }

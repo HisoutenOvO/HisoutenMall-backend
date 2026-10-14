@@ -10,12 +10,21 @@ import java.util.List;
  */
 @Data
 public class ReviewPageResultBO {
+
     private Long id;
+
     private String nickname;     // 脱敏的用户昵称
+
     private String avatar;
+
     private Integer rating;
+
     private String content;
-    private List<String> images; // 解析逗号分隔的 URL
+
+    private String images; // 解析逗号分隔的 URL
+
     private String skuSpecs;
+
     private LocalDateTime createTime;
+
 }
