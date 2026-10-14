@@ -34,6 +34,7 @@ import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
+import static cn.hisouten.mall.constant.CommonConstant.DEFAULT_LOGISTICS_COMPANY;
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.PayMethodConstant.WECHAT;
 import static cn.hisouten.mall.constant.SeckillConstant.NORMAL;
@@ -49,14 +50,13 @@ public class OrderServiceImpl implements OrderService {
     private final CartItemMapper cartItemMapper;
     private final OrderItemMapper orderItemMapper;
     private final PaymentMapper paymentMapper;
+    private final LogisticsMapper logisticsMapper;
 
     private final UserAddressService userAddressService;
     private final ProductService productService;
     private final MerchantProfileService merchantProfileService;
     private final UserProfileService userProfileService;
     private final MqProducerService mqProducerService;
-
-    private final StringRedisTemplate stringRedisTemplate;
 
 
     /**
@@ -349,7 +349,14 @@ public class OrderServiceImpl implements OrderService {
         if (order.getStatus() != PAID) {
             throw new BizException(ORDER_STATUS_ERROR);
         }
-        order.setStatus(COMPLETED);   // 阶段二简化,发货即完成
+        Logistics logistics = new Logistics();
+        logistics.setOrderId(order.getId());
+        logistics.setCompany(DEFAULT_LOGISTICS_COMPANY);
+        logistics.setTrackingNo(orderNo + System.currentTimeMillis());
+        logistics.setStatus(LOGISTICS_SHIPPED);
+        logisticsMapper.insert(logistics);
+
+        order.setStatus(ORDER_SHIPPED);
         order.setFinishTime(LocalDateTime.now());
         orderMapper.updateById(order);
     }

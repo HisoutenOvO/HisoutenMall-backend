@@ -17,8 +17,17 @@ public class StatusConstant {
 
     public static final int CANCELLED = 2; //已取消
 
-    public static final int COMPLETED = 3; //已完成
+    public static final int ORDER_SHIPPED = 3; //已发货
 
-    public static final int REFUND = 4; //已退款
+    public static final int COMPLETED = 4; //已完成
+
+    public static final int REFUND = 5; //已退款
+
+    //物流状态
+    public static final int PENDING_SHIP = 0; //待发货
+
+    public static final int LOGISTICS_SHIPPED = 1; //已发货
+
+    public static final int SIGNED = 2; //已签收
 
 }
