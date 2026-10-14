@@ -12,6 +12,7 @@ import cn.hisouten.mall.pojo.dto.ReviewPageQueryDTO;
 import cn.hisouten.mall.pojo.entity.Order;
 import cn.hisouten.mall.pojo.entity.OrderItem;
 import cn.hisouten.mall.pojo.entity.ProductReview;
+import cn.hisouten.mall.pojo.vo.MerchantReviewPageResultVO;
 import cn.hisouten.mall.pojo.vo.UserReviewPageResultVO;
 import cn.hisouten.mall.pojo.vo.UserSelfReviewPageResultVO;
 import cn.hisouten.mall.service.ReviewService;
@@ -94,10 +95,13 @@ public class ReviewServiceImpl implements ReviewService {
         List<UserReviewPageResultVO> voList = new ArrayList<>();
         for (ReviewPageResultBO bo : boList) {
             UserReviewPageResultVO vo = new UserReviewPageResultVO();
-            BeanUtils.copyProperties(bo,vo);
             String image = bo.getImages();
+            //转成单个字符串
             List<String> images = StrUtil.split(image,",");
             vo.setImages(images);
+            //脱敏处理
+            vo.setNickname(StrUtil.hide(bo.getNickname(),1,bo.getNickname().length()));
+            BeanUtils.copyProperties(bo,vo);
             voList.add(vo);
         }
         return new PageResult<>(total,voList);
@@ -122,10 +126,40 @@ public class ReviewServiceImpl implements ReviewService {
         List<UserSelfReviewPageResultVO> voList = new ArrayList<>();
         for (ReviewPageResultBO bo : boList) {
             UserSelfReviewPageResultVO vo = new UserSelfReviewPageResultVO();
-            BeanUtils.copyProperties(bo,vo);
             String image = bo.getImages();
+            //转成单个字符串
             List<String> images = StrUtil.split(image,",");
             vo.setImages(images);
+            BeanUtils.copyProperties(bo,vo);
+            voList.add(vo);
+        }
+        return new PageResult<>(total,voList);
+    }
+
+    /**
+     * 商家端分页查询自己的评价列表
+     * @param merchantId 商家id
+     * @param pageQueryDTO 分页参数
+     * @return 返回值
+     */
+    @Override
+    public PageResult<MerchantReviewPageResultVO> merchantPageResult(Long merchantId, ReviewPageQueryDTO pageQueryDTO) {
+        Page<ReviewPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        ReviewPageQueryBO pageQueryBO = new ReviewPageQueryBO();
+        pageQueryBO.setProductId(pageQueryDTO.getProductId());
+        pageQueryBO.setRating(pageQueryBO.getRating());
+        pageQueryBO.setMerchantId(merchantId);
+        Page<ReviewPageResultBO> result = reviewMapper.pageQuery(page,pageQueryBO);
+        long total = result.getTotal();
+        List<ReviewPageResultBO> boList = result.getRecords();
+        List<MerchantReviewPageResultVO> voList = new ArrayList<>();
+        for (ReviewPageResultBO bo : boList) {
+            MerchantReviewPageResultVO vo = new MerchantReviewPageResultVO();
+            String image = bo.getImages();
+            //转成单个字符串
+            List<String> images = StrUtil.split(image,",");
+            vo.setImages(images);
+            BeanUtils.copyProperties(bo,vo);
             voList.add(vo);
         }
         return new PageResult<>(total,voList);

@@ -3,6 +3,7 @@ package cn.hisouten.mall.service;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.UserReviewAddDTO;
 import cn.hisouten.mall.pojo.dto.ReviewPageQueryDTO;
+import cn.hisouten.mall.pojo.vo.MerchantReviewPageResultVO;
 import cn.hisouten.mall.pojo.vo.UserReviewPageResultVO;
 import cn.hisouten.mall.pojo.vo.UserSelfReviewPageResultVO;
 
@@ -28,4 +29,12 @@ public interface ReviewService {
      * @return 返回值
      */
     PageResult<UserSelfReviewPageResultVO> selfPageResult(Long userId, ReviewPageQueryDTO pageQueryDTO);
+
+    /**
+     * 商家端分页查询自己的评价列表
+     * @param merchantId 商家id
+     * @param pageQueryDTO 分页参数
+     * @return 返回值
+     */
+    PageResult<MerchantReviewPageResultVO> merchantPageResult(Long merchantId, ReviewPageQueryDTO pageQueryDTO);
 }

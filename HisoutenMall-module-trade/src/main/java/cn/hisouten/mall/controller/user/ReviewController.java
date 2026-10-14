@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@RestController("userReviewController")
 @RequestMapping("/user/review")
 @Slf4j
 @Tag(name = "用户端——评价接口")
