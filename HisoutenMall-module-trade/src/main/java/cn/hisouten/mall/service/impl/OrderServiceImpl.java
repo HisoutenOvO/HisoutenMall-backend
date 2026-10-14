@@ -21,7 +21,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -349,18 +348,21 @@ public class OrderServiceImpl implements OrderService {
         if (order.getStatus() != PAID) {
             throw new BizException(ORDER_STATUS_ERROR);
         }
+        Logistics exsitedlogistics = logisticsMapper.selectByOrderId(order.getUserId(),order.getId());
+        if(exsitedlogistics != null){
+            throw new BizException(LOGISTICS_ALREADY_EXIST);
+        }
         Logistics logistics = new Logistics();
         logistics.setOrderId(order.getId());
+        logistics.setCompany(DEFAULT_LOGISTICS_COMPANY);
         if(company != null){
             logistics.setCompany(company);
         }
-        logistics.setCompany(DEFAULT_LOGISTICS_COMPANY);
         logistics.setTrackingNo(orderNo + System.currentTimeMillis());
         logistics.setStatus(LOGISTICS_SHIPPED);
         logisticsMapper.insert(logistics);
 
         order.setStatus(ORDER_SHIPPED);
-        order.setFinishTime(LocalDateTime.now());
         orderMapper.updateById(order);
     }
 
@@ -459,10 +461,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public UserLogisticsVO logisticsQuery(Long userId, String orderNo) {
         Order order = orderMapper.selectByOrderNo(orderNo);
-        if(order == null){
+        if(order == null || !order.getUserId().equals(userId)){
             throw new BizException(ORDER_NOT_FOUND);
         }
-        Logistics logistics = logisticsMapper.selectByOrderNo(userId,order.getId());
+        Logistics logistics = logisticsMapper.selectByOrderId(userId,order.getId());
         if(logistics == null){
             throw new BizException(ORDER_NOT_FOUND);
         }
@@ -470,6 +472,32 @@ public class OrderServiceImpl implements OrderService {
         BeanUtils.copyProperties(logistics,logisticsVO);
         logisticsVO.setShipTime(logistics.getCreateTime());
         return logisticsVO;
+    }
+
+    /**
+     * 用户确认收货
+     * @param userId 用户id
+     * @param orderNo 订单号
+     */
+    @Override
+    @Transactional
+    public void receive(Long userId, String orderNo) {
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if(order == null || !order.getUserId().equals(userId)){
+            throw new BizException(ORDER_NOT_FOUND);
+        }
+        Logistics logistics = logisticsMapper.selectByOrderId(userId,order.getId());
+        if(logistics == null){
+            throw new BizException(ORDER_NOT_FOUND);
+        }
+        if(order.getStatus() != ORDER_SHIPPED || logistics.getStatus() != LOGISTICS_SHIPPED){
+            throw new BizException(ORDER_STATUS_ERROR);
+        }
+        logistics.setStatus(SIGNED);
+        logisticsMapper.updateById(logistics);
+        order.setStatus(COMPLETED);
+        order.setFinishTime(LocalDateTime.now());
+        orderMapper.updateById(order);
     }
 
     /**

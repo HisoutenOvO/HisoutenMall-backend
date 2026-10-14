@@ -126,6 +126,20 @@ public class OrderController {
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户:{} 查询物流",userId);
         UserLogisticsVO vo = orderService.logisticsQuery(userId,orderNo);
+        return Result.success(vo);
+    }
+
+    /**
+     * 确认收货
+     * @param orderNo 订单号
+     * @return 返回值
+     */
+    @PutMapping("/{orderNo}/receive")
+    @Operation(summary = "确认收货")
+    public Result receive(@PathVariable String orderNo){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 确认收货:{} ",userId,orderNo);
+        orderService.receive(userId,orderNo);
         return Result.success();
     }
 }

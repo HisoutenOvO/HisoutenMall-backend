@@ -103,4 +103,11 @@ public interface OrderService {
      * @return 返回值
      */
     UserLogisticsVO logisticsQuery(Long userId, String orderNo);
+
+    /**
+     * 用户确认收货
+     * @param userId 用户id
+     * @param orderNo 订单号
+     */
+    void receive(Long userId, String orderNo);
 }

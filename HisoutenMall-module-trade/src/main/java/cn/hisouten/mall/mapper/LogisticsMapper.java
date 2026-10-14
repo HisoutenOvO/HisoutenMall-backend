@@ -14,5 +14,5 @@ public interface LogisticsMapper extends BaseMapper<Logistics> {
      * @return 返回值
      */
     @Select("select * from logistics where order_id = #{orderId}")
-    Logistics selectByOrderNo(Long userId,Long orderId);
+    Logistics selectByOrderId(Long userId, Long orderId);
 }
