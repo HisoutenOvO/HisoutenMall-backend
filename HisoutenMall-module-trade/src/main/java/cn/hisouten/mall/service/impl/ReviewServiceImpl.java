@@ -4,13 +4,23 @@ import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.OrderItemMapper;
 import cn.hisouten.mall.mapper.OrderMapper;
 import cn.hisouten.mall.mapper.ReviewMapper;
+import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.pojo.bo.ReviewPageQueryBO;
+import cn.hisouten.mall.pojo.bo.ReviewPageResultBO;
 import cn.hisouten.mall.pojo.dto.UserReviewAddDTO;
+import cn.hisouten.mall.pojo.dto.UserReviewPageQueryDTO;
 import cn.hisouten.mall.pojo.entity.Order;
 import cn.hisouten.mall.pojo.entity.OrderItem;
 import cn.hisouten.mall.pojo.entity.ProductReview;
+import cn.hisouten.mall.pojo.vo.UserReviewPageResultVO;
 import cn.hisouten.mall.service.ReviewService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static cn.hisouten.mall.constant.CommonConstant.DEFAULT_RATING;
 import static cn.hisouten.mall.constant.CommonConstant.DEFAULT_REVIEW;
@@ -61,7 +71,30 @@ public class ReviewServiceImpl implements ReviewService {
         if(addDTO.getContent() == null){
             review.setContent(DEFAULT_REVIEW);
         }
-        review.setImage(addDTO.getImage());
+        review.setImage(addDTO.getImages());
         reviewMapper.insert(review);
+    }
+
+    /**
+     * 用户端游客分页查询评价
+     * @param pageQueryDTO 分页查询参数
+     * @return 返回值
+     */
+    @Override
+    public PageResult<UserReviewPageResultVO> userPageResult(UserReviewPageQueryDTO pageQueryDTO) {
+        Page<ReviewPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        ReviewPageQueryBO pageQueryBO = new ReviewPageQueryBO();
+        pageQueryBO.setProductId(pageQueryDTO.getProductId());
+        pageQueryBO.setRating(pageQueryBO.getRating());
+        Page<ReviewPageResultBO> result = reviewMapper.pageQuery(page,pageQueryBO);
+        long total = result.getTotal();
+        List<ReviewPageResultBO> boList = result.getRecords();
+        List<UserReviewPageResultVO> voList = new ArrayList<>();
+        for (ReviewPageResultBO bo : boList) {
+            UserReviewPageResultVO vo = new UserReviewPageResultVO();
+            BeanUtils.copyProperties(bo,vo);
+            voList.add(vo);
+        }
+        return new PageResult<>(total,voList);
     }
 }

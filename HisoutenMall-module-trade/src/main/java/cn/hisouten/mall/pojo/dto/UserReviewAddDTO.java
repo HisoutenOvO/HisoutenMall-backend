@@ -14,6 +14,6 @@ public class UserReviewAddDTO {
 
     private String content;
 
-    private String image;
+    private String images;
 
 }

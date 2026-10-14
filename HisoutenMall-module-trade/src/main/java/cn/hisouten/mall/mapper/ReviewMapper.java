@@ -1,7 +1,10 @@
 package cn.hisouten.mall.mapper;
 
+import cn.hisouten.mall.pojo.bo.ReviewPageQueryBO;
+import cn.hisouten.mall.pojo.bo.ReviewPageResultBO;
 import cn.hisouten.mall.pojo.entity.ProductReview;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -16,4 +19,12 @@ public interface ReviewMapper extends BaseMapper<ProductReview> {
      */
     @Select("select * from product_review where user_id = #{userId} and order_item_id = #{orderItemId}")
     ProductReview selectByItemId(Long userId, Long orderItemId);
+
+    /**
+     * 分页条件查询评价列表
+     * @param page 分页参数
+     * @param pageQueryBO 条件参数
+     * @return 返回值
+     */
+    Page<ReviewPageResultBO> pageQuery(Page<ReviewPageResultBO> page, ReviewPageQueryBO pageQueryBO);
 }

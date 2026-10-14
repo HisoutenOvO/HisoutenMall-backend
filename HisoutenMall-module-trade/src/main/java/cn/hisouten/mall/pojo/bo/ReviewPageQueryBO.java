@@ -1,0 +1,14 @@
+package cn.hisouten.mall.pojo.bo;
+
+import cn.hisouten.mall.pojo.BasePageQueryDTO;
+import lombok.Data;
+
+/**
+ * 用于中转分页查询评价条件的BO类
+ */
+@Data
+public class ReviewPageQueryBO extends BasePageQueryDTO {
+    private Long productId;
+    private Integer rating;
+    private Long merchantId;
+}
