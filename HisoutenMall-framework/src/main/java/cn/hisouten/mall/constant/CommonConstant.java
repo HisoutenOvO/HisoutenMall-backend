@@ -10,4 +10,10 @@ public class CommonConstant {
 
     //默认物流公司
     public static final String DEFAULT_LOGISTICS_COMPANY = "顺丰快递";
+
+    //默认评分
+    public static final int DEFAULT_RATING = 5;
+
+    //默认评价
+    public static final String DEFAULT_REVIEW = "用户未评价，默认好评";
 }

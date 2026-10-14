@@ -30,6 +30,7 @@ public class ExceptionMessageConstant {
     public static final String CONTACT_PHONE_ALREADY_EXIST = "该联系电话已存在！";
     public static final String SPECS_ALREADY_EXIST = "该商品规格已存在！";
     public static final String LOGISTICS_ALREADY_EXIST = "该商品的物流信息已被创建，不可再次发货！";
+    public static final String REVIEW_ALREADY_EXIST = "商品评价已存在，请前去修改！";
     public static final String USER_NOT_MATCH = "帐号或密码错误！";
     public static final String NO_SKU_EXIST = "请至少保留一件具体款式在当前商品下！";
     public static final String SKU_NOT_VALID = "有商品款式不存在或不属于该商品！";
