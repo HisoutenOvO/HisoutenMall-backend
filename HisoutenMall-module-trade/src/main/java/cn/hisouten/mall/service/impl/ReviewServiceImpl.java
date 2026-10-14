@@ -4,6 +4,7 @@ import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.OrderItemMapper;
 import cn.hisouten.mall.mapper.OrderMapper;
 import cn.hisouten.mall.mapper.ReviewMapper;
+import cn.hisouten.mall.pojo.BasePageQueryDTO;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.ReviewPageQueryBO;
 import cn.hisouten.mall.pojo.bo.ReviewPageResultBO;
@@ -13,6 +14,7 @@ import cn.hisouten.mall.pojo.entity.Order;
 import cn.hisouten.mall.pojo.entity.OrderItem;
 import cn.hisouten.mall.pojo.entity.ProductReview;
 import cn.hisouten.mall.pojo.vo.MerchantReviewPageResultVO;
+import cn.hisouten.mall.pojo.vo.UserPendingReviewPageResultVO;
 import cn.hisouten.mall.pojo.vo.UserReviewPageResultVO;
 import cn.hisouten.mall.pojo.vo.UserSelfReviewPageResultVO;
 import cn.hisouten.mall.service.ReviewService;
@@ -178,5 +180,18 @@ public class ReviewServiceImpl implements ReviewService {
         }
         //由于在新增评论的校验时，查询是否存在评价未设置deleted = 0，使得用户删除评价后也不允许再次评价避免刷评
         reviewMapper.deleteById(reviewId);
+    }
+
+    /**
+     * 用户分页查询待评价商品
+     * @param userId 用户id
+     * @param pageQueryDTO 查询条件
+     * @return 返回值
+     */
+    @Override
+    public PageResult<UserPendingReviewPageResultVO> pendingPageQuery(Long userId, BasePageQueryDTO pageQueryDTO) {
+        Page<UserPendingReviewPageResultVO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        Page<UserPendingReviewPageResultVO> result = reviewMapper.pendingPageQuery(userId,page,pageQueryDTO);
+        return new PageResult<>(result.getTotal(),result.getRecords());
     }
 }

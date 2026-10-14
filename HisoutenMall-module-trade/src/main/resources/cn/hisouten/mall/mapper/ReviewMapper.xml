@@ -23,4 +23,20 @@
         </where>
         order by create_time desc
     </select>
+    <select id="pendingPageQuery" resultType="cn.hisouten.mall.pojo.vo.UserPendingReviewPageResultVO">
+        select
+            oi.id as orderItemId,
+            o.order_no,
+            oi.product_id, oi.product_name, oi.image as productImage,
+            oi.sku_specs,
+            o.finish_time
+        from order_item oi
+                 left join `order` o on oi.order_id = o.id
+                 left join product_review r on r.order_item_id = oi.id
+        where o.user_id = #{userId}
+          and o.status = 3   -- 已完成
+          and o.deleted = 0
+          and r.id is null   -- 未评价
+        order by o.finish_time desc
+    </select>
 </mapper>

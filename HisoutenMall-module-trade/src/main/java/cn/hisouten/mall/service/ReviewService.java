@@ -1,9 +1,11 @@
 package cn.hisouten.mall.service;
 
+import cn.hisouten.mall.pojo.BasePageQueryDTO;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.UserReviewAddDTO;
 import cn.hisouten.mall.pojo.dto.ReviewPageQueryDTO;
 import cn.hisouten.mall.pojo.vo.MerchantReviewPageResultVO;
+import cn.hisouten.mall.pojo.vo.UserPendingReviewPageResultVO;
 import cn.hisouten.mall.pojo.vo.UserReviewPageResultVO;
 import cn.hisouten.mall.pojo.vo.UserSelfReviewPageResultVO;
 
@@ -44,4 +46,12 @@ public interface ReviewService {
      * @param reviewId 评价id
      */
     void deleteReview(Long userId, Long reviewId);
+
+    /**
+     * 用户分页查询待评价商品
+     * @param userId 用户id
+     * @param pageQueryDTO 查询条件
+     * @return 返回值
+     */
+    PageResult<UserPendingReviewPageResultVO> pendingPageQuery(Long userId, BasePageQueryDTO pageQueryDTO);
 }

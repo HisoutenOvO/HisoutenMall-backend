@@ -1,10 +1,12 @@
 package cn.hisouten.mall.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.pojo.BasePageQueryDTO;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.UserReviewAddDTO;
 import cn.hisouten.mall.pojo.dto.ReviewPageQueryDTO;
+import cn.hisouten.mall.pojo.vo.UserPendingReviewPageResultVO;
 import cn.hisouten.mall.pojo.vo.UserReviewPageResultVO;
 import cn.hisouten.mall.pojo.vo.UserSelfReviewPageResultVO;
 import cn.hisouten.mall.service.ReviewService;
@@ -79,4 +81,17 @@ public class ReviewController {
         return Result.success();
     }
 
+    /**
+     * 分页查询待评价列表
+     * @param pageQueryDTO 分页条件
+     * @return 返回值
+     */
+    @GetMapping("/pending")
+    @Operation(summary = "分页查询待支付列表")
+    public Result<PageResult<UserPendingReviewPageResultVO>> pendingQuery(BasePageQueryDTO pageQueryDTO){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 分页查询待评价列表",userId);
+        PageResult<UserPendingReviewPageResultVO> pageResult = reviewService.pendingPageQuery(userId,pageQueryDTO);
+        return Result.success(pageResult);
+    }
 }
