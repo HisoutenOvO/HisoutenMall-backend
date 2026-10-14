@@ -341,7 +341,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     @Transactional
-    public void ship(String orderNo) {
+    public void ship(String orderNo,String company) {
         Order order = orderMapper.selectByOrderNo(orderNo);
         if (order == null || !order.getMerchantId().equals(StpUtil.getLoginIdAsLong())) {
             throw new BizException(ORDER_NOT_FOUND);
@@ -351,6 +351,9 @@ public class OrderServiceImpl implements OrderService {
         }
         Logistics logistics = new Logistics();
         logistics.setOrderId(order.getId());
+        if(company != null){
+            logistics.setCompany(company);
+        }
         logistics.setCompany(DEFAULT_LOGISTICS_COMPANY);
         logistics.setTrackingNo(orderNo + System.currentTimeMillis());
         logistics.setStatus(LOGISTICS_SHIPPED);
@@ -445,6 +448,28 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void insertOrderItem(OrderItem item){
         orderItemMapper.insert(item);
+    }
+
+    /**
+     * 用户查询物流信息
+     * @param userId 用户id
+     * @param orderNo 订单号
+     * @return 返回值
+     */
+    @Override
+    public UserLogisticsVO logisticsQuery(Long userId, String orderNo) {
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if(order == null){
+            throw new BizException(ORDER_NOT_FOUND);
+        }
+        Logistics logistics = logisticsMapper.selectByOrderNo(userId,order.getId());
+        if(logistics == null){
+            throw new BizException(ORDER_NOT_FOUND);
+        }
+        UserLogisticsVO logisticsVO = new UserLogisticsVO();
+        BeanUtils.copyProperties(logistics,logisticsVO);
+        logisticsVO.setShipTime(logistics.getCreateTime());
+        return logisticsVO;
     }
 
     /**

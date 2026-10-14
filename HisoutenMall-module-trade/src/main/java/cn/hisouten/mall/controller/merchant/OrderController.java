@@ -55,9 +55,9 @@ public class OrderController {
      */
     @PutMapping("/{orderNo}/ship")
     @Operation(summary = "商家发货")
-    public Result ship(@PathVariable String orderNo){
+    public Result ship(@PathVariable String orderNo,String company){
         log.info("商家：{}发货:{}",StpUtil.getLoginIdAsLong(),orderNo);
-        orderService.ship(orderNo);
+        orderService.ship(orderNo,company);
         return Result.success();
     }
 }

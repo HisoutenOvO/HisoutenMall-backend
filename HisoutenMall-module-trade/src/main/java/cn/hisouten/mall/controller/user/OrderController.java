@@ -7,6 +7,7 @@ import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.UserOrderCreateDTO;
 import cn.hisouten.mall.pojo.dto.UserOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.UserOrderPayDTO;
+import cn.hisouten.mall.pojo.vo.UserLogisticsVO;
 import cn.hisouten.mall.pojo.vo.UserOrderCreateVO;
 import cn.hisouten.mall.pojo.vo.UserOrderDetailVO;
 import cn.hisouten.mall.pojo.vo.UserOrderPageResultVO;
@@ -101,7 +102,6 @@ public class OrderController {
         return Result.success(pageResult);
     }
 
-
     /**
      * 查询订单详情
      * @param orderNo 订单号
@@ -115,4 +115,17 @@ public class OrderController {
         return Result.success(userDetailVO);
     }
 
+    /**
+     * 查询物流信息
+     * @param orderNo 订单信息
+     * @return 返回值
+     */
+    @GetMapping("/{orderNo}/logistics")
+    @Operation(summary = "查询物流信息")
+    public Result<UserLogisticsVO> logisticsQuery(@PathVariable String orderNo){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 查询物流",userId);
+        UserLogisticsVO vo = orderService.logisticsQuery(userId,orderNo);
+        return Result.success();
+    }
 }

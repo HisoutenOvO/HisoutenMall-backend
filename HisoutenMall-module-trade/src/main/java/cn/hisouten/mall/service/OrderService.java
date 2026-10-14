@@ -68,7 +68,7 @@ public interface OrderService {
      * 商家发货
      * @param orderNo 订单号
      */
-    void ship(String orderNo);
+    void ship(String orderNo,String company);
 
     /**
      * 分页查询订单
@@ -95,4 +95,12 @@ public interface OrderService {
      * @param item 订单项
      */
     void insertOrderItem(OrderItem item);
+
+    /**
+     * 用户查询物流信息
+     * @param userId 用户id
+     * @param orderNo 订单号
+     * @return 返回值
+     */
+    UserLogisticsVO logisticsQuery(Long userId, String orderNo);
 }
