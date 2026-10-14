@@ -164,4 +164,19 @@ public class ReviewServiceImpl implements ReviewService {
         }
         return new PageResult<>(total,voList);
     }
+
+    /**
+     * 用户删除评价
+     * @param userId 用户id
+     * @param reviewId 评价id
+     */
+    @Override
+    public void deleteReview(Long userId, Long reviewId) {
+        ProductReview review = reviewMapper.selectById(reviewId);
+        if(review == null || !review.getUserId().equals(userId)){
+            throw new BizException(REVIEW_NOT_FOUND);
+        }
+        //由于在新增评论的校验时，查询是否存在评价未设置deleted = 0，使得用户删除评价后也不允许再次评价避免刷评
+        reviewMapper.deleteById(reviewId);
+    }
 }

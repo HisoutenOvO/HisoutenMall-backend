@@ -14,6 +14,7 @@ public class ExceptionMessageConstant {
     public static final String ORDER_NOT_FOUND = "订单不存在！";
     public static final String ACTIVITY_NOT_FOUND = "活动不存在！";
     public static final String MERCHANT_NOT_FOUND = "商家不存在！";
+    public static final String REVIEW_NOT_FOUND = "评价不存在！";
     public static final String PARENT_CATEGORY_NOT_FOUND = "父级分类不存在！";
     public static final String LEVEL_OVERFLOW = "分类层级溢出，最多三级，请修改子分类！";
     public static final String SKU_NOT_FOUND = "商品款式不存在！";

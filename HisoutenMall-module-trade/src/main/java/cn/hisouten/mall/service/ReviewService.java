@@ -37,4 +37,11 @@ public interface ReviewService {
      * @return 返回值
      */
     PageResult<MerchantReviewPageResultVO> merchantPageResult(Long merchantId, ReviewPageQueryDTO pageQueryDTO);
+
+    /**
+     * 用户删除评价
+     * @param userId 用户id
+     * @param reviewId 评价id
+     */
+    void deleteReview(Long userId, Long reviewId);
 }

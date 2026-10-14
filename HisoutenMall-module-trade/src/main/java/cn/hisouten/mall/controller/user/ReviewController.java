@@ -65,4 +65,18 @@ public class ReviewController {
         return Result.success(pageResult);
     }
 
+    /**
+     * 删除评价
+     * @param reviewId 评价id
+     * @return 返回值
+     */
+    @DeleteMapping("/{reviewId}")
+    @Operation(summary = "删除评价")
+    public Result deleteReview(@PathVariable Long reviewId){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 删除评价:{} ",userId,reviewId);
+        reviewService.deleteReview(userId,reviewId);
+        return Result.success();
+    }
+
 }
