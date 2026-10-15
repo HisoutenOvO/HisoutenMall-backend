@@ -12,11 +12,10 @@ import cn.hisouten.mall.pojo.dto.UserReviewAddDTO;
 import cn.hisouten.mall.pojo.dto.ReviewPageQueryDTO;
 import cn.hisouten.mall.pojo.entity.Order;
 import cn.hisouten.mall.pojo.entity.OrderItem;
+import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.entity.ProductReview;
-import cn.hisouten.mall.pojo.vo.MerchantReviewPageResultVO;
-import cn.hisouten.mall.pojo.vo.UserPendingReviewPageResultVO;
-import cn.hisouten.mall.pojo.vo.UserReviewPageResultVO;
-import cn.hisouten.mall.pojo.vo.UserSelfReviewPageResultVO;
+import cn.hisouten.mall.pojo.vo.*;
+import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.service.ReviewService;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -24,8 +23,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static cn.hisouten.mall.constant.CommonConstant.DEFAULT_RATING;
 import static cn.hisouten.mall.constant.CommonConstant.DEFAULT_REVIEW;
@@ -38,6 +40,8 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewMapper reviewMapper;
     private final OrderMapper orderMapper;
     private final OrderItemMapper orderItemMapper;
+
+    private final ProductService productService;
 
     /**
      * 用户新增评价
@@ -193,5 +197,48 @@ public class ReviewServiceImpl implements ReviewService {
         Page<UserPendingReviewPageResultVO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
         Page<UserPendingReviewPageResultVO> result = reviewMapper.pendingPageQuery(userId,page,pageQueryDTO);
         return new PageResult<>(result.getTotal(),result.getRecords());
+    }
+
+    /**
+     * 商家端查询商品评价统计
+     * @param merchantId 商家id
+     * @param productId 商品id
+     * @return 返回值
+     */
+    @Override
+    public MerchantReviewStatisticsVO statisticsQuery(Long merchantId, Long productId) {
+        Product product = productService.getProductByProductId(productId);
+        if(product == null || !product.getMerchantId().equals(merchantId)){
+            throw new BizException(PRODUCT_NOT_FOUND);
+        }
+        List<ProductReview> reviewList = reviewMapper.selectByProductId(productId);
+        if(reviewList.isEmpty()){
+            MerchantReviewStatisticsVO emptyVO = new MerchantReviewStatisticsVO();
+            emptyVO.setTotalCount(0);
+            emptyVO.setAvgRating(BigDecimal.ZERO);
+            emptyVO.setGoodCount(0);
+            emptyVO.setGoodRate(0);
+            emptyVO.setRatingCountMap(null);
+            return emptyVO;
+        }
+        int totalCount = reviewList.size();
+        int sumRating = reviewList.stream().mapToInt(ProductReview::getRating).sum();
+        BigDecimal avgRating = BigDecimal.valueOf(sumRating / totalCount);
+        int goodCount = (int) reviewList.stream().filter(r -> r.getRating() >= 4).count();
+        int goodRate = goodCount / totalCount;
+        Map<Integer,Integer> ratingCountMap = new HashMap<>();
+        //初始化Map
+        for(int i = 0; i < 5; i++) ratingCountMap.put(i,0);
+        for (ProductReview review : reviewList) {
+            //对于每个星级，不存在就设为1，存在就累加
+            ratingCountMap.merge(review.getRating(),1,Integer::sum);
+        }
+        MerchantReviewStatisticsVO vo = new MerchantReviewStatisticsVO();
+        vo.setTotalCount(totalCount);
+        vo.setAvgRating(avgRating);
+        vo.setGoodCount(goodCount);
+        vo.setGoodRate(goodRate);
+        vo.setRatingCountMap(ratingCountMap);
+        return vo;
     }
 }

@@ -5,12 +5,14 @@ import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.ReviewPageQueryDTO;
 import cn.hisouten.mall.pojo.vo.MerchantReviewPageResultVO;
+import cn.hisouten.mall.pojo.vo.MerchantReviewStatisticsVO;
 import cn.hisouten.mall.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,5 +36,19 @@ public class ReviewController {
         log.info("商家:{} 分页查询自己的评价记录",merchantId);
         PageResult<MerchantReviewPageResultVO> pageResult = reviewService.merchantPageResult(merchantId,pageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    /**
+     * 评价统计
+     * @param productId 商品id
+     * @return 返回值
+     */
+    @GetMapping("/{productId}/statistics")
+    @Operation(summary = "评价统计")
+    public Result<MerchantReviewStatisticsVO> statisticsQuery(@PathVariable Long productId){
+        Long merchantId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 评价统计",merchantId);
+        MerchantReviewStatisticsVO statisticsVO = reviewService.statisticsQuery(merchantId,productId);
+        return Result.success(statisticsVO);
     }
 }

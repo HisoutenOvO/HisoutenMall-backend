@@ -4,10 +4,7 @@ import cn.hisouten.mall.pojo.BasePageQueryDTO;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.UserReviewAddDTO;
 import cn.hisouten.mall.pojo.dto.ReviewPageQueryDTO;
-import cn.hisouten.mall.pojo.vo.MerchantReviewPageResultVO;
-import cn.hisouten.mall.pojo.vo.UserPendingReviewPageResultVO;
-import cn.hisouten.mall.pojo.vo.UserReviewPageResultVO;
-import cn.hisouten.mall.pojo.vo.UserSelfReviewPageResultVO;
+import cn.hisouten.mall.pojo.vo.*;
 
 public interface ReviewService {
     /**
@@ -54,4 +51,12 @@ public interface ReviewService {
      * @return 返回值
      */
     PageResult<UserPendingReviewPageResultVO> pendingPageQuery(Long userId, BasePageQueryDTO pageQueryDTO);
+
+    /**
+     * 商家端查询商品评价统计
+     * @param merchantId 商家id
+     * @param productId 商品id
+     * @return 返回值
+     */
+    MerchantReviewStatisticsVO statisticsQuery(Long merchantId, Long productId);
 }
