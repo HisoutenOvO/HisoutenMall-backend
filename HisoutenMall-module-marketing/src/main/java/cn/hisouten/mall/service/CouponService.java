@@ -38,4 +38,11 @@ public interface CouponService {
      * @return 返回值
      */
     MerchantCouponDetailVO merchantDetailQuery(Long merchantId, Long couponId);
+
+    /**
+     * 商家删除优惠券
+     * @param merchantId 商家id
+     * @param couponId 优惠券id
+     */
+    void deleteCoupon(Long merchantId, Long couponId);
 }

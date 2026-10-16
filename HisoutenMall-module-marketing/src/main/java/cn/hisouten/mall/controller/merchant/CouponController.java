@@ -79,4 +79,18 @@ public class CouponController {
         MerchantCouponDetailVO detailVO = couponService.merchantDetailQuery(merchantId,couponId);
         return Result.success(detailVO);
     }
+
+    /**
+     * 删除优惠券
+     * @param couponId 优惠券id
+     * @return 返回值
+     */
+    @DeleteMapping("/{couponId}")
+    @Operation(summary = "删除优惠券")
+    public Result deleted(@PathVariable Long couponId){
+        Long merchantId = StpUtil.getLoginIdAsLong();
+        log.info("商家:{} 删除优惠券:{} ",merchantId,couponId);
+        couponService.deleteCoupon(merchantId,couponId);
+        return Result.success();
+    }
 }

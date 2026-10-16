@@ -8,6 +8,7 @@ import cn.hisouten.mall.pojo.dto.MerchantCouponAddDTO;
 import cn.hisouten.mall.pojo.dto.MerchantCouponPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantCouponUpdateDTO;
 import cn.hisouten.mall.pojo.entity.Coupon;
+import cn.hisouten.mall.pojo.entity.UserCoupon;
 import cn.hisouten.mall.pojo.vo.MerchantCouponDetailVO;
 import cn.hisouten.mall.pojo.vo.MerchantCouponPageResultVO;
 import cn.hisouten.mall.service.CouponService;
@@ -148,5 +149,26 @@ public class CouponServiceImpl implements CouponService {
             detailVO.setStatus(FINISHED);
         }
         return detailVO;
+    }
+
+    /**
+     * 商家删除优惠券
+     * @param merchantId 商家id
+     * @param couponId 优惠券id
+     */
+    @Override
+    public void deleteCoupon(Long merchantId, Long couponId) {
+        Coupon coupon = couponMapper.selectById(couponId);
+        if(coupon == null || !coupon.getMerchantId().equals(merchantId)){
+            throw new BizException(COUPON_NOT_FOUND);
+        }
+        if (coupon.getStartTime().isBefore(LocalDateTime.now()) && coupon.getEndTime().isAfter(LocalDateTime.now())){
+            throw new BizException(COUPON_HAS_START);
+        }
+        UserCoupon userCoupon = userCouponMapper.selectByCouponId(couponId);
+        if(userCoupon != null){
+            throw new BizException(COUPON_HAS_RECEIVED);
+        }
+        couponMapper.deleteById(couponId);
     }
 }

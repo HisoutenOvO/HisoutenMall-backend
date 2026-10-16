@@ -71,5 +71,6 @@ public class ExceptionMessageConstant {
     public static final String COUPON_TIME_INVALID = "优惠券时间无效，请检查起止时间是否正确！";
     public static final String COUPON_INFO_INVALID = "优惠券信息无效，请修改价值或库存！";
     public static final String COUPON_HAS_START = "优惠券生效期间不可再修改！";
+    public static final String COUPON_HAS_RECEIVED = "优惠券已被领取，不可进行该操作！";
     public static final String COUPON_EXPIRE_OUT = "优惠券已过期，不可再修改！";
 }

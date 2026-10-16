@@ -26,6 +26,7 @@
                 and c.end_time &lt; NOW()
             </if>
         </if>
+        and deleted = 0
         </where>
     </select>
 </mapper>
