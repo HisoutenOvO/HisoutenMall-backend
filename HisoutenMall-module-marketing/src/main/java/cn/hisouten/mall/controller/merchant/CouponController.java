@@ -1,9 +1,12 @@
 package cn.hisouten.mall.controller.merchant;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.MerchantCouponAddDTO;
+import cn.hisouten.mall.pojo.dto.MerchantCouponPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantCouponUpdateDTO;
+import cn.hisouten.mall.pojo.vo.MerchantCouponPageResultVO;
 import cn.hisouten.mall.service.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -46,5 +49,19 @@ public class CouponController {
         log.info("商家:{} 修改优惠券:{} 信息",merchantId,couponId);
         couponService.updateCoupon(merchantId,couponId,updateDTO);
         return Result.success();
+    }
+
+    /**
+     * 分页查询优惠券
+     * @param pageQueryDTO 分页条件参数
+     * @return 返回值
+     */
+    @GetMapping("/page")
+    @Operation(summary = "分页查询优惠券")
+    public Result<PageResult<MerchantCouponPageResultVO>> pageQuery(MerchantCouponPageQueryDTO pageQueryDTO){
+        Long merchantId = StpUtil.getLoginIdAsLong();
+        log.info("商家:{} 分页查询优惠券",merchantId);
+        PageResult<MerchantCouponPageResultVO> pageResultVO = couponService.merchantPageQuery(merchantId,pageQueryDTO);
+        return Result.success(pageResultVO);
     }
 }

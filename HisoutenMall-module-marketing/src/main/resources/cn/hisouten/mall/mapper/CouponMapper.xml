@@ -1,4 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.hisouten.mall.mapper.CouponMapper">
+    <select id="pageQuery" resultType="cn.hisouten.mall.pojo.vo.MerchantCouponPageResultVO">
+        select c.id,c.name,c.type,c.value,c.min_amount,c.start_time,c.end_time,c.total,c.remain,
+               (c.total - c.remain) as receivedCount,c.create_time,count(uc.use_time) as usedCount
+        from coupon c
+        left join user_coupon uc
+        on c.id = uc.coupon_id
+        <where>
+        and merchant_id = #{merchantID}
+            <if test="pageQueryDTO.keyword != null and pageQueryDTO.keyword !=''">
+                and c.name like concat('%',#{pageQueryDTO.keyword},'%')
+            </if>
+        <if test="pageQueryDTO.type != null">
+            and c.type = #{pageQueryDTO.type}
+        </if>
+        <if test="pageQueryDTO.status != null">
+            <if test="pageQueryDTO.status == 0">
+                and c.start_time &gt; NOW()
+            </if>
+            <if test="pageQueryDTO.status == 1">
+                and c.start_time &lt; NOW() and c.end_time &gt; NOW()
+            </if>
+            <if test="pageQueryDTO.status == 2">
+                and c.end_time &lt; NOW()
+            </if>
+        </if>
+        </where>
+    </select>
 </mapper>

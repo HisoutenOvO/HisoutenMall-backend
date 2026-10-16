@@ -30,4 +30,11 @@ public class StatusConstant {
 
     public static final int SIGNED = 2; //已签收
 
+    //优惠券状态
+    public static final int NOT_START = 0; //未开始
+
+    public static final int IN_PROGRESS = 1; //进行中
+
+    public static final int FINISHED = 2; //已结束
+
 }

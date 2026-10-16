@@ -3,21 +3,28 @@ package cn.hisouten.mall.service.impl;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.CouponMapper;
 import cn.hisouten.mall.mapper.UserCouponMapper;
+import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.MerchantCouponAddDTO;
+import cn.hisouten.mall.pojo.dto.MerchantCouponPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantCouponUpdateDTO;
 import cn.hisouten.mall.pojo.entity.Coupon;
+import cn.hisouten.mall.pojo.vo.MerchantCouponPageResultVO;
 import cn.hisouten.mall.service.CouponService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static cn.hisouten.mall.constant.CommonConstant.AMOUNT_OFF_COUPON;
 import static cn.hisouten.mall.constant.CommonConstant.DISCOUNT_COUPON;
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
+import static cn.hisouten.mall.constant.StatusConstant.*;
 
 @Service
 @RequiredArgsConstructor
@@ -86,5 +93,35 @@ public class CouponServiceImpl implements CouponService {
         coupon.setName(updateDTO.getName());
         coupon.setEndTime(updateDTO.getEndTime());
         couponMapper.updateById(coupon);
+    }
+
+    /**
+     * 商家端分页查询已有的优惠券
+     * @param merchantId 商家id
+     * @param pageQueryDTO 条件参数
+     * @return 返回值
+     */
+    @Override
+    public PageResult<MerchantCouponPageResultVO> merchantPageQuery(Long merchantId, MerchantCouponPageQueryDTO pageQueryDTO) {
+        Page<MerchantCouponPageResultVO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        Page<MerchantCouponPageResultVO> result = couponMapper.pageQuery(merchantId,page,pageQueryDTO);
+        if(result == null){
+            return null;
+        }
+        long total = result.getTotal();
+        List<MerchantCouponPageResultVO> records = new ArrayList<>();
+        for (MerchantCouponPageResultVO record : result.getRecords()) {
+            MerchantCouponPageResultVO vo = new MerchantCouponPageResultVO();
+            BeanUtils.copyProperties(record,vo);
+            if(record.getStartTime().isAfter(LocalDateTime.now())){
+                vo.setStatus(NOT_START);
+            } else if (record.getStartTime().isBefore(LocalDateTime.now()) && record.getEndTime().isAfter(LocalDateTime.now())) {
+                vo.setStatus(IN_PROGRESS);
+            }else{
+                vo.setStatus(FINISHED);
+            }
+            records.add(vo);
+        }
+        return new PageResult<>(total,records);
     }
 }
