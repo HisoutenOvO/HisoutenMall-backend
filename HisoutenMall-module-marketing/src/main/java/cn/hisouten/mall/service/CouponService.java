@@ -4,6 +4,7 @@ import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.MerchantCouponAddDTO;
 import cn.hisouten.mall.pojo.dto.MerchantCouponPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantCouponUpdateDTO;
+import cn.hisouten.mall.pojo.vo.MerchantCouponDetailVO;
 import cn.hisouten.mall.pojo.vo.MerchantCouponPageResultVO;
 
 public interface CouponService {
@@ -29,4 +30,12 @@ public interface CouponService {
      * @return 返回值
      */
     PageResult<MerchantCouponPageResultVO> merchantPageQuery(Long merchantId, MerchantCouponPageQueryDTO pageQueryDTO);
+
+    /**
+     * 商家端查询优惠券详情
+     * @param merchantId 商家id
+     * @param couponId 优惠券
+     * @return 返回值
+     */
+    MerchantCouponDetailVO merchantDetailQuery(Long merchantId, Long couponId);
 }

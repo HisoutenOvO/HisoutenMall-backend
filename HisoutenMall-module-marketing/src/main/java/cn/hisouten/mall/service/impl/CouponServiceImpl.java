@@ -8,6 +8,7 @@ import cn.hisouten.mall.pojo.dto.MerchantCouponAddDTO;
 import cn.hisouten.mall.pojo.dto.MerchantCouponPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantCouponUpdateDTO;
 import cn.hisouten.mall.pojo.entity.Coupon;
+import cn.hisouten.mall.pojo.vo.MerchantCouponDetailVO;
 import cn.hisouten.mall.pojo.vo.MerchantCouponPageResultVO;
 import cn.hisouten.mall.service.CouponService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -123,5 +124,29 @@ public class CouponServiceImpl implements CouponService {
             records.add(vo);
         }
         return new PageResult<>(total,records);
+    }
+
+    /**
+     * 商家端查询优惠券详情
+     * @param merchantId 商家id
+     * @param couponId 优惠券
+     * @return 返回值
+     */
+    @Override
+    public MerchantCouponDetailVO merchantDetailQuery(Long merchantId, Long couponId) {
+        Coupon coupon = couponMapper.selectById(couponId);
+        if(coupon == null || !coupon.getMerchantId().equals(merchantId)){
+            throw new BizException(COUPON_NOT_FOUND);
+        }
+        MerchantCouponDetailVO detailVO = new MerchantCouponDetailVO();
+        BeanUtils.copyProperties(coupon,detailVO);
+        if(coupon.getStartTime().isAfter(LocalDateTime.now())){
+            detailVO.setStatus(NOT_START);
+        } else if (coupon.getStartTime().isBefore(LocalDateTime.now()) && coupon.getEndTime().isAfter(LocalDateTime.now())) {
+            detailVO.setStatus(IN_PROGRESS);
+        }else{
+            detailVO.setStatus(FINISHED);
+        }
+        return detailVO;
     }
 }
