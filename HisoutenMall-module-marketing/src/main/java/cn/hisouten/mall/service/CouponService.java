@@ -1,9 +1,11 @@
 package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.pojo.dto.AvailableCouponPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantCouponAddDTO;
 import cn.hisouten.mall.pojo.dto.MerchantCouponPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantCouponUpdateDTO;
+import cn.hisouten.mall.pojo.vo.AvailableCouponPageResultVO;
 import cn.hisouten.mall.pojo.vo.MerchantCouponDetailVO;
 import cn.hisouten.mall.pojo.vo.MerchantCouponPageResultVO;
 
@@ -45,4 +47,12 @@ public interface CouponService {
      * @param couponId 优惠券id
      */
     void deleteCoupon(Long merchantId, Long couponId);
+
+    /**
+     * 用户分页查询可领取优惠券列表
+     * @param userId 用户id
+     * @param pageQueryDTO 查询参数
+     * @return 返回值
+     */
+    PageResult<AvailableCouponPageResultVO> availablePageQuery(Long userId, AvailableCouponPageQueryDTO pageQueryDTO);
 }

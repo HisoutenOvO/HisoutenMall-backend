@@ -29,4 +29,11 @@
         and deleted = 0
         </where>
     </select>
+    <select id="availablePageQuery" resultType="cn.hisouten.mall.pojo.vo.AvailableCouponPageResultVO">
+        select c.id,c.name,c.type,c.value,c.min_amount,c.start_time,c.end_time,c.remain,
+               mp.shop_name
+        from coupon c
+        left join merchant_profile mp on c.merchant_id = mp.user_id
+        where c.merchant_id = #{pageQueryDTO.merchantId} and c.deleted = 0
+    </select>
 </mapper>

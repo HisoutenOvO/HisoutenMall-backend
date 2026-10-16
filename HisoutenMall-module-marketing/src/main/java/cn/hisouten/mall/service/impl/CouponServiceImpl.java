@@ -4,14 +4,17 @@ import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.CouponMapper;
 import cn.hisouten.mall.mapper.UserCouponMapper;
 import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.pojo.dto.AvailableCouponPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantCouponAddDTO;
 import cn.hisouten.mall.pojo.dto.MerchantCouponPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.MerchantCouponUpdateDTO;
 import cn.hisouten.mall.pojo.entity.Coupon;
 import cn.hisouten.mall.pojo.entity.UserCoupon;
+import cn.hisouten.mall.pojo.vo.AvailableCouponPageResultVO;
 import cn.hisouten.mall.pojo.vo.MerchantCouponDetailVO;
 import cn.hisouten.mall.pojo.vo.MerchantCouponPageResultVO;
 import cn.hisouten.mall.service.CouponService;
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -170,5 +173,32 @@ public class CouponServiceImpl implements CouponService {
             throw new BizException(COUPON_HAS_RECEIVED);
         }
         couponMapper.deleteById(couponId);
+    }
+
+    /**
+     * 用户分页查询可领取优惠券列表
+     * @param userId 用户id
+     * @param pageQueryDTO 查询参数
+     * @return 返回值
+     */
+    @Override
+    public PageResult<AvailableCouponPageResultVO> availablePageQuery(Long userId, AvailableCouponPageQueryDTO pageQueryDTO) {
+        Page<AvailableCouponPageResultVO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        Page<AvailableCouponPageResultVO> result = couponMapper.availablePageQuery(page,pageQueryDTO);
+        long total = result.getTotal();
+
+        //获取用户已有优惠券列表
+        List<UserCoupon> userCouponList = userCouponMapper.selectListByUserId(userId);
+        List<Long> userCouponIdList = CollUtil.getFieldValues(userCouponList,"id", Long.class);
+        //将所有优惠券进行比对，如果优惠券id存在于已有优惠券，则用户已领过
+        List<AvailableCouponPageResultVO> records = new ArrayList<>();
+        for (AvailableCouponPageResultVO record : result.getRecords()) {
+            AvailableCouponPageResultVO vo = new AvailableCouponPageResultVO();
+            BeanUtils.copyProperties(record,vo);
+            boolean exist = userCouponIdList.contains(record.getId());
+            vo.setReceived(exist);
+            records.add(vo);
+        }
+        return new PageResult<>(total,records);
     }
 }
