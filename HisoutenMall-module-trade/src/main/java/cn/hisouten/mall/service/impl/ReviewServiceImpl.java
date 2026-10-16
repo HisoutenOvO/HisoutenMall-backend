@@ -24,6 +24,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -94,20 +95,20 @@ public class ReviewServiceImpl implements ReviewService {
         Page<ReviewPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
         ReviewPageQueryBO pageQueryBO = new ReviewPageQueryBO();
         pageQueryBO.setProductId(pageQueryDTO.getProductId());
-        pageQueryBO.setRating(pageQueryBO.getRating());
+        pageQueryBO.setRating(pageQueryDTO.getRating());
         Page<ReviewPageResultBO> result = reviewMapper.pageQuery(page,pageQueryBO);
         long total = result.getTotal();
         List<ReviewPageResultBO> boList = result.getRecords();
         List<UserReviewPageResultVO> voList = new ArrayList<>();
         for (ReviewPageResultBO bo : boList) {
             UserReviewPageResultVO vo = new UserReviewPageResultVO();
+            BeanUtils.copyProperties(bo,vo);
             String image = bo.getImages();
             //转成单个字符串
             List<String> images = StrUtil.split(image,",");
             vo.setImages(images);
             //脱敏处理
             vo.setNickname(StrUtil.hide(bo.getNickname(),1,bo.getNickname().length()));
-            BeanUtils.copyProperties(bo,vo);
             voList.add(vo);
         }
         return new PageResult<>(total,voList);
@@ -124,7 +125,7 @@ public class ReviewServiceImpl implements ReviewService {
         Page<ReviewPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
         ReviewPageQueryBO pageQueryBO = new ReviewPageQueryBO();
         pageQueryBO.setProductId(pageQueryDTO.getProductId());
-        pageQueryBO.setRating(pageQueryBO.getRating());
+        pageQueryBO.setRating(pageQueryDTO.getRating());
         pageQueryBO.setUserId(userId);
         Page<ReviewPageResultBO> result = reviewMapper.pageQuery(page,pageQueryBO);
         long total = result.getTotal();
@@ -132,11 +133,11 @@ public class ReviewServiceImpl implements ReviewService {
         List<UserSelfReviewPageResultVO> voList = new ArrayList<>();
         for (ReviewPageResultBO bo : boList) {
             UserSelfReviewPageResultVO vo = new UserSelfReviewPageResultVO();
+            BeanUtils.copyProperties(bo,vo);
             String image = bo.getImages();
             //转成单个字符串
             List<String> images = StrUtil.split(image,",");
             vo.setImages(images);
-            BeanUtils.copyProperties(bo,vo);
             voList.add(vo);
         }
         return new PageResult<>(total,voList);
@@ -153,7 +154,7 @@ public class ReviewServiceImpl implements ReviewService {
         Page<ReviewPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
         ReviewPageQueryBO pageQueryBO = new ReviewPageQueryBO();
         pageQueryBO.setProductId(pageQueryDTO.getProductId());
-        pageQueryBO.setRating(pageQueryBO.getRating());
+        pageQueryBO.setRating(pageQueryDTO.getRating());
         pageQueryBO.setMerchantId(merchantId);
         Page<ReviewPageResultBO> result = reviewMapper.pageQuery(page,pageQueryBO);
         long total = result.getTotal();
@@ -161,11 +162,11 @@ public class ReviewServiceImpl implements ReviewService {
         List<MerchantReviewPageResultVO> voList = new ArrayList<>();
         for (ReviewPageResultBO bo : boList) {
             MerchantReviewPageResultVO vo = new MerchantReviewPageResultVO();
+            BeanUtils.copyProperties(bo,vo);
             String image = bo.getImages();
             //转成单个字符串
             List<String> images = StrUtil.split(image,",");
             vo.setImages(images);
-            BeanUtils.copyProperties(bo,vo);
             voList.add(vo);
         }
         return new PageResult<>(total,voList);
@@ -223,12 +224,13 @@ public class ReviewServiceImpl implements ReviewService {
         }
         int totalCount = reviewList.size();
         int sumRating = reviewList.stream().mapToInt(ProductReview::getRating).sum();
-        BigDecimal avgRating = BigDecimal.valueOf(sumRating / totalCount);
+        BigDecimal avgRating = BigDecimal.valueOf(sumRating)
+                .divide(BigDecimal.valueOf(totalCount), 1, RoundingMode.HALF_UP);
         int goodCount = (int) reviewList.stream().filter(r -> r.getRating() >= 4).count();
-        int goodRate = goodCount / totalCount;
+        int goodRate = goodCount * 100 / totalCount;
         Map<Integer,Integer> ratingCountMap = new HashMap<>();
         //初始化Map
-        for(int i = 0; i < 5; i++) ratingCountMap.put(i,0);
+        for(int i = 0; i <= 5; i++) ratingCountMap.put(i,0);
         for (ProductReview review : reviewList) {
             //对于每个星级，不存在就设为1，存在就累加
             ratingCountMap.merge(review.getRating(),1,Integer::sum);

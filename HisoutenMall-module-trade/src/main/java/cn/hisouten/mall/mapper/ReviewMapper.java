@@ -21,7 +21,7 @@ public interface ReviewMapper extends BaseMapper<ProductReview> {
      * @param orderItemId 订单项id
      * @return 返回值
      */
-    @Select("select * from product_review where user_id = #{userId} and order_item_id = #{orderItemId} and deleted = 0")
+    @Select("select * from product_review where user_id = #{userId} and order_item_id = #{orderItemId}")
     ProductReview selectByItemId(Long userId, Long orderItemId);
 
     /**
