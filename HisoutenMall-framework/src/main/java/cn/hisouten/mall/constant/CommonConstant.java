@@ -16,4 +16,10 @@ public class CommonConstant {
 
     //默认评价
     public static final String DEFAULT_REVIEW = "用户未评价，默认好评";
+
+    //满减券类型
+    public static final int AMOUNT_OFF_COUPON = 1;
+
+    //折扣券类型
+    public static final int DISCOUNT_COUPON = 2;
 }
