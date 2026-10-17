@@ -37,4 +37,10 @@
         left join merchant_profile mp on c.merchant_id = mp.user_id
         where c.merchant_id = #{pageQueryDTO.merchantId} and c.deleted = 0
     </select>
+    <select id="selectListByIds" resultType="cn.hisouten.mall.pojo.entity.Coupon">
+        select * from coupon where id in
+        <foreach collection="couponIdList" separator="," item="id" open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

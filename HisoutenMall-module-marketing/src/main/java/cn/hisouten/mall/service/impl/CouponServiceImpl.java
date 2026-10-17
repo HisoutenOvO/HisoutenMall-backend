@@ -13,7 +13,9 @@ import cn.hisouten.mall.pojo.entity.UserCoupon;
 import cn.hisouten.mall.pojo.vo.AvailableCouponPageResultVO;
 import cn.hisouten.mall.pojo.vo.MerchantCouponDetailVO;
 import cn.hisouten.mall.pojo.vo.MerchantCouponPageResultVO;
+import cn.hisouten.mall.pojo.vo.UserUsableCouponVO;
 import cn.hisouten.mall.service.CouponService;
+import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +23,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static cn.hisouten.mall.constant.CommonConstant.AMOUNT_OFF_COUPON;
@@ -238,5 +242,49 @@ public class CouponServiceImpl implements CouponService {
         userCoupon.setReceiveTime(LocalDateTime.now());
         userCoupon.setExpireTime(coupon.getEndTime());
         userCouponMapper.insert(userCoupon);
+    }
+
+    /**
+     * 用户查询可用优惠券列表
+     * @param userId 用户id
+     * @param merchantId 商家id
+     * @param orderAmount 订单金额
+     * @return 返回值
+     */
+    @Override
+    public List<UserUsableCouponVO> usableQuery(Long userId, Long merchantId, BigDecimal orderAmount) {
+        List<UserCoupon> userCouponList = userCouponMapper.selectListByUserId(userId);
+        List<Long> couponIdList = CollUtil.getFieldValues(userCouponList,"couponId", Long.class);
+        //根据优惠券id查询优惠券列表
+        if(couponIdList.isEmpty()){
+            return new ArrayList<>();
+        }
+        List<Coupon> couponList = couponMapper.selectListByIds(couponIdList);
+        Map<Long,Coupon> userCouponMap = CollStreamUtil.toIdentityMap(couponList,Coupon::getId);
+        List<UserUsableCouponVO> voList = new ArrayList<>();
+        //拿到所有优惠券
+        for (UserCoupon userCoupon : userCouponList) {
+            Coupon coupon = userCouponMap.get(userCoupon.getCouponId());
+            if(coupon == null) continue;
+            if(userCoupon.getStatus() != NOT_USED) continue;
+            if (userCoupon.getExpireTime().isBefore(LocalDateTime.now())) continue;
+            if(!coupon.getMerchantId().equals(merchantId)) continue;
+            if(orderAmount.compareTo(coupon.getMinAmount()) < 0) continue;
+            UserUsableCouponVO vo = new UserUsableCouponVO();
+            vo.setUserCouponId(userCoupon.getId());
+            vo.setName(coupon.getName());
+            vo.setType(coupon.getType());
+            vo.setValue(coupon.getValue());
+            vo.setMinAmount(coupon.getMinAmount());
+            vo.setExpireTime(userCoupon.getExpireTime());
+            if(coupon.getType() == AMOUNT_OFF_COUPON){
+                vo.setDiscountAmount(coupon.getValue());
+            }else{
+                //保留两位小数
+                vo.setDiscountAmount(orderAmount.subtract(orderAmount.multiply(coupon.getValue())).setScale(2, RoundingMode.HALF_UP));
+            }
+            voList.add(vo);
+        }
+        return voList;
     }
 }

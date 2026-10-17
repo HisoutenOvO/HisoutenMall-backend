@@ -11,6 +11,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
+
 @Mapper
 public interface CouponMapper extends BaseMapper<Coupon> {
 
@@ -47,4 +49,19 @@ public interface CouponMapper extends BaseMapper<Coupon> {
      */
     @Update("update coupon set remain = remain - 1 where id = #{couponId} and remain > 0")
     int deductRemain(Long couponId);
+
+    /**
+     * 根据商家id查询优惠券
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    @Select("select * from coupon where merchant_id = #{mercahntId}")
+    List<Coupon> selectListByMerchantId(Long merchantId);
+
+    /**
+     * 根据优惠券id列表查询优惠券列表
+     * @param couponIdList 优惠券id列表
+     * @return 返回值
+     */
+    List<Coupon> selectListByIds(List<Long> couponIdList);
 }

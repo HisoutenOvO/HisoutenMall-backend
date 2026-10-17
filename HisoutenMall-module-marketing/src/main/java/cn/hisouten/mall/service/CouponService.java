@@ -8,6 +8,10 @@ import cn.hisouten.mall.pojo.dto.MerchantCouponUpdateDTO;
 import cn.hisouten.mall.pojo.vo.AvailableCouponPageResultVO;
 import cn.hisouten.mall.pojo.vo.MerchantCouponDetailVO;
 import cn.hisouten.mall.pojo.vo.MerchantCouponPageResultVO;
+import cn.hisouten.mall.pojo.vo.UserUsableCouponVO;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 public interface CouponService {
     /**
@@ -62,4 +66,13 @@ public interface CouponService {
      * @param couponId 优惠券id
      */
     void receiveCoupon(Long userId, Long couponId);
+
+    /**
+     * 用户查询可用优惠券列表
+     * @param userId 用户id
+     * @param merchantId 商家id
+     * @param orderAmount 订单金额
+     * @return 返回值
+     */
+    List<UserUsableCouponVO> usableQuery(Long userId, Long merchantId, BigDecimal orderAmount);
 }

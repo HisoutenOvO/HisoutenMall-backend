@@ -5,12 +5,16 @@ import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.AvailableCouponPageQueryDTO;
 import cn.hisouten.mall.pojo.vo.AvailableCouponPageResultVO;
+import cn.hisouten.mall.pojo.vo.UserUsableCouponVO;
 import cn.hisouten.mall.service.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @RestController("userCouponController")
 @RequestMapping("/user/coupon")
@@ -46,5 +50,20 @@ public class CouponController {
         log.info("用户:{} 领取优惠券:{} ",userId,couponId);
         couponService.receiveCoupon(userId,couponId);
         return Result.success();
+    }
+
+    /**
+     * 查询可用优惠券列表
+     * @param merchantId 商家id
+     * @param orderAmount 订单金额
+     * @return 返回值
+     */
+    @GetMapping("/usable")
+    @Operation(summary = "查询可用优惠券列表")
+    public Result<List<UserUsableCouponVO>> usableQuery(@RequestParam Long merchantId, @RequestParam BigDecimal orderAmount){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 查询可用优惠券",userId);
+        List<UserUsableCouponVO> usableCouponVOList = couponService.usableQuery(userId,merchantId,orderAmount);
+        return Result.success(usableCouponVOList);
     }
 }
