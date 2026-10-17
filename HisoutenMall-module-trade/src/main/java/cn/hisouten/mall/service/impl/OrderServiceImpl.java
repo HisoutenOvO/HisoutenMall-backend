@@ -574,7 +574,6 @@ public class OrderServiceImpl implements OrderService {
             for (CartItemListBO boItem : merchantItems) {
                 totalPrice = totalPrice.add(boItem.getPrice().multiply(BigDecimal.valueOf(boItem.getQuantity())));
             }
-            totalAmountList.add(totalPrice);
 
             BigDecimal discount = BigDecimal.ZERO;
 
@@ -597,6 +596,8 @@ public class OrderServiceImpl implements OrderService {
             if (payAmount.compareTo(BigDecimal.ZERO) < 0) {
                 payAmount = BigDecimal.ZERO; // 防止负数
             }
+
+            totalAmountList.add(payAmount);
 
             // 插入订单表
             Order order = new Order();
@@ -649,17 +650,19 @@ public class OrderServiceImpl implements OrderService {
                 userCoupon.setOrderId(order.getId());
                 userCoupon.setUseTime(LocalDateTime.now());
             }
-
-            // 发送订单创建消息（订单超时关闭）
-            OrderTimeoutMessage message = new OrderTimeoutMessage();
-            message.setOrderNo(orderNo);
-            message.setSendTime(System.currentTimeMillis());
-            mqProducerService.sendDelay(ORDER_TIMEOUT_TOPIC, message, THIRTY_MINUTE_DELAY);
         }
 
         //8.用户传了券，但购物车里没有该商家的商品
         if (userCouponId != null && !couponUsed) {
             throw new BizException(COUPON_NOT_USE);
+        }
+
+        //循环外发送消息队列
+        for (String orderNo : orderNos) {
+            OrderTimeoutMessage message = new OrderTimeoutMessage();
+            message.setOrderNo(orderNo);
+            message.setSendTime(System.currentTimeMillis());
+            mqProducerService.sendDelay(ORDER_TIMEOUT_TOPIC, message, THIRTY_MINUTE_DELAY);
         }
 
         //9.清空购物车
