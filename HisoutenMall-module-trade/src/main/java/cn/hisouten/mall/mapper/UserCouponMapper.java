@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -61,4 +62,12 @@ public interface UserCouponMapper extends BaseMapper<UserCoupon> {
      */
     @Select("select * from user_coupon where user_id = #{userId} and id = #{userCouponId}")
     UserCoupon selectByIdAndUserId(Long userCouponId, Long userId);
+
+    /**
+     * 处理过期优惠券
+     * @param now 当前时间
+     * @return 返回影响数
+     */
+    @Update("update user_coupon set status = 2 where status = 0 and expire_time < #{now}")
+    int expireCoupons(LocalDateTime now);
 }
