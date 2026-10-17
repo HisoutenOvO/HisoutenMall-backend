@@ -2,6 +2,7 @@ package cn.hisouten.mall.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.common.annotation.Log;
+import cn.hisouten.mall.common.annotation.RepeatSubmit;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.order.UserOrderCreateDTO;
@@ -34,6 +35,7 @@ public class OrderController {
      */
     @PostMapping("/create-from-cart")
     @Log("购物车下单")
+    @RepeatSubmit(interval = 3) //3秒防重复
     @Operation(summary = "从购物车里结算")
     public Result<UserOrderCreateVO> createFromCart(@RequestParam Long addressId,@RequestParam Long userCouponId) {
         Long userId = StpUtil.getLoginIdAsLong();
@@ -49,6 +51,7 @@ public class OrderController {
      */
     @PostMapping("/create-direct")
     @Log("立即下单")
+    @RepeatSubmit(interval = 3)
     @Operation(summary = "直接购买")
     public Result<UserOrderCreateVO> createDirect(@RequestBody UserOrderCreateDTO userOrderCreateDTO) {
         Long userId = StpUtil.getLoginIdAsLong();
@@ -63,8 +66,9 @@ public class OrderController {
      * @return 返回值
      */
     @PostMapping("/pay")
-    @Operation(summary = "用户支付订单")
     @Log("支付订单")
+    @RepeatSubmit(interval = 3)
+    @Operation(summary = "用户支付订单")
     public Result pay(@RequestBody UserOrderPayDTO userOrderPayDTO) {
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户:{}支付订单", userId);

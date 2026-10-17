@@ -3,6 +3,7 @@ package cn.hisouten.mall.user.controller;
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.common.annotation.Log;
+import cn.hisouten.mall.common.annotation.RepeatSubmit;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.login.AdminLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.login.MerchantLoginDTO;
@@ -33,6 +34,7 @@ public class AuthController {
      */
     @SaIgnore
     @PostMapping("/merchant/login")
+    @RepeatSubmit
     @Log("商家登录")
     @Operation(summary = "商家登录")
     public Result<LoginVO> merchantLogin(@RequestBody MerchantLoginDTO merchantLoginDTO){
@@ -63,6 +65,7 @@ public class AuthController {
      */
     @SaIgnore
     @PostMapping("/user/login")
+    @RepeatSubmit
     @Log("用户登录")
     @Operation(summary = "用户登录")
     public Result<LoginVO> userLogin(@RequestBody UserLoginDTO userLoginDTO){
@@ -78,6 +81,7 @@ public class AuthController {
      */
     @SaIgnore
     @PostMapping("/admin/login")
+    @RepeatSubmit
     @Log("管理员登录")
     @Operation(summary = "管理员登录")
     public Result<LoginVO> adminLogin(@RequestBody AdminLoginDTO adminLoginDTO){

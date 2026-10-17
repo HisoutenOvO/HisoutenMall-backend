@@ -1,6 +1,8 @@
 package cn.hisouten.mall.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.common.annotation.Log;
+import cn.hisouten.mall.common.annotation.RepeatSubmit;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.coupon.AvailableCouponPageQueryDTO;
@@ -44,6 +46,8 @@ public class CouponController {
      * @return 返回值
      */
     @PostMapping("/{couponId}/receive")
+    @RepeatSubmit
+    @Log("用户领券")
     @Operation(summary = "领券")
     public Result receiveCoupon(@PathVariable Long couponId){
         Long userId = StpUtil.getLoginIdAsLong();

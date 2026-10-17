@@ -1,6 +1,7 @@
 package cn.hisouten.mall.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.common.annotation.RepeatSubmit;
 import cn.hisouten.mall.pojo.BasePageQueryDTO;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
@@ -30,6 +31,7 @@ public class ReviewController {
      * @return 返回值
      */
     @PostMapping
+    @RepeatSubmit
     @Operation(summary = "新增评价")
     public Result addReview(@RequestBody UserReviewAddDTO addDTO){
         Long userId = StpUtil.getLoginIdAsLong();

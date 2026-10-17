@@ -1,6 +1,7 @@
 package cn.hisouten.mall.controller.merchant;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.common.annotation.RepeatSubmit;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.activity.MerchantSeckillActivityPageQueryDTO;
@@ -47,6 +48,7 @@ public class SeckillController {
      * @return 返回值
      */
     @PostMapping("/activity")
+    @RepeatSubmit
     @Operation(summary = "新增秒杀活动")
     public Result createActivity(@RequestBody MerchantSeckillActivitySaveDTO merchantSeckillActivitySaveDTO){
         Long merchantId = StpUtil.getLoginIdAsLong();
@@ -104,6 +106,7 @@ public class SeckillController {
      * @return 返回值
      */
     @PostMapping("/product")
+    @RepeatSubmit
     @Operation(summary = "（批量）新增秒杀商品")
     public Result addProduct(@RequestBody MerchantSeckillProductAddDTO addDTO){
         Long merchantId = StpUtil.getLoginIdAsLong();

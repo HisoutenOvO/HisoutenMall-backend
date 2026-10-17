@@ -71,6 +71,9 @@ public class RedisConstant {
     //秒杀用户
     public static final String SECKILL_USERS = "seckill:users:";
 
+    //防重复前缀
+    public static final String REPEAT_SUBMIT = "repeat_submit:";
+
     //设置空缓存的过期时间——单位是分钟
     public static final long CACHE_NULL_TTL = 2L;
 

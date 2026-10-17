@@ -2,6 +2,7 @@ package cn.hisouten.mall.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.common.annotation.Log;
+import cn.hisouten.mall.common.annotation.RepeatSubmit;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.cart.UserCartAddDTO;
 import cn.hisouten.mall.pojo.dto.cart.UserCartItemDeleteDTO;
@@ -30,6 +31,7 @@ public class CartController {
      */
     @PostMapping
     @Log("新增购物车")
+    @RepeatSubmit
     @Operation(summary = "用户新增购物车")
     public Result addCart(@RequestBody UserCartAddDTO userCartAddDTO){
         Long userId = StpUtil.getLoginIdAsLong();

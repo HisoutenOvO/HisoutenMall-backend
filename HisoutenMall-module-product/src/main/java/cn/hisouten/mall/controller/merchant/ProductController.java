@@ -2,6 +2,7 @@ package cn.hisouten.mall.controller.merchant;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.common.annotation.Log;
+import cn.hisouten.mall.common.annotation.RepeatSubmit;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.product.*;
@@ -47,6 +48,7 @@ public class ProductController {
      */
     @PostMapping
     @Log("商家端新增商品")
+    @RepeatSubmit
     @Operation(summary = "新增商品")
     public Result addProduct(@Valid @RequestBody MerchantProductAddDTO merchantProductAddDTO){
         log.info("商家{}新增商品", StpUtil.getLoginIdAsLong());

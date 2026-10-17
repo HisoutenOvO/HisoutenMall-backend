@@ -1,6 +1,7 @@
 package cn.hisouten.mall.controller.merchant;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.common.annotation.RepeatSubmit;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.order.MerchantOrderPageQueryDTO;
@@ -54,6 +55,7 @@ public class OrderController {
      * @return 返回值
      */
     @PutMapping("/{orderNo}/ship")
+    @RepeatSubmit
     @Operation(summary = "商家发货")
     public Result ship(@PathVariable String orderNo,String company){
         log.info("商家：{}发货:{}",StpUtil.getLoginIdAsLong(),orderNo);
