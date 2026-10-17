@@ -12,9 +12,10 @@ public interface OrderService {
     /**
      * 用户从购物车里结算下单
      * @param addressId 地址id
+     * @param userCouponId 用户优惠券id
      * @return 返回值
      */
-    UserOrderCreateVO createFromCart(Long userId, Long addressId);
+    UserOrderCreateVO createFromCart(Long userId, Long addressId,Long userCouponId);
 
     /**
      * 用户立即购买下单

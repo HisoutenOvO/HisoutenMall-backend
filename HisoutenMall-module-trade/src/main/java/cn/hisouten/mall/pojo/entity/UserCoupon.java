@@ -28,7 +28,7 @@ public class UserCoupon {
 
     private LocalDateTime receiveTime;
 
-    private LocalDateTime userTime;
+    private LocalDateTime useTime;
 
     private LocalDateTime expireTime;
 }

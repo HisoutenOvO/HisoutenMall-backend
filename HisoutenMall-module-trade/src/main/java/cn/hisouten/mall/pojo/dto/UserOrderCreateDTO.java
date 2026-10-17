@@ -12,4 +12,6 @@ public class UserOrderCreateDTO {
     private Long skuId;
 
     private Integer quantity;
+
+    private Long userCouponId;
 }

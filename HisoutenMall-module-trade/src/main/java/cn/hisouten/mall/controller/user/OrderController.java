@@ -35,10 +35,10 @@ public class OrderController {
     @PostMapping("/create-from-cart")
     @Log("购物车下单")
     @Operation(summary = "从购物车里结算")
-    public Result<UserOrderCreateVO> createFromCart(@RequestParam Long addressId) {
+    public Result<UserOrderCreateVO> createFromCart(@RequestParam Long addressId,@RequestParam Long userCouponId) {
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户：{}从购物车结算订单", userId);
-        UserOrderCreateVO userOrderCreateVO = orderService.createFromCart(userId, addressId);
+        UserOrderCreateVO userOrderCreateVO = orderService.createFromCart(userId, addressId,userCouponId);
         return Result.success(userOrderCreateVO);
     }
 
