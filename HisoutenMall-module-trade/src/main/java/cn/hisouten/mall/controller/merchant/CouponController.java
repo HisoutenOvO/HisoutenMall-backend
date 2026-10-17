@@ -1,8 +1,8 @@
 package cn.hisouten.mall.controller.merchant;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.dto.coupon.MerchantCouponAddDTO;
 import cn.hisouten.mall.pojo.dto.coupon.MerchantCouponPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.coupon.MerchantCouponUpdateDTO;
@@ -11,6 +11,7 @@ import cn.hisouten.mall.pojo.vo.coupon.MerchantCouponPageResultVO;
 import cn.hisouten.mall.service.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class CouponController {
      */
     @PostMapping
     @Operation(summary = "新增优惠券")
-    public Result addCoupon(@RequestBody MerchantCouponAddDTO addDTO){
+    public Result addCoupon(@Valid @RequestBody MerchantCouponAddDTO addDTO){
         Long merchantId = StpUtil.getLoginIdAsLong();
         log.info("商家:{} 新增优惠券",merchantId);
         couponService.addCoupon(merchantId,addDTO);
@@ -45,7 +46,7 @@ public class CouponController {
      */
     @PutMapping("/{couponId}")
     @Operation(summary = "修改优惠券信息")
-    public Result updateCoupon(@RequestBody MerchantCouponUpdateDTO updateDTO, @PathVariable Long couponId){
+    public Result updateCoupon(@Valid @RequestBody MerchantCouponUpdateDTO updateDTO, @PathVariable Long couponId){
         Long merchantId = StpUtil.getLoginIdAsLong();
         log.info("商家:{} 修改优惠券:{} 信息",merchantId,couponId);
         couponService.updateCoupon(merchantId,couponId,updateDTO);
@@ -59,7 +60,7 @@ public class CouponController {
      */
     @GetMapping("/page")
     @Operation(summary = "分页查询优惠券")
-    public Result<PageResult<MerchantCouponPageResultVO>> pageQuery(MerchantCouponPageQueryDTO pageQueryDTO){
+    public Result<PageResult<MerchantCouponPageResultVO>> pageQuery(@Valid MerchantCouponPageQueryDTO pageQueryDTO){
         Long merchantId = StpUtil.getLoginIdAsLong();
         log.info("商家:{} 分页查询优惠券",merchantId);
         PageResult<MerchantCouponPageResultVO> pageResultVO = couponService.merchantPageQuery(merchantId,pageQueryDTO);

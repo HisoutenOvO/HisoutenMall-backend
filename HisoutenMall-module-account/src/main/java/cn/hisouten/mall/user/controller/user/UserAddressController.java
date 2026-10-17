@@ -2,7 +2,7 @@ package cn.hisouten.mall.user.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.common.annotation.Log;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.address.UserAddressAddDTO;
 import cn.hisouten.mall.user.pojo.dto.address.UserAddressUpdateDTO;
 import cn.hisouten.mall.user.pojo.vo.user.UserAddressDetailVO;
@@ -10,6 +10,7 @@ import cn.hisouten.mall.user.pojo.vo.user.UserAddressListVO;
 import cn.hisouten.mall.user.service.UserAddressService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -58,7 +59,7 @@ public class UserAddressController {
     @PostMapping
     @Log("用户新增地址")
     @Operation(summary = "用户新增地址")
-    public Result addAddress(@RequestBody UserAddressAddDTO userAddressAddDTO){
+    public Result addAddress(@Valid @RequestBody UserAddressAddDTO userAddressAddDTO){
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户：{}新增地址参数",userId);
         userAddressService.addAddress(userId,userAddressAddDTO);
@@ -75,7 +76,7 @@ public class UserAddressController {
     @PutMapping("/{addressId}")
     @Log("用户修改地址")
     @Operation(summary = "用户修改地址")
-    public Result updateAddress(@PathVariable Long addressId,@RequestBody UserAddressUpdateDTO userAddressUpdateDTO){
+    public Result updateAddress(@PathVariable Long addressId,@Valid @RequestBody UserAddressUpdateDTO userAddressUpdateDTO){
         log.info("用户:{}修改地址:{}",StpUtil.getLoginIdAsLong(),addressId);
         userAddressService.updateAddress(addressId,userAddressUpdateDTO);
         return Result.success();

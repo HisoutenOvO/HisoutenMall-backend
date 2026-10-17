@@ -1,16 +1,16 @@
 package cn.hisouten.mall.controller.admin;
 
 import cn.hisouten.mall.common.annotation.Log;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryAddDTO;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryUpdateDTO;
-import cn.hisouten.mall.pojo.vo.brand.AdminBrandDetailVO;
 import cn.hisouten.mall.pojo.vo.category.AdminCategoryDetailVO;
 import cn.hisouten.mall.pojo.vo.category.AdminCategoryListVO;
 import cn.hisouten.mall.pojo.vo.category.AdminCategoryTreeVO;
 import cn.hisouten.mall.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -70,7 +70,7 @@ public class CategoryController {
     @PostMapping
     @Log("管理端新增分类")
     @Operation(summary = "新增分类")
-    public Result addCategory(@RequestBody AdminCategoryAddDTO adminCategoryAddDTO){
+    public Result addCategory(@Valid @RequestBody AdminCategoryAddDTO adminCategoryAddDTO){
         log.info("新增分类");
         categoryService.addCategory(adminCategoryAddDTO);
         return Result.success();
@@ -85,7 +85,7 @@ public class CategoryController {
     @PutMapping("/{categoryId}")
     @Log("管理端修改分类")
     @Operation(summary = "修改分类")
-    public Result updateCategory(@PathVariable Long categoryId ,@RequestBody AdminCategoryUpdateDTO adminCategoryUpdateDTO){
+    public Result updateCategory(@PathVariable Long categoryId ,@Valid @RequestBody AdminCategoryUpdateDTO adminCategoryUpdateDTO){
         log.info("修改分类:{}",categoryId);
         categoryService.updateCategory(categoryId,adminCategoryUpdateDTO);
         return Result.success();

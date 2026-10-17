@@ -1,12 +1,13 @@
 package cn.hisouten.mall.controller.Admin;
 
-import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.dto.order.AdminOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.vo.order.AdminOrderPageResultVO;
 import cn.hisouten.mall.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +29,7 @@ public class OrderController {
      */
     @GetMapping("/page")
     @Operation(summary = "分页查询订单")
-    public Result<PageResult<AdminOrderPageResultVO>> pageQuery(AdminOrderPageQueryDTO adminOrderPageResultDTO){
+    public Result<PageResult<AdminOrderPageResultVO>> pageQuery(@Valid AdminOrderPageQueryDTO adminOrderPageResultDTO){
         log.info("管理员分页查询订单");
         PageResult<AdminOrderPageResultVO> pageResult = orderService.adminPageQuery(adminOrderPageResultDTO);
         return Result.success(pageResult);

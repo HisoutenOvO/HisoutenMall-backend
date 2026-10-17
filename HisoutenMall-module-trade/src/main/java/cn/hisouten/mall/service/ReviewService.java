@@ -1,7 +1,7 @@
 package cn.hisouten.mall.service;
 
-import cn.hisouten.mall.pojo.BasePageQueryDTO;
-import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.BasePageQueryDTO;
+import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.review.UserReviewAddDTO;
 import cn.hisouten.mall.pojo.dto.review.ReviewPageQueryDTO;
 import cn.hisouten.mall.pojo.vo.review.*;

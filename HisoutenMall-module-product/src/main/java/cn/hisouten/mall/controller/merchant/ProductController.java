@@ -3,8 +3,8 @@ package cn.hisouten.mall.controller.merchant;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.common.annotation.RepeatSubmit;
-import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.dto.product.*;
 import cn.hisouten.mall.pojo.vo.product.MerchantProductDetailVO;
 import cn.hisouten.mall.pojo.vo.product.MerchantProductPageResultVO;
@@ -34,7 +34,7 @@ public class ProductController {
      */
     @GetMapping("/page")
     @Operation(summary = "商品分页查询")
-    public Result<PageResult<MerchantProductPageResultVO>> pageQuery(MerchantProductPageQueryDTO merchantProductPageQueryDTO){
+    public Result<PageResult<MerchantProductPageResultVO>> pageQuery(@Valid MerchantProductPageQueryDTO merchantProductPageQueryDTO){
         log.info("分页查询商品信息");
         PageResult<MerchantProductPageResultVO> pageResult = productService.merchantPageQuery(merchantProductPageQueryDTO);
         return Result.success(pageResult);
@@ -176,7 +176,7 @@ public class ProductController {
     @PutMapping("/sku/{skuId}")
     @Log("商家端修改sku")
     @Operation(summary = "修改sku")
-    public Result updateSku(@PathVariable Long skuId, @RequestBody MerchantProductSkuDTO productSkuDTO){
+    public Result updateSku(@PathVariable Long skuId, @Valid @RequestBody MerchantProductSkuDTO productSkuDTO){
         log.info("修改：{}",skuId);
         productService.updateSku(skuId,productSkuDTO);
         return Result.success();

@@ -3,8 +3,8 @@ package cn.hisouten.mall.controller.user;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.common.annotation.RepeatSubmit;
-import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.dto.order.UserOrderCreateDTO;
 import cn.hisouten.mall.pojo.dto.order.UserOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.order.UserOrderPayDTO;
@@ -15,6 +15,7 @@ import cn.hisouten.mall.pojo.vo.order.UserOrderPageResultVO;
 import cn.hisouten.mall.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -53,7 +54,7 @@ public class OrderController {
     @Log("立即下单")
     @RepeatSubmit(interval = 3)
     @Operation(summary = "直接购买")
-    public Result<UserOrderCreateVO> createDirect(@RequestBody UserOrderCreateDTO userOrderCreateDTO) {
+    public Result<UserOrderCreateVO> createDirect(@Valid @RequestBody UserOrderCreateDTO userOrderCreateDTO) {
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户：{}直接下单", userId);
         UserOrderCreateVO userOrderCreateVO = orderService.createDirect(userId, userOrderCreateDTO);
@@ -69,7 +70,7 @@ public class OrderController {
     @Log("支付订单")
     @RepeatSubmit(interval = 3)
     @Operation(summary = "用户支付订单")
-    public Result pay(@RequestBody UserOrderPayDTO userOrderPayDTO) {
+    public Result pay(@Valid @RequestBody UserOrderPayDTO userOrderPayDTO) {
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户:{}支付订单", userId);
         orderService.pay(userId, userOrderPayDTO);
@@ -99,7 +100,7 @@ public class OrderController {
      */
     @GetMapping("/page")
     @Operation(summary = "订单分页查询")
-    public Result<PageResult<UserOrderPageResultVO>> pageQuery(UserOrderPageQueryDTO userOrderPageQueryDTO) {
+    public Result<PageResult<UserOrderPageResultVO>> pageQuery(@Valid UserOrderPageQueryDTO userOrderPageQueryDTO) {
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户：{}分页查询订单", userId);
         PageResult<UserOrderPageResultVO> pageResult = orderService.userPageQuery(userOrderPageQueryDTO);

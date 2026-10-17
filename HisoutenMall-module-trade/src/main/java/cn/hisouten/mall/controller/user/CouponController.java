@@ -3,14 +3,15 @@ package cn.hisouten.mall.controller.user;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.common.annotation.RepeatSubmit;
-import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.dto.coupon.AvailableCouponPageQueryDTO;
 import cn.hisouten.mall.pojo.vo.coupon.AvailableCouponPageResultVO;
 import cn.hisouten.mall.pojo.vo.coupon.UserUsableCouponVO;
 import cn.hisouten.mall.service.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class CouponController {
      */
     @GetMapping("/available")
     @Operation(summary = "分页查询可领取优惠券列表")
-    public Result<PageResult<AvailableCouponPageResultVO>> availablePageQuery(AvailableCouponPageQueryDTO pageQueryDTO){
+    public Result<PageResult<AvailableCouponPageResultVO>> availablePageQuery(@Valid AvailableCouponPageQueryDTO pageQueryDTO){
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户:{} 分页查询可领取的优惠券列表",userId);
         PageResult<AvailableCouponPageResultVO> pageResult = couponService.availablePageQuery(userId,pageQueryDTO);

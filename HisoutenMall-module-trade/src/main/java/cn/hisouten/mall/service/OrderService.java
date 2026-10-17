@@ -1,6 +1,6 @@
 package cn.hisouten.mall.service;
 
-import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.order.*;
 import cn.hisouten.mall.pojo.entity.Order;
 import cn.hisouten.mall.pojo.entity.OrderItem;

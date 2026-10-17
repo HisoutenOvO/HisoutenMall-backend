@@ -1,13 +1,14 @@
 package cn.hisouten.mall.user.controller.admin;
 
 import cn.hisouten.mall.common.annotation.Log;
-import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.AdminUserPageQueryDTO;
 import cn.hisouten.mall.user.pojo.vo.user.AdminUserPageResultVO;
 import cn.hisouten.mall.user.service.AdminUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class AdminUserController {
      */
     @GetMapping("/page")
     @Operation(summary = "用户分页查询")
-    public Result<PageResult<AdminUserPageResultVO>> pageQuery(AdminUserPageQueryDTO adminUserPageQueryDTO){
+    public Result<PageResult<AdminUserPageResultVO>> pageQuery(@Valid AdminUserPageQueryDTO adminUserPageQueryDTO){
         log.info("用户分页查询");
         PageResult<AdminUserPageResultVO> adminUserPageResultVO = adminUserService.pageQuery(adminUserPageQueryDTO);
         return Result.success(adminUserPageResultVO);

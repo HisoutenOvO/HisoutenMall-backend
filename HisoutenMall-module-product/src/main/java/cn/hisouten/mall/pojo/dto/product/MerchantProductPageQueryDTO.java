@@ -1,6 +1,7 @@
 package cn.hisouten.mall.pojo.dto.product;
 
-import cn.hisouten.mall.pojo.BasePageQueryDTO;
+import cn.hisouten.mall.common.pojo.BasePageQueryDTO;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MerchantProductPageQueryDTO extends BasePageQueryDTO {
 
+    @Size(max = 100, message = "搜索关键词过长")
     private String keyword;
 
     private Long categoryId;

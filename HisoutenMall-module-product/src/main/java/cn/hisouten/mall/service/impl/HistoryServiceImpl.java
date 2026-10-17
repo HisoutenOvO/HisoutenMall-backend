@@ -2,8 +2,8 @@ package cn.hisouten.mall.service.impl;
 
 import cn.hisouten.mall.mapper.HistoryMapper;
 import cn.hisouten.mall.mapper.ProductMapper;
-import cn.hisouten.mall.pojo.BasePageQueryDTO;
-import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.BasePageQueryDTO;
+import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.entity.UserBrowseHistory;
 import cn.hisouten.mall.pojo.vo.history.UserHistoryPageResultVO;

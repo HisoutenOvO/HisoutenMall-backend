@@ -1,6 +1,7 @@
 package cn.hisouten.mall.pojo.dto.coupon;
 
-import cn.hisouten.mall.pojo.BasePageQueryDTO;
+import cn.hisouten.mall.common.pojo.BasePageQueryDTO;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -8,5 +9,7 @@ import lombok.Data;
  */
 @Data
 public class AvailableCouponPageQueryDTO extends BasePageQueryDTO {
+
+    @NotNull(message = "商家ID不能为空")
     private Long merchant;
 }

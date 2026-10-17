@@ -6,7 +6,7 @@ import cn.hisouten.mall.mapper.*;
 import cn.hisouten.mall.mq.message.OrderCancelMessage;
 import cn.hisouten.mall.mq.message.OrderTimeoutMessage;
 import cn.hisouten.mall.mq.producer.MqProducerService;
-import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.cart.CartItemListBO;
 import cn.hisouten.mall.pojo.dto.order.*;
 import cn.hisouten.mall.pojo.entity.*;

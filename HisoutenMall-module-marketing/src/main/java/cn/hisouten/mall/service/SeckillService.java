@@ -1,6 +1,6 @@
 package cn.hisouten.mall.service;
 
-import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.activity.MerchantSeckillActivityPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.activity.MerchantSeckillActivitySaveDTO;
 import cn.hisouten.mall.pojo.dto.product.MerchantSeckillProductAddDTO;

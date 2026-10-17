@@ -1,6 +1,6 @@
 package cn.hisouten.mall.mapper;
 
-import cn.hisouten.mall.pojo.BasePageQueryDTO;
+import cn.hisouten.mall.common.pojo.BasePageQueryDTO;
 import cn.hisouten.mall.pojo.bo.review.ReviewPageQueryBO;
 import cn.hisouten.mall.pojo.bo.review.ReviewPageResultBO;
 import cn.hisouten.mall.pojo.entity.ProductReview;

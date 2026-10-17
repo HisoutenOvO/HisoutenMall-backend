@@ -1,6 +1,6 @@
 package cn.hisouten.mall.controller.user;
 
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.vo.category.CategoryListVO;
 import cn.hisouten.mall.pojo.vo.category.CategoryTreeVO;
 import cn.hisouten.mall.service.CategoryService;

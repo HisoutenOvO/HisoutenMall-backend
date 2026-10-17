@@ -2,7 +2,7 @@ package cn.hisouten.mall.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.common.annotation.Log;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.dto.SeckillExecuteDTO;
 import cn.hisouten.mall.pojo.vo.activity.UserSeckillActivityListVO;
 import cn.hisouten.mall.pojo.vo.activity.UserSeckillActivityDetailVO;
@@ -10,6 +10,7 @@ import cn.hisouten.mall.service.SeckillOrderService;
 import cn.hisouten.mall.service.SeckillService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class SeckillController {
     @PostMapping("/execute")
     @Log("用户秒杀下单")
     @Operation(summary = "秒杀商品")
-    public Result<String> execute(@RequestBody SeckillExecuteDTO seckillExecuteDTO){
+    public Result<String> execute(@Valid @RequestBody SeckillExecuteDTO seckillExecuteDTO){
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户:{}秒杀商品{}",userId,seckillExecuteDTO.getSkuId());
         String success = seckillOrderService.seckillProduct(userId,seckillExecuteDTO);

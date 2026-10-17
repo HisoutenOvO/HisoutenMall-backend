@@ -1,14 +1,15 @@
 package cn.hisouten.mall.user.controller.admin;
 
 import cn.hisouten.mall.common.annotation.Log;
-import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.AdminMerchantPageQueryDTO;
 import cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantDetailVO;
 import cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantPageResultVO;
 import cn.hisouten.mall.user.service.AdminMerchantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class AdminMerchantController {
      */
     @GetMapping("/page")
     @Operation(summary = "商家分页查询")
-    public Result<PageResult<AdminMerchantPageResultVO>> pageQuery(AdminMerchantPageQueryDTO adminMerchantPageQueryDTO){
+    public Result<PageResult<AdminMerchantPageResultVO>> pageQuery(@Valid AdminMerchantPageQueryDTO adminMerchantPageQueryDTO){
         log.info("商家分页查询");
         PageResult<AdminMerchantPageResultVO> pageResult = adminMerchantService.pageQuery(adminMerchantPageQueryDTO);
         return Result.success(pageResult);

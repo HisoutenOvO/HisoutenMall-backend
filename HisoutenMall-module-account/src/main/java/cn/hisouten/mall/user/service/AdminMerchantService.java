@@ -1,6 +1,6 @@
 package cn.hisouten.mall.user.service;
 
-import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.user.pojo.dto.AdminMerchantPageQueryDTO;
 import cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantDetailVO;
 import cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantPageResultVO;

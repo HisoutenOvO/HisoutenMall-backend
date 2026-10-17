@@ -1,8 +1,8 @@
 package cn.hisouten.mall.controller.admin;
 
 import cn.hisouten.mall.common.annotation.Log;
-import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandAddDTO;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandUpdateDTO;
@@ -11,6 +11,7 @@ import cn.hisouten.mall.pojo.vo.brand.AdminBrandPageResultVO;
 import cn.hisouten.mall.service.BrandService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class BrandController {
      */
     @GetMapping("/page")
     @Operation(summary = "品牌分页查询")
-    public Result<PageResult<AdminBrandPageResultVO>> pageQuery(AdminBrandPageQueryDTO adminBrandPageQueryDTO){
+    public Result<PageResult<AdminBrandPageResultVO>> pageQuery(@Valid AdminBrandPageQueryDTO adminBrandPageQueryDTO){
         log.info("品牌分页查询");
         PageResult<AdminBrandPageResultVO> pageResult = brandService.pageQuery(adminBrandPageQueryDTO);
         return Result.success(pageResult);
@@ -57,7 +58,7 @@ public class BrandController {
     @PostMapping
     @Log("管理端新增品牌")
     @Operation(summary = "新增品牌")
-    public Result addBrand(@RequestBody AdminBrandAddDTO adminBrandAddDTO){
+    public Result addBrand(@Valid @RequestBody AdminBrandAddDTO adminBrandAddDTO){
         log.info("新增品牌");
         brandService.addBrand(adminBrandAddDTO);
         return Result.success();
@@ -71,7 +72,7 @@ public class BrandController {
     @PutMapping("/{brandId}")
     @Log("管理端修改品牌")
     @Operation(summary = "修改品牌")
-    public Result updateBrand(@PathVariable Long brandId ,@RequestBody AdminBrandUpdateDTO adminBrandUpdateDTO){
+    public Result updateBrand(@PathVariable Long brandId ,@Valid @RequestBody AdminBrandUpdateDTO adminBrandUpdateDTO){
         log.info("修改品牌：{}",brandId);
         brandService.updateBrand(brandId,adminBrandUpdateDTO);
         return Result.success();

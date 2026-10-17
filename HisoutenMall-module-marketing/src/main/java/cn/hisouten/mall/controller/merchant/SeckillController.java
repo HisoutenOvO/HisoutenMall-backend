@@ -2,8 +2,8 @@ package cn.hisouten.mall.controller.merchant;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.common.annotation.RepeatSubmit;
-import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.dto.activity.MerchantSeckillActivityPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.activity.MerchantSeckillActivitySaveDTO;
 import cn.hisouten.mall.pojo.dto.product.MerchantSeckillProductAddDTO;
@@ -14,6 +14,7 @@ import cn.hisouten.mall.service.SeckillOrderService;
 import cn.hisouten.mall.service.SeckillService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,7 @@ public class SeckillController {
      */
     @GetMapping("/activity/page")
     @Operation(summary = "分页查询秒杀活动")
-    public Result<PageResult<MerchantSeckillActivityPageResultVO>> pageQuery(MerchantSeckillActivityPageQueryDTO pageQueryDTO){
+    public Result<PageResult<MerchantSeckillActivityPageResultVO>> pageQuery(@Valid MerchantSeckillActivityPageQueryDTO pageQueryDTO){
         Long merchantId = StpUtil.getLoginIdAsLong();
         log.info("商家:{} 分页查询秒杀活动",merchantId);
         PageResult<MerchantSeckillActivityPageResultVO> pageResult = seckillService.pageQueryMerchant(merchantId,pageQueryDTO);
@@ -50,7 +51,7 @@ public class SeckillController {
     @PostMapping("/activity")
     @RepeatSubmit
     @Operation(summary = "新增秒杀活动")
-    public Result createActivity(@RequestBody MerchantSeckillActivitySaveDTO merchantSeckillActivitySaveDTO){
+    public Result createActivity(@Valid @RequestBody MerchantSeckillActivitySaveDTO merchantSeckillActivitySaveDTO){
         Long merchantId = StpUtil.getLoginIdAsLong();
         log.info("商家：{} 创建秒杀活动",merchantId);
         seckillService.createActivity(merchantId, merchantSeckillActivitySaveDTO);
@@ -79,7 +80,7 @@ public class SeckillController {
      */
     @PutMapping("/activity/{activityId}")
     @Operation(summary = "修改秒杀活动")
-    public Result updateActivity(@PathVariable Long activityId,@RequestBody MerchantSeckillActivitySaveDTO merchantSeckillActivitySaveDTO){
+    public Result updateActivity(@PathVariable Long activityId,@Valid @RequestBody MerchantSeckillActivitySaveDTO merchantSeckillActivitySaveDTO){
         Long merchantId = StpUtil.getLoginIdAsLong();
         log.info("商家:{} 修改秒杀活动:{}",merchantId,activityId);
         seckillService.updateActivity(merchantId,activityId,merchantSeckillActivitySaveDTO);
@@ -108,7 +109,7 @@ public class SeckillController {
     @PostMapping("/product")
     @RepeatSubmit
     @Operation(summary = "（批量）新增秒杀商品")
-    public Result addProduct(@RequestBody MerchantSeckillProductAddDTO addDTO){
+    public Result addProduct(@Valid @RequestBody MerchantSeckillProductAddDTO addDTO){
         Long merchantId = StpUtil.getLoginIdAsLong();
         log.info("商家:{} 批量新增秒杀商品",merchantId);
         seckillService.addProduct(merchantId,addDTO);
@@ -123,7 +124,7 @@ public class SeckillController {
      */
     @PutMapping("/product/{productId}")
     @Operation(summary = "修改秒杀商品")
-    public Result updateProduct(@PathVariable Long productId,@RequestBody MerchantSeckillProductUpdateDTO updateDTO){
+    public Result updateProduct(@PathVariable Long productId,@Valid @RequestBody MerchantSeckillProductUpdateDTO updateDTO){
         Long merchantId = StpUtil.getLoginIdAsLong();
         log.info("商家:{} 修改秒杀商品:{} ",merchantId,productId);
         seckillService.updateProduct(merchantId,productId,updateDTO);

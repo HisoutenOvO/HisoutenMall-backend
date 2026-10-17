@@ -1,6 +1,6 @@
 package cn.hisouten.mall.service;
 
-import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandAddDTO;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandUpdateDTO;

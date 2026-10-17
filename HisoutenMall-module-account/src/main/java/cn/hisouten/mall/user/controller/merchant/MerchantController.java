@@ -2,13 +2,14 @@ package cn.hisouten.mall.user.controller.merchant;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.common.annotation.Log;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.update.MerchantUpdateDTO;
 import cn.hisouten.mall.user.pojo.vo.merchant.MerchantDetailVO;
 import cn.hisouten.mall.user.service.AuthService;
 import cn.hisouten.mall.user.service.MerchantProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +45,7 @@ public class MerchantController {
     @PutMapping("/profile")
     @Log("商家端修改信息")
     @Operation(summary = "商家修改信息")
-    public Result updateInfo(@RequestBody MerchantUpdateDTO merchantUpdateDTO){
+    public Result updateInfo(@Valid @RequestBody MerchantUpdateDTO merchantUpdateDTO){
         Long merchantId = StpUtil.getLoginIdAsLong();
         log.info("商家:{}修改信息",merchantId);
         merchantProfileService.updateInfo(merchantId,merchantUpdateDTO);

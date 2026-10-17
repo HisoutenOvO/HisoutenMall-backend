@@ -3,13 +3,14 @@ package cn.hisouten.mall.controller.user;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.common.annotation.RepeatSubmit;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.dto.cart.UserCartAddDTO;
 import cn.hisouten.mall.pojo.dto.cart.UserCartItemDeleteDTO;
 import cn.hisouten.mall.pojo.vo.cart.UserCartItemListVO;
 import cn.hisouten.mall.service.CartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class CartController {
     @Log("新增购物车")
     @RepeatSubmit
     @Operation(summary = "用户新增购物车")
-    public Result addCart(@RequestBody UserCartAddDTO userCartAddDTO){
+    public Result addCart(@Valid @RequestBody UserCartAddDTO userCartAddDTO){
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户:{}新增购物车商品",userId);
         cartService.addCart(userId,userCartAddDTO);
@@ -109,7 +110,7 @@ public class CartController {
     @DeleteMapping
     @Log("批量删除购物车")
     @Operation(summary = "批量删除购物车数据")
-    public Result deleteBatch(@RequestBody UserCartItemDeleteDTO userCartItemDeleteDTO){
+    public Result deleteBatch(@Valid @RequestBody UserCartItemDeleteDTO userCartItemDeleteDTO){
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户批量删除购物车数据:{}",userCartItemDeleteDTO.getIds());
         cartService.deleteBatch(userCartItemDeleteDTO,userId);

@@ -1,4 +1,4 @@
-package cn.hisouten.mall.pojo;
+package cn.hisouten.mall.common.pojo;
 
 import lombok.Data;
 import java.io.Serializable;

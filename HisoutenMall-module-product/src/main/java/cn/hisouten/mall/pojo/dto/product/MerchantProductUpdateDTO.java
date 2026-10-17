@@ -1,5 +1,6 @@
 package cn.hisouten.mall.pojo.dto.product;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,11 +26,14 @@ public class MerchantProductUpdateDTO {
 
     private Long brandId;
 
+    @Size(max = 500, message = "主图链接过长")
     private String mainImage;
 
     @Size(max = 5000, message = "详情不能超过5000字")
     private String detail;
 
+    @NotEmpty(message = "商品必须包含至少一个SKU")
+    @Valid // 级联校验
     private List<ProductSkuItemDTO> skuList;
 
 }

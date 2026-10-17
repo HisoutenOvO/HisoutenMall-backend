@@ -132,7 +132,7 @@ public class CategoryServiceImpl implements CategoryService {
         } else {
             Category parent = categoryMapper.selectById(adminCategoryAddDTO.getParentId());
             if (parent == null) {
-                throw new BizException(CATEGORY_NOT_FOUND);
+                throw new BizException(PARENT_CATEGORY_NOT_FOUND);
             }
             if (parent.getLevel() >= 3) {
                 throw new BizException(LEVEL_OVERFLOW);

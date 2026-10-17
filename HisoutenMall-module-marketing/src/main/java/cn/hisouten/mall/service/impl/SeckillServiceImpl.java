@@ -3,7 +3,7 @@ package cn.hisouten.mall.service.impl;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.SeckillActivityMapper;
 import cn.hisouten.mall.mapper.SeckillProductMapper;
-import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.SeckillProductBO;
 import cn.hisouten.mall.pojo.dto.activity.MerchantSeckillActivityPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.activity.MerchantSeckillActivitySaveDTO;

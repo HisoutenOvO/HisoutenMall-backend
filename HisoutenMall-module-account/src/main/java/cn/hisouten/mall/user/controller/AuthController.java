@@ -4,7 +4,7 @@ import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.common.annotation.RepeatSubmit;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.login.AdminLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.login.MerchantLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.login.UserLoginDTO;
@@ -16,6 +16,7 @@ import cn.hisouten.mall.user.pojo.vo.user.UserInfoVO;
 import cn.hisouten.mall.user.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +38,7 @@ public class AuthController {
     @RepeatSubmit
     @Log("商家登录")
     @Operation(summary = "商家登录")
-    public Result<LoginVO> merchantLogin(@RequestBody MerchantLoginDTO merchantLoginDTO){
+    public Result<LoginVO> merchantLogin(@Valid @RequestBody MerchantLoginDTO merchantLoginDTO){
         log.info("商家：'{}'登录",merchantLoginDTO.getUsername());
         LoginVO loginVO = authService.merchantLogin(merchantLoginDTO);
         return Result.success(loginVO);
@@ -52,7 +53,7 @@ public class AuthController {
     @PostMapping("/merchant/register")
     @Log("商家注册")
     @Operation(summary = "商家注册")
-    public Result merchantRegister(@RequestBody MerchantRegisterDTO merchantRegisterDTO){
+    public Result merchantRegister(@Valid @RequestBody MerchantRegisterDTO merchantRegisterDTO){
         log.info("商家注册：{}",merchantRegisterDTO.getUsername());
         authService.merchantRegister(merchantRegisterDTO);
         return Result.success();
@@ -68,7 +69,7 @@ public class AuthController {
     @RepeatSubmit
     @Log("用户登录")
     @Operation(summary = "用户登录")
-    public Result<LoginVO> userLogin(@RequestBody UserLoginDTO userLoginDTO){
+    public Result<LoginVO> userLogin(@Valid @RequestBody UserLoginDTO userLoginDTO){
         log.info("用户:{}登录",userLoginDTO.getUsername());
         LoginVO loginVO = authService.userLogin(userLoginDTO);
         return Result.success(loginVO);
@@ -84,7 +85,7 @@ public class AuthController {
     @RepeatSubmit
     @Log("管理员登录")
     @Operation(summary = "管理员登录")
-    public Result<LoginVO> adminLogin(@RequestBody AdminLoginDTO adminLoginDTO){
+    public Result<LoginVO> adminLogin(@Valid @RequestBody AdminLoginDTO adminLoginDTO){
         log.info("管理员：{}登录",adminLoginDTO.getUsername());
         LoginVO loginVO = authService.adminLogin(adminLoginDTO);
         return Result.success(loginVO);
@@ -99,7 +100,7 @@ public class AuthController {
     @PostMapping("/user/register")
     @Log("用户注册")
     @Operation(summary = "用户注册")
-    public Result userRegister(@RequestBody UserRegisterDTO userRegisterDTO){
+    public Result userRegister(@Valid @RequestBody UserRegisterDTO userRegisterDTO){
         log.info("用户登录：{}",userRegisterDTO.getUsername());
         authService.userRegister(userRegisterDTO);
         return Result.success();
@@ -140,7 +141,7 @@ public class AuthController {
     @PutMapping("/password")
     @Log("修改密码")
     @Operation(summary = "用户修改密码")
-    public Result updatePwd(@RequestBody PasswordUpdateDTO passwordUpdateDTO){
+    public Result updatePwd(@Valid @RequestBody PasswordUpdateDTO passwordUpdateDTO){
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户：{}修改密码",userId);
         authService.updatePwd(userId, passwordUpdateDTO);

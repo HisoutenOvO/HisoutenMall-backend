@@ -1,5 +1,6 @@
 package cn.hisouten.mall.pojo.dto.cart;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 import java.util.List;
@@ -9,5 +10,7 @@ import java.util.List;
  */
 @Data
 public class UserCartItemDeleteDTO {
+
+    @NotEmpty(message = "要删除的购物车项ID列表不能为空")
     private List<Long> ids;
 }

@@ -3,7 +3,7 @@ package cn.hisouten.mall.service.impl;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.CouponMapper;
 import cn.hisouten.mall.mapper.UserCouponMapper;
-import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.coupon.AvailableCouponPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.coupon.MerchantCouponAddDTO;
 import cn.hisouten.mall.pojo.dto.coupon.MerchantCouponPageQueryDTO;

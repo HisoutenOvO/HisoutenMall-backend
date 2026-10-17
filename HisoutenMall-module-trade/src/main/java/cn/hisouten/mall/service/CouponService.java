@@ -1,6 +1,6 @@
 package cn.hisouten.mall.service;
 
-import cn.hisouten.mall.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.pojo.dto.coupon.AvailableCouponPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.coupon.MerchantCouponAddDTO;
 import cn.hisouten.mall.pojo.dto.coupon.MerchantCouponPageQueryDTO;

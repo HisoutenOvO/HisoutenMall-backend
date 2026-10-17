@@ -1,5 +1,6 @@
 package cn.hisouten.mall.pojo.dto.order;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 import java.util.List;
@@ -9,5 +10,7 @@ import java.util.List;
  */
 @Data
 public class UserOrderPayDTO {
-    List<String> orderNos; //是订单号，不是订单id，因为刚才给vo传过去的就是no
+
+    @NotEmpty(message = "订单号列表不能为空")
+    List<String> orderNos;
 }

@@ -1,6 +1,7 @@
 package cn.hisouten.mall.pojo.dto.order;
 
-import cn.hisouten.mall.pojo.BasePageQueryDTO;
+import cn.hisouten.mall.common.pojo.BasePageQueryDTO;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 /**
@@ -8,6 +9,8 @@ import lombok.Data;
  */
 @Data
 public class AdminOrderPageQueryDTO extends BasePageQueryDTO {
+
+    @Size(max = 64, message = "搜索关键词过长")
     private String keyword;
 
     private Integer status;

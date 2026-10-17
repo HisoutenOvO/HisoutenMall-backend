@@ -1,13 +1,14 @@
 package cn.hisouten.mall.controller.user;
 
-import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.dto.product.UserProductPageQueryDTO;
 import cn.hisouten.mall.pojo.vo.product.UserProductDetailVO;
 import cn.hisouten.mall.pojo.vo.product.UserProductPageResultVO;
 import cn.hisouten.mall.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,7 @@ public class ProductController {
      */
     @GetMapping("/page")
     @Operation(summary = "分页查询商品")
-    public Result<PageResult<UserProductPageResultVO>> pageQuery(UserProductPageQueryDTO userProductPageQueryDTO){
+    public Result<PageResult<UserProductPageResultVO>> pageQuery(@Valid UserProductPageQueryDTO userProductPageQueryDTO){
         log.info("分页查询商品");
         PageResult<UserProductPageResultVO> pageQuery = productService.userPageQuery(userProductPageQueryDTO);
         return Result.success(pageQuery);

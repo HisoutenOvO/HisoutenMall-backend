@@ -2,14 +2,15 @@ package cn.hisouten.mall.controller.merchant;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.common.annotation.RepeatSubmit;
-import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.dto.order.MerchantOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.vo.order.MerchantOrderDetailVO;
 import cn.hisouten.mall.pojo.vo.order.MerchantOrderPageResultVO;
 import cn.hisouten.mall.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ public class OrderController {
      */
     @GetMapping("/page")
     @Operation(summary = "分页查询订单")
-    public Result<PageResult<MerchantOrderPageResultVO>> pageQuery(MerchantOrderPageQueryDTO  merchantOrderPageQueryDTO){
+    public Result<PageResult<MerchantOrderPageResultVO>> pageQuery(@Valid MerchantOrderPageQueryDTO  merchantOrderPageQueryDTO){
         log.info("商家：{}分页查询订单", StpUtil.getLoginIdAsLong());
         PageResult<MerchantOrderPageResultVO> pageResult = orderService.merchantPageQuery(merchantOrderPageQueryDTO);
         return Result.success(pageResult);
@@ -57,7 +58,7 @@ public class OrderController {
     @PutMapping("/{orderNo}/ship")
     @RepeatSubmit
     @Operation(summary = "商家发货")
-    public Result ship(@PathVariable String orderNo,String company){
+    public Result ship(@PathVariable String orderNo,@RequestParam String company){
         log.info("商家：{}发货:{}",StpUtil.getLoginIdAsLong(),orderNo);
         orderService.ship(orderNo,company);
         return Result.success();

@@ -2,13 +2,14 @@ package cn.hisouten.mall.user.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.common.annotation.Log;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.update.UserUpdateDTO;
 import cn.hisouten.mall.user.pojo.vo.user.UserDetailVO;
 import cn.hisouten.mall.user.service.AuthService;
 import cn.hisouten.mall.user.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -43,7 +44,7 @@ public class UserController {
     @PutMapping("/profile")
     @Log("用户修改个人信息")
     @Operation(summary = "用户修改个人信息")
-    public Result updateInfo(@RequestBody UserUpdateDTO userUpdateDTO){
+    public Result updateInfo(@Valid @RequestBody UserUpdateDTO userUpdateDTO){
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户：{}修改个人信息",userId);
         userProfileService.updateInfo(userId,userUpdateDTO);

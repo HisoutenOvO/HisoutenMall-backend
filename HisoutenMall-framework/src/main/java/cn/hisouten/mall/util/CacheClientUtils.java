@@ -1,6 +1,6 @@
 package cn.hisouten.mall.util;
 
-import cn.hisouten.mall.pojo.RedisData;
+import cn.hisouten.mall.common.pojo.RedisData;
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;

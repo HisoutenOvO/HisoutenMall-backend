@@ -1,6 +1,6 @@
 package cn.hisouten.mall.controller.merchant;
 
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.vo.brand.BrandListVO;
 import cn.hisouten.mall.service.BrandService;
 import io.swagger.v3.oas.annotations.Operation;

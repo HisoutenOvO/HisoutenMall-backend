@@ -1,6 +1,6 @@
 package cn.hisouten.mall.pojo.bo.review;
 
-import cn.hisouten.mall.pojo.BasePageQueryDTO;
+import cn.hisouten.mall.common.pojo.BasePageQueryDTO;
 import lombok.Data;
 
 /**

@@ -1,13 +1,14 @@
 package cn.hisouten.mall.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hisouten.mall.pojo.BasePageQueryDTO;
-import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.BasePageQueryDTO;
+import cn.hisouten.mall.common.pojo.PageResult;
+import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.vo.favorite.UserFavoritePageResultVO;
 import cn.hisouten.mall.service.FavoriteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -54,7 +55,7 @@ public class FavoriteController {
      */
     @GetMapping("/page")
     @Operation(summary = "分页查询收藏")
-    public Result<PageResult<UserFavoritePageResultVO>> pageQuery(BasePageQueryDTO pageQuery){
+    public Result<PageResult<UserFavoritePageResultVO>> pageQuery(@Valid BasePageQueryDTO pageQuery){
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户:{} 分页查询收藏",userId);
         PageResult<UserFavoritePageResultVO> pageResult = favoriteService.pageQuery(pageQuery);

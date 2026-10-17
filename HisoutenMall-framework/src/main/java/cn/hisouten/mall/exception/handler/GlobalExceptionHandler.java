@@ -3,21 +3,20 @@ package cn.hisouten.mall.exception.handler;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotRoleException;
 import cn.hisouten.mall.exception.BaseException;
-import cn.hisouten.mall.pojo.Result;
+import cn.hisouten.mall.common.pojo.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     /**
-     * 业务异常（BaseException 及其子类）
+     * 业务异常
      */
     @ExceptionHandler(BaseException.class)
     public Result<String> handleBaseException(BaseException e) {
@@ -41,6 +40,35 @@ public class GlobalExceptionHandler {
     public Result<Void> handleNotRole(NotRoleException e) {
         log.warn("角色权限不足：{}", e.getMessage());
         return Result.error(403, "权限不足");
+    }
+
+    /**
+     * DTO参数校验异常
+     * @param e 异常对象
+     * @return 返回值
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Result<Void> handleValidationException(MethodArgumentNotValidException e) {
+        // 获取第一个校验失败的字段提示
+        String message = e.getBindingResult().getFieldErrors().stream()
+                .map(FieldError::getDefaultMessage)
+                .findFirst()
+                .orElse("参数校验失败");
+        return Result.error(message);
+    }
+
+    /**
+     * 校验RequestParam参数
+     * @param e 异常对象
+     * @return 返回值
+     */
+    @ExceptionHandler(BindException.class)
+    public Result<Void> handleBindException(BindException e) {
+        String message = e.getBindingResult().getFieldErrors().stream()
+                .map(FieldError::getDefaultMessage)
+                .findFirst()
+                .orElse("参数绑定失败");
+        return Result.error(message);
     }
 //
 //    /**
