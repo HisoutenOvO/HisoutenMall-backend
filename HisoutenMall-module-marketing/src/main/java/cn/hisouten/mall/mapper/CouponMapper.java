@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface CouponMapper extends BaseMapper<Coupon> {
@@ -38,4 +39,12 @@ public interface CouponMapper extends BaseMapper<Coupon> {
      * @return 返回值
      */
     Page<AvailableCouponPageResultVO> availablePageQuery(Page<AvailableCouponPageResultVO> page, AvailableCouponPageQueryDTO pageQueryDTO);
+
+    /**
+     * 乐观锁扣减库存
+     * @param couponId 优惠券id
+     * @return 返回值
+     */
+    @Update("update coupon set remain = remain - 1 where id = #{couponId} and remain > 0")
+    int deductRemain(Long couponId);
 }

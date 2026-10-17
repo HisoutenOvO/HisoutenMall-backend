@@ -46,7 +46,7 @@ public class CouponServiceImpl implements CouponService {
     public void addCoupon(Long merchantId, MerchantCouponAddDTO addDTO) {
         Coupon coupon = new Coupon();
         Coupon existedCoupon = couponMapper.selectByName(merchantId,addDTO.getName());
-        if(Objects.equals(existedCoupon.getName(), addDTO.getName())){
+        if(existedCoupon != null){
             throw new BizException(COUPON_NAME_EXIST);
         }
         LocalDateTime startTime = addDTO.getStartTime();
@@ -56,6 +56,10 @@ public class CouponServiceImpl implements CouponService {
         }
         //若是满减券，则价值必须大于0，最低金额大于等于0
         if(addDTO.getType() == AMOUNT_OFF_COUPON && (addDTO.getValue().compareTo(BigDecimal.ZERO) <= 0 || addDTO.getMinAmount().compareTo(BigDecimal.ZERO) < 0)){
+            throw new BizException(COUPON_INFO_INVALID);
+        }
+        //且减满金额不能大于最低金额，不能出现满100减200
+        if(coupon.getValue().compareTo(coupon.getMinAmount()) >= 0){
             throw new BizException(COUPON_INFO_INVALID);
         }
         //若是折扣券，则折扣必须在0-1之间
@@ -92,8 +96,9 @@ public class CouponServiceImpl implements CouponService {
         if(endtime.isBefore(startTime)){
             throw new BizException(COUPON_TIME_INVALID);
         }
-        if(Objects.equals(coupon.getName(), updateDTO.getName())){
-            throw new BizException(COUPON_NAME_EXIST);
+        if(!Objects.equals(coupon.getName(), updateDTO.getName())){
+            Coupon existed = couponMapper.selectByName(merchantId, updateDTO.getName());
+            if (existed != null) throw new BizException(COUPON_NAME_EXIST);
         }
         coupon.setName(updateDTO.getName());
         coupon.setEndTime(updateDTO.getEndTime());
@@ -189,7 +194,7 @@ public class CouponServiceImpl implements CouponService {
 
         //获取用户已有优惠券列表
         List<UserCoupon> userCouponList = userCouponMapper.selectListByUserId(userId);
-        List<Long> userCouponIdList = CollUtil.getFieldValues(userCouponList,"id", Long.class);
+        List<Long> userCouponIdList = CollUtil.getFieldValues(userCouponList,"couponId", Long.class);
         //将所有优惠券进行比对，如果优惠券id存在于已有优惠券，则用户已领过
         List<AvailableCouponPageResultVO> records = new ArrayList<>();
         for (AvailableCouponPageResultVO record : result.getRecords()) {
@@ -217,9 +222,14 @@ public class CouponServiceImpl implements CouponService {
         if(!(coupon.getStartTime().isBefore(LocalDateTime.now()) && coupon.getEndTime().isAfter(LocalDateTime.now()))){
             throw new BizException(COUPON_TIME_INVALID);
         }
-       UserCoupon existedCoupon = userCouponMapper.selectByCouponId(couponId);
-        if(existedCoupon != null && existedCoupon.getUserId().equals(userId)){
+        UserCoupon existedCoupon = userCouponMapper.selectByCouponIdAndUserId(userId,couponId);
+        if(existedCoupon != null){
             throw new BizException(COUPON_HAS_RECEIVED);
+        }
+        //用乐观锁扣减库存
+        int affected = couponMapper.deductRemain(couponId);
+        if (affected == 0) {
+            throw new BizException(OUT_OF_STOCK);
         }
         UserCoupon userCoupon = new UserCoupon();
         userCoupon.setUserId(userId);

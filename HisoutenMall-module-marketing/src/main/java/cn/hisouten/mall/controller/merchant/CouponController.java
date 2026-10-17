@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 @RestController("merchantCouponController")
-@RequestMapping("/user/coupon")
+@RequestMapping("/merchant/coupon")
 @Slf4j
 @Tag(name = "商家端——优惠券接口")
 @RequiredArgsConstructor

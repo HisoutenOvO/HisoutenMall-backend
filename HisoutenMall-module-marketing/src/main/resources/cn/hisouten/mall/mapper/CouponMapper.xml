@@ -8,7 +8,7 @@
         left join user_coupon uc
         on c.id = uc.coupon_id
         <where>
-        and merchant_id = #{merchantID}
+        and merchant_id = #{merchantId}
             <if test="pageQueryDTO.keyword != null and pageQueryDTO.keyword !=''">
                 and c.name like concat('%',#{pageQueryDTO.keyword},'%')
             </if>
@@ -26,8 +26,9 @@
                 and c.end_time &lt; NOW()
             </if>
         </if>
-        and deleted = 0
+        and c.deleted = 0
         </where>
+        group by c.id
     </select>
     <select id="availablePageQuery" resultType="cn.hisouten.mall.pojo.vo.AvailableCouponPageResultVO">
         select c.id,c.name,c.type,c.value,c.min_amount,c.start_time,c.end_time,c.remain,

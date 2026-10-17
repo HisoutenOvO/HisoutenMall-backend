@@ -25,4 +25,13 @@ public interface UserCouponMapper extends BaseMapper<UserCoupon> {
      */
     @Select("select * from user_coupon where user_id = #{userId}")
     List<UserCoupon> selectListByUserId(Long userId);
+
+    /**
+     * 通过用户id和优惠券id查询优惠券
+     * @param userId 用户id
+     * @param couponId 优惠券id
+     * @return 返回值
+     */
+    @Select("select * from user_coupon where coupon_id = #{couponId} and user_id = #{userId}")
+    UserCoupon selectByCouponIdAndUserId(Long userId, Long couponId);
 }
