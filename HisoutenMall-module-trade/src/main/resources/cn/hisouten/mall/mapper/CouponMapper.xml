@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.hisouten.mall.mapper.CouponMapper">
-    <select id="pageQuery" resultType="cn.hisouten.mall.pojo.vo.MerchantCouponPageResultVO">
+    <select id="pageQuery" resultType="cn.hisouten.mall.pojo.vo.coupon.MerchantCouponPageResultVO">
         select c.id,c.name,c.type,c.value,c.min_amount,c.start_time,c.end_time,c.total,c.remain,
                (c.total - c.remain) as receivedCount,c.create_time,count(uc.use_time) as usedCount
         from coupon c
@@ -30,7 +30,7 @@
         </where>
         group by c.id
     </select>
-    <select id="availablePageQuery" resultType="cn.hisouten.mall.pojo.vo.AvailableCouponPageResultVO">
+    <select id="availablePageQuery" resultType="cn.hisouten.mall.pojo.vo.coupon.AvailableCouponPageResultVO">
         select c.id,c.name,c.type,c.value,c.min_amount,c.start_time,c.end_time,c.remain,
                mp.shop_name
         from coupon c

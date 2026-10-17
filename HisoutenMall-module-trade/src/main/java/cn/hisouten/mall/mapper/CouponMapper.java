@@ -1,10 +1,10 @@
 package cn.hisouten.mall.mapper;
 
-import cn.hisouten.mall.pojo.dto.AvailableCouponPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.MerchantCouponPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.coupon.AvailableCouponPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.coupon.MerchantCouponPageQueryDTO;
 import cn.hisouten.mall.pojo.entity.Coupon;
-import cn.hisouten.mall.pojo.vo.AvailableCouponPageResultVO;
-import cn.hisouten.mall.pojo.vo.MerchantCouponPageResultVO;
+import cn.hisouten.mall.pojo.vo.coupon.AvailableCouponPageResultVO;
+import cn.hisouten.mall.pojo.vo.coupon.MerchantCouponPageResultVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;

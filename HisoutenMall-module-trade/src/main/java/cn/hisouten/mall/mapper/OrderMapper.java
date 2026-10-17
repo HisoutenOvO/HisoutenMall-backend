@@ -1,18 +1,17 @@
 package cn.hisouten.mall.mapper;
 
-import cn.hisouten.mall.pojo.dto.AdminOrderPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.MerchantOrderPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.UserOrderPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.order.AdminOrderPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.order.MerchantOrderPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.order.UserOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.entity.Order;
-import cn.hisouten.mall.pojo.vo.AdminOrderPageResultVO;
-import cn.hisouten.mall.pojo.vo.MerchantOrderPageResultVO;
-import cn.hisouten.mall.pojo.vo.UserOrderPageResultVO;
+import cn.hisouten.mall.pojo.vo.order.AdminOrderPageResultVO;
+import cn.hisouten.mall.pojo.vo.order.MerchantOrderPageResultVO;
+import cn.hisouten.mall.pojo.vo.order.UserOrderPageResultVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 
 import java.time.LocalDateTime;
 import java.util.List;

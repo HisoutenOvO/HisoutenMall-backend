@@ -1,10 +1,10 @@
 package cn.hisouten.mall.user.service;
 
-import cn.hisouten.mall.user.pojo.dto.UserAddressAddDTO;
-import cn.hisouten.mall.user.pojo.dto.UserAddressUpdateDTO;
+import cn.hisouten.mall.user.pojo.dto.address.UserAddressAddDTO;
+import cn.hisouten.mall.user.pojo.dto.address.UserAddressUpdateDTO;
 import cn.hisouten.mall.user.pojo.entity.UserAddress;
-import cn.hisouten.mall.user.pojo.vo.UserAddressDetailVO;
-import cn.hisouten.mall.user.pojo.vo.UserAddressListVO;
+import cn.hisouten.mall.user.pojo.vo.user.UserAddressDetailVO;
+import cn.hisouten.mall.user.pojo.vo.user.UserAddressListVO;
 
 import java.util.List;
 

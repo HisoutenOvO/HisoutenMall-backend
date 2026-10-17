@@ -1,0 +1,34 @@
+package cn.hisouten.mall.pojo.vo.product;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+
+/**
+ * 商家端查询秒杀商品项详情返回值
+ */
+@Data
+@NoArgsConstructor
+public class MerchantSeckillProductVO {
+
+    private Long id;              // seckill_product.id
+
+    private Long skuId;
+
+    private String productName;   // 商品名
+
+    private String skuSpecs;      // 规格
+
+    private String image;
+
+    private BigDecimal originalPrice;   // 原价（product_sku.price）
+
+    private BigDecimal seckillPrice;    // 秒杀价
+
+    private Integer seckillStock;       // 秒杀库存
+
+    private Integer skuStock;           // 普通库存
+
+    private Integer limitPerUser;       // 限购
+}

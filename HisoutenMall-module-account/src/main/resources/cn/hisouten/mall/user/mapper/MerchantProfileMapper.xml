@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.hisouten.mall.user.mapper.MerchantProfileMapper">
-    <select id="pageQuery" resultType="cn.hisouten.mall.user.pojo.vo.AdminMerchantPageResultVO">
+    <select id="pageQuery" resultType="cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantPageResultVO">
         select u.id,u.username,u.status,u.deleted,u.create_time,u.update_time,
                mp.shop_name,mp.shop_logo,mp.contact_phone
         from user u
@@ -21,7 +21,7 @@
             order by u.create_time desc
         </where>
     </select>
-    <select id="getMerchantById" resultType="cn.hisouten.mall.user.pojo.vo.AdminMerchantDetailVO">
+    <select id="getMerchantById" resultType="cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantDetailVO">
         select u.id,u.username,u.status,
                mp.shop_name,mp.shop_logo,mp.shop_description,mp.contact_phone,mp.business_license,
                mp.audit_status,mp.audit_reason

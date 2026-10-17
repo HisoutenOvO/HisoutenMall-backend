@@ -1,10 +1,10 @@
 package cn.hisouten.mall.mapper;
 
 import cn.hisouten.mall.pojo.BasePageQueryDTO;
-import cn.hisouten.mall.pojo.bo.ReviewPageQueryBO;
-import cn.hisouten.mall.pojo.bo.ReviewPageResultBO;
+import cn.hisouten.mall.pojo.bo.review.ReviewPageQueryBO;
+import cn.hisouten.mall.pojo.bo.review.ReviewPageResultBO;
 import cn.hisouten.mall.pojo.entity.ProductReview;
-import cn.hisouten.mall.pojo.vo.UserPendingReviewPageResultVO;
+import cn.hisouten.mall.pojo.vo.review.UserPendingReviewPageResultVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;

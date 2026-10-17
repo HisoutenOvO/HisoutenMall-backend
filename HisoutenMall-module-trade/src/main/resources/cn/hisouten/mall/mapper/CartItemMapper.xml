@@ -8,7 +8,7 @@
             #{id}
         </foreach>
     </update>
-    <select id="selectListByUserId" resultType="cn.hisouten.mall.pojo.bo.CartItemListBO">
+    <select id="selectListByUserId" resultType="cn.hisouten.mall.pojo.bo.cart.CartItemListBO">
         select
             c.id, c.product_id, c.sku_id, c.quantity, c.checked,
             p.name as productName,p.main_image as mainImage,p.status as productStatus,p.deleted as productDeleted,
@@ -26,7 +26,7 @@
         left join product p on c.product_id = p.id
         where p.status = 1 and s.status = 1 and p.deleted = 0 and s.deleted = 0 and s.stock >= c.quantity
     </select>
-    <select id="selectCheckedItemByUserId" resultType="cn.hisouten.mall.pojo.bo.CartItemListBO">
+    <select id="selectCheckedItemByUserId" resultType="cn.hisouten.mall.pojo.bo.cart.CartItemListBO">
         SELECT c.id, c.product_id, c.sku_id, c.quantity,
         p.merchant_id, p.name AS productName, p.main_image AS mainImage,
         s.specs AS skuSpecs, s.price, s.stock,

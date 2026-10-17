@@ -1,14 +1,14 @@
 package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.dto.AvailableCouponPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.MerchantCouponAddDTO;
-import cn.hisouten.mall.pojo.dto.MerchantCouponPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.MerchantCouponUpdateDTO;
-import cn.hisouten.mall.pojo.vo.AvailableCouponPageResultVO;
-import cn.hisouten.mall.pojo.vo.MerchantCouponDetailVO;
-import cn.hisouten.mall.pojo.vo.MerchantCouponPageResultVO;
-import cn.hisouten.mall.pojo.vo.UserUsableCouponVO;
+import cn.hisouten.mall.pojo.dto.coupon.AvailableCouponPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.coupon.MerchantCouponAddDTO;
+import cn.hisouten.mall.pojo.dto.coupon.MerchantCouponPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.coupon.MerchantCouponUpdateDTO;
+import cn.hisouten.mall.pojo.vo.coupon.AvailableCouponPageResultVO;
+import cn.hisouten.mall.pojo.vo.coupon.MerchantCouponDetailVO;
+import cn.hisouten.mall.pojo.vo.coupon.MerchantCouponPageResultVO;
+import cn.hisouten.mall.pojo.vo.coupon.UserUsableCouponVO;
 
 import java.math.BigDecimal;
 import java.util.List;

@@ -1,14 +1,12 @@
 package cn.hisouten.mall.user.service.impl;
 
-import cn.dev33.satoken.secure.BCrypt;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.user.mapper.AuthMapper;
 import cn.hisouten.mall.user.mapper.UserProfileMapper;
-import cn.hisouten.mall.user.pojo.dto.UserUpdateDTO;
-import cn.hisouten.mall.user.pojo.dto.PasswordUpdateDTO;
+import cn.hisouten.mall.user.pojo.dto.update.UserUpdateDTO;
 import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.entity.UserProfile;
-import cn.hisouten.mall.user.pojo.vo.UserDetailVO;
+import cn.hisouten.mall.user.pojo.vo.user.UserDetailVO;
 import cn.hisouten.mall.user.service.UserProfileService;
 import cn.hisouten.mall.util.CacheClientUtils;
 import lombok.RequiredArgsConstructor;

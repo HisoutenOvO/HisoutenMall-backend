@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.hisouten.mall.mapper.OrderMapper">
-    <select id="pageQuery" resultType="cn.hisouten.mall.pojo.vo.UserOrderPageResultVO">
+    <select id="pageQuery" resultType="cn.hisouten.mall.pojo.vo.order.UserOrderPageResultVO">
         select o.id , o.order_no as orderNo,o.merchant_id as merchantId,m.name as merchantName,
                o.pay_amount as payAmount,o.status,o.create_time as createTime,o.source
         from `order` o
@@ -20,7 +20,7 @@
         order by m.create_time desc
         </where>
     </select>
-    <select id="MerchantPageQuery" resultType="cn.hisouten.mall.pojo.vo.MerchantOrderPageResultVO">
+    <select id="MerchantPageQuery" resultType="cn.hisouten.mall.pojo.vo.order.MerchantOrderPageResultVO">
         select o.id,o.order_no as orderNo,o.pay_amount as payAmount,o.status,o.create_time as createTime,
                u.nickname as buyerName,o.source
         from `order` o
@@ -39,7 +39,7 @@
         order by o.create_time desc
         </where>
     </select>
-    <select id="AdminPageQuery" resultType="cn.hisouten.mall.pojo.vo.AdminOrderPageResultVO">
+    <select id="AdminPageQuery" resultType="cn.hisouten.mall.pojo.vo.order.AdminOrderPageResultVO">
         select o.id,o.order_no as orderNo,o.pay_amount as payAmount,o.status,o.create_time as createTime,
                u.nickname as buyerName,m.shop_name as merchantName,o.receiver_name as receiverName,
                o.receiver_address as receiverAddress,o.receiver_phone as receiverPhone,o.pay_time as payTime,o.source

@@ -2,8 +2,8 @@ package cn.hisouten.mall.controller.Admin;
 
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
-import cn.hisouten.mall.pojo.dto.AdminOrderPageQueryDTO;
-import cn.hisouten.mall.pojo.vo.AdminOrderPageResultVO;
+import cn.hisouten.mall.pojo.dto.order.AdminOrderPageQueryDTO;
+import cn.hisouten.mall.pojo.vo.order.AdminOrderPageResultVO;
 import cn.hisouten.mall.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

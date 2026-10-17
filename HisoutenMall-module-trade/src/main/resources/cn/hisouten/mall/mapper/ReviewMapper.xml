@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.hisouten.mall.mapper.ReviewMapper">
-    <select id="pageQuery" resultType="cn.hisouten.mall.pojo.bo.ReviewPageResultBO">
+    <select id="pageQuery" resultType="cn.hisouten.mall.pojo.bo.review.ReviewPageResultBO">
         select p.id,up.nickname,up.avatar,p.rating,p.content,p.images,p.sku_specs,p.create_time
         from product_review p
         left join user_profile up on p.user_id = up.user_id
@@ -24,7 +24,7 @@
         </where>
         order by create_time desc
     </select>
-    <select id="pendingPageQuery" resultType="cn.hisouten.mall.pojo.vo.UserPendingReviewPageResultVO">
+    <select id="pendingPageQuery" resultType="cn.hisouten.mall.pojo.vo.review.UserPendingReviewPageResultVO">
         select
             oi.id as orderItemId,
             o.order_no,

@@ -1,8 +1,7 @@
 package cn.hisouten.mall.user.service;
 
-import cn.hisouten.mall.user.pojo.dto.UserUpdateDTO;
-import cn.hisouten.mall.user.pojo.dto.PasswordUpdateDTO;
-import cn.hisouten.mall.user.pojo.vo.UserDetailVO;
+import cn.hisouten.mall.user.pojo.dto.update.UserUpdateDTO;
+import cn.hisouten.mall.user.pojo.vo.user.UserDetailVO;
 
 public interface UserProfileService {
     /**

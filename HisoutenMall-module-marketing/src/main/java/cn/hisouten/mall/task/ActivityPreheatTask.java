@@ -2,7 +2,7 @@ package cn.hisouten.mall.task;
 
 import cn.hisouten.mall.mapper.SeckillProductMapper;
 import cn.hisouten.mall.pojo.entity.SeckillProduct;
-import cn.hisouten.mall.pojo.vo.UserSeckillActivityDetailVO;
+import cn.hisouten.mall.pojo.vo.activity.UserSeckillActivityDetailVO;
 import cn.hisouten.mall.service.SeckillService;
 import cn.hisouten.mall.util.CacheClientUtils;
 import lombok.RequiredArgsConstructor;

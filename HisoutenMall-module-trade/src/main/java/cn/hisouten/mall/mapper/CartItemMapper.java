@@ -1,8 +1,7 @@
 package cn.hisouten.mall.mapper;
 
-import cn.hisouten.mall.pojo.bo.CartItemListBO;
+import cn.hisouten.mall.pojo.bo.cart.CartItemListBO;
 import cn.hisouten.mall.pojo.entity.CartItem;
-import cn.hisouten.mall.pojo.vo.UserCartItemListVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;

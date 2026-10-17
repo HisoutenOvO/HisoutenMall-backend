@@ -1,14 +1,12 @@
 package cn.hisouten.mall.user.service.impl;
 
-import cn.dev33.satoken.secure.BCrypt;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.user.mapper.AuthMapper;
 import cn.hisouten.mall.user.mapper.MerchantProfileMapper;
-import cn.hisouten.mall.user.pojo.dto.MerchantUpdateDTO;
-import cn.hisouten.mall.user.pojo.dto.PasswordUpdateDTO;
+import cn.hisouten.mall.user.pojo.dto.update.MerchantUpdateDTO;
 import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
 import cn.hisouten.mall.user.pojo.entity.User;
-import cn.hisouten.mall.user.pojo.vo.MerchantDetailVO;
+import cn.hisouten.mall.user.pojo.vo.merchant.MerchantDetailVO;
 import cn.hisouten.mall.user.service.MerchantProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -17,7 +15,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
-import static cn.hisouten.mall.constant.RedisConstant.CACHE_BRAND_NAME_PREFIX;
 import static cn.hisouten.mall.constant.RedisConstant.CACHE_MERCHANT_NAME_PREFIX;
 
 @Service

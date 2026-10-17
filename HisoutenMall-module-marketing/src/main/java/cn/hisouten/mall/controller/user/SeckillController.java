@@ -1,10 +1,11 @@
 package cn.hisouten.mall.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.pojo.dto.SeckillExecuteDTO;
-import cn.hisouten.mall.pojo.vo.UserSeckillActivityListVO;
-import cn.hisouten.mall.pojo.vo.UserSeckillActivityDetailVO;
+import cn.hisouten.mall.pojo.vo.activity.UserSeckillActivityListVO;
+import cn.hisouten.mall.pojo.vo.activity.UserSeckillActivityDetailVO;
 import cn.hisouten.mall.service.SeckillOrderService;
 import cn.hisouten.mall.service.SeckillService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,6 +31,7 @@ public class SeckillController {
      * @return 返回下单成功
      */
     @PostMapping("/execute")
+    @Log("用户秒杀下单")
     @Operation(summary = "秒杀商品")
     public Result<String> execute(@RequestBody SeckillExecuteDTO seckillExecuteDTO){
         Long userId = StpUtil.getLoginIdAsLong();

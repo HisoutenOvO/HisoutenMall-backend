@@ -1,10 +1,11 @@
 package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.dto.*;
+import cn.hisouten.mall.pojo.dto.order.*;
 import cn.hisouten.mall.pojo.entity.Order;
 import cn.hisouten.mall.pojo.entity.OrderItem;
-import cn.hisouten.mall.pojo.vo.*;
+import cn.hisouten.mall.pojo.vo.logistics.UserLogisticsVO;
+import cn.hisouten.mall.pojo.vo.order.*;
 
 
 public interface OrderService {

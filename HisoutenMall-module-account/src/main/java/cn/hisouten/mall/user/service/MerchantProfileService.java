@@ -1,8 +1,7 @@
 package cn.hisouten.mall.user.service;
 
-import cn.hisouten.mall.user.pojo.dto.MerchantUpdateDTO;
-import cn.hisouten.mall.user.pojo.dto.PasswordUpdateDTO;
-import cn.hisouten.mall.user.pojo.vo.MerchantDetailVO;
+import cn.hisouten.mall.user.pojo.dto.update.MerchantUpdateDTO;
+import cn.hisouten.mall.user.pojo.vo.merchant.MerchantDetailVO;
 
 public interface MerchantProfileService {
 

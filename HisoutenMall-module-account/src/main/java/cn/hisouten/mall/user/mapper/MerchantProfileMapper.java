@@ -2,8 +2,7 @@ package cn.hisouten.mall.user.mapper;
 
 import cn.hisouten.mall.user.pojo.dto.AdminMerchantPageQueryDTO;
 import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
-import cn.hisouten.mall.user.pojo.vo.AdminMerchantDetailVO;
-import cn.hisouten.mall.user.pojo.vo.AdminMerchantPageResultVO;
+import cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantPageResultVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;

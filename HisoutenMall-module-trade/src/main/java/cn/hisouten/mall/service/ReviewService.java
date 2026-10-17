@@ -2,9 +2,9 @@ package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.pojo.BasePageQueryDTO;
 import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.dto.UserReviewAddDTO;
-import cn.hisouten.mall.pojo.dto.ReviewPageQueryDTO;
-import cn.hisouten.mall.pojo.vo.*;
+import cn.hisouten.mall.pojo.dto.review.UserReviewAddDTO;
+import cn.hisouten.mall.pojo.dto.review.ReviewPageQueryDTO;
+import cn.hisouten.mall.pojo.vo.review.*;
 
 public interface ReviewService {
     /**

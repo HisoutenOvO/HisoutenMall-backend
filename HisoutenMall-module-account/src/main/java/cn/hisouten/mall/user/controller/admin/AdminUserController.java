@@ -4,7 +4,7 @@ import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.pojo.PageResult;
 import cn.hisouten.mall.pojo.Result;
 import cn.hisouten.mall.user.pojo.dto.AdminUserPageQueryDTO;
-import cn.hisouten.mall.user.pojo.vo.AdminUserPageResultVO;
+import cn.hisouten.mall.user.pojo.vo.user.AdminUserPageResultVO;
 import cn.hisouten.mall.user.service.AdminUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

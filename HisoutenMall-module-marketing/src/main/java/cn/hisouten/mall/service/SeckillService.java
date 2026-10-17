@@ -1,14 +1,14 @@
 package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.pojo.PageResult;
-import cn.hisouten.mall.pojo.dto.MerchantSeckillActivityPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.MerchantSeckillActivitySaveDTO;
-import cn.hisouten.mall.pojo.dto.MerchantSeckillProductAddDTO;
-import cn.hisouten.mall.pojo.dto.MerchantSeckillProductUpdateDTO;
-import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityDetailVO;
-import cn.hisouten.mall.pojo.vo.MerchantSeckillActivityPageResultVO;
-import cn.hisouten.mall.pojo.vo.UserSeckillActivityListVO;
-import cn.hisouten.mall.pojo.vo.UserSeckillActivityDetailVO;
+import cn.hisouten.mall.pojo.dto.activity.MerchantSeckillActivityPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.activity.MerchantSeckillActivitySaveDTO;
+import cn.hisouten.mall.pojo.dto.product.MerchantSeckillProductAddDTO;
+import cn.hisouten.mall.pojo.dto.product.MerchantSeckillProductUpdateDTO;
+import cn.hisouten.mall.pojo.vo.activity.MerchantSeckillActivityDetailVO;
+import cn.hisouten.mall.pojo.vo.activity.MerchantSeckillActivityPageResultVO;
+import cn.hisouten.mall.pojo.vo.activity.UserSeckillActivityListVO;
+import cn.hisouten.mall.pojo.vo.activity.UserSeckillActivityDetailVO;
 
 import java.util.List;
 
