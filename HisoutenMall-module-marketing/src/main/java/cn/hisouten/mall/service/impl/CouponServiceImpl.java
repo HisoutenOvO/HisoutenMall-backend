@@ -201,4 +201,32 @@ public class CouponServiceImpl implements CouponService {
         }
         return new PageResult<>(total,records);
     }
+
+    /**
+     * 用户领券
+     * @param userId 用户id
+     * @param couponId 优惠券id
+     */
+    @Override
+    public void receiveCoupon(Long userId, Long couponId) {
+        Coupon coupon = couponMapper.selectById(couponId);
+        if(coupon == null || coupon.getRemain() <= 0){
+            throw new BizException(COUPON_NOT_FOUND);
+        }
+        //查看是否在有效期内
+        if(!(coupon.getStartTime().isBefore(LocalDateTime.now()) && coupon.getEndTime().isAfter(LocalDateTime.now()))){
+            throw new BizException(COUPON_TIME_INVALID);
+        }
+       UserCoupon existedCoupon = userCouponMapper.selectByCouponId(couponId);
+        if(existedCoupon != null && existedCoupon.getUserId().equals(userId)){
+            throw new BizException(COUPON_HAS_RECEIVED);
+        }
+        UserCoupon userCoupon = new UserCoupon();
+        userCoupon.setUserId(userId);
+        userCoupon.setCouponId(couponId);
+        userCoupon.setStatus(NOT_USED);
+        userCoupon.setReceiveTime(LocalDateTime.now());
+        userCoupon.setExpireTime(coupon.getEndTime());
+        userCouponMapper.insert(userCoupon);
+    }
 }

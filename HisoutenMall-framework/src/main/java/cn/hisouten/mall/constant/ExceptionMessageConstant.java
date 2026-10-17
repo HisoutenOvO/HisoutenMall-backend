@@ -68,7 +68,7 @@ public class ExceptionMessageConstant {
     public static final String SECKILL_LIMIT_INVALID = "秒杀商品至少限购一件！";
     public static final String SECKILL_PRODUCT_INVALID = "秒杀商品只能同时存在于一个未结束的秒杀活动中！";
     public static final String COUPON_NAME_EXIST = "优惠券名称已存在，请修改！";
-    public static final String COUPON_TIME_INVALID = "优惠券时间无效，请检查起止时间是否正确！";
+    public static final String COUPON_TIME_INVALID = "优惠券时间无效，请检查有效期起止时间是否正确！";
     public static final String COUPON_INFO_INVALID = "优惠券信息无效，请修改价值或库存！";
     public static final String COUPON_HAS_START = "优惠券生效期间不可再修改！";
     public static final String COUPON_HAS_RECEIVED = "优惠券已被领取，不可进行该操作！";

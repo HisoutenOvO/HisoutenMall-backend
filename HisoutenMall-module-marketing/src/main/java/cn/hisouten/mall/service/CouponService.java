@@ -55,4 +55,11 @@ public interface CouponService {
      * @return 返回值
      */
     PageResult<AvailableCouponPageResultVO> availablePageQuery(Long userId, AvailableCouponPageQueryDTO pageQueryDTO);
+
+    /**
+     * 用户领券
+     * @param userId 用户id
+     * @param couponId 优惠券id
+     */
+    void receiveCoupon(Long userId, Long couponId);
 }

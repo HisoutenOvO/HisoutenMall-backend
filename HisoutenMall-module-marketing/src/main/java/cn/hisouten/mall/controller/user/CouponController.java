@@ -10,9 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController("userCouponController")
 @RequestMapping("/user/coupon")
@@ -22,6 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class CouponController {
     private final CouponService couponService;
 
+    /**
+     * 分页查询可灵气优惠券列表
+     * @param pageQueryDTO 分页参数
+     * @return 返回值
+     */
     @GetMapping("/available")
     @Operation(summary = "分页查询可领取优惠券列表")
     public Result<PageResult<AvailableCouponPageResultVO>> availablePageQuery(AvailableCouponPageQueryDTO pageQueryDTO){
@@ -29,5 +32,19 @@ public class CouponController {
         log.info("用户:{} 分页查询可领取的优惠券列表",userId);
         PageResult<AvailableCouponPageResultVO> pageResult = couponService.availablePageQuery(userId,pageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    /**
+     * 领券
+     * @param couponId 优惠券id
+     * @return 返回值
+     */
+    @PostMapping("/{couponId}/receive")
+    @Operation(summary = "领券")
+    public Result receiveCoupon(@PathVariable Long couponId){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 领取优惠券:{} ",userId,couponId);
+        couponService.receiveCoupon(userId,couponId);
+        return Result.success();
     }
 }

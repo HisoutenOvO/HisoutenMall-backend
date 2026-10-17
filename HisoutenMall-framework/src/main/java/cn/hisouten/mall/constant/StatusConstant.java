@@ -37,4 +37,10 @@ public class StatusConstant {
 
     public static final int FINISHED = 2; //已结束
 
+    public static final int NOT_USED = 0; //未使用
+
+    public static final int USED = 1; //已使用
+
+    public static final int EXPIRED = 2; //已过期
+
 }
