@@ -75,5 +75,6 @@ public class ExceptionMessageConstant {
     public static final String COUPON_EXPIRE_OUT = "优惠券已过期，不可再进行操作！";
     public static final String COUPON_NOT_USABLE = "优惠券已不可用！";
     public static final String COUPON_NOT_USE = "优惠券未使用！";
-    public static final String MERCHANT_AUDIT_STATUS_INVALID = "店铺正在审核或审核不通过，无法进行该操作！";
+    public static final String MERCHANT_NOT_AUDIT = "店铺正在审核或审核不通过，无法进行该操作！";
+    public static final String MERCHANT_AUDIT_ERROR = "商家不处于待审核状态，不可进行审核";
 }

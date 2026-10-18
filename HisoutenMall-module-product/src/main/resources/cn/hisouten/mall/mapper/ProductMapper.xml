@@ -39,6 +39,9 @@
             <if test="dto.merchantId != null">
                 and p.merchant_id = #{dto.merchantId}
             </if>
+            <if test="dto.merchantName != null and dto.merchantName != ''">
+                and mp.shop_name like concat('%',#{dto.merchantName},'%')
+            </if>
         </where>
         order by p.create_time desc
     </select>

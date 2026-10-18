@@ -11,4 +11,6 @@ public class RoleConstant {
 
     public static final int ADMIN_ROLE = 3;
 
+    public static final String ADMIN = "admin";
+
 }

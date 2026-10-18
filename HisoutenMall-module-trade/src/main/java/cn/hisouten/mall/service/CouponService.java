@@ -1,14 +1,8 @@
 package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.common.pojo.PageResult;
-import cn.hisouten.mall.pojo.dto.coupon.AvailableCouponPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.coupon.MerchantCouponAddDTO;
-import cn.hisouten.mall.pojo.dto.coupon.MerchantCouponPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.coupon.MerchantCouponUpdateDTO;
-import cn.hisouten.mall.pojo.vo.coupon.AvailableCouponPageResultVO;
-import cn.hisouten.mall.pojo.vo.coupon.MerchantCouponDetailVO;
-import cn.hisouten.mall.pojo.vo.coupon.MerchantCouponPageResultVO;
-import cn.hisouten.mall.pojo.vo.coupon.UserUsableCouponVO;
+import cn.hisouten.mall.pojo.dto.coupon.*;
+import cn.hisouten.mall.pojo.vo.coupon.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -75,4 +69,12 @@ public interface CouponService {
      * @return 返回值
      */
     List<UserUsableCouponVO> usableQuery(Long userId, Long merchantId, BigDecimal orderAmount);
+
+    /**
+     * 管理员分页条件查询全平台优惠券
+     * @param adminId 管理员id
+     * @param pageQueryDTO 分页条件参数
+     * @return 返回值
+     */
+    PageResult<AdminCouponPageResultVO> adminPageQuery(Long adminId, AdminCouponPageQueryDTO pageQueryDTO);
 }

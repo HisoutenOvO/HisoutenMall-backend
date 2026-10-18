@@ -51,7 +51,7 @@ public class ReviewController {
     public Result<PageResult<UserReviewPageResultVO>> pageQuery(@Valid ReviewPageQueryDTO pageQueryDTO){
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户:{} 分页查询评价",userId);
-        PageResult<UserReviewPageResultVO> pageResult = reviewService.userPageResult(pageQueryDTO);
+        PageResult<UserReviewPageResultVO> pageResult = reviewService.userPageQuery(pageQueryDTO);
         return Result.success(pageResult);
 
     }
@@ -66,7 +66,7 @@ public class ReviewController {
     public Result<PageResult<UserSelfReviewPageResultVO>> selfPageQuery(@Valid ReviewPageQueryDTO pageQueryDTO){
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户:{} 分页查询自己发表过的评价",userId);
-        PageResult<UserSelfReviewPageResultVO> pageResult = reviewService.selfPageResult(userId,pageQueryDTO);
+        PageResult<UserSelfReviewPageResultVO> pageResult = reviewService.selfPageQuery(userId,pageQueryDTO);
         return Result.success(pageResult);
     }
 

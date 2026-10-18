@@ -6,6 +6,7 @@ import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.user.mapper.AuthMapper;
 import cn.hisouten.mall.user.mapper.MerchantProfileMapper;
+import cn.hisouten.mall.user.pojo.dto.AdminAuditMerchantDTO;
 import cn.hisouten.mall.user.pojo.dto.AdminMerchantPageQueryDTO;
 import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
 import cn.hisouten.mall.user.pojo.entity.User;
@@ -19,10 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static cn.hisouten.mall.constant.ExceptionMessageConstant.ROLE_NOT_MERCHANT;
-import static cn.hisouten.mall.constant.ExceptionMessageConstant.USER_NOT_FOUND;
+import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
+import static cn.hisouten.mall.constant.RoleConstant.ADMIN_ROLE;
 import static cn.hisouten.mall.constant.RoleConstant.MERCHANT_ROLE;
-import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
+import static cn.hisouten.mall.constant.StatusConstant.*;
 
 @Service
 @RequiredArgsConstructor
@@ -97,5 +98,31 @@ public class AdminMerchantServiceImpl implements AdminMerchantService {
             productService.disableAllProductByMerchantId(merchantId);
         }
         StpUtil.kickout(merchantId);
+    }
+
+    /**
+     * 管理员审核商家
+     * @param adminId 管理员id
+     * @param merchantId 商家id
+     * @param auditDTO 审核参数
+     */
+    @Override
+    public void auditMerchant(Long adminId, Long merchantId, AdminAuditMerchantDTO auditDTO) {
+        User merchant = authMapper.selectById(merchantId);
+        if(merchant == null || merchant.getRole() != MERCHANT_ROLE){
+            throw new BizException(ROLE_NOT_MERCHANT);
+        }
+        MerchantProfile merchantProfile = merchantProfileMapper.selectProfileByMerchantId(merchantId);
+        if(merchantProfile == null){
+            throw new BizException(MERCHANT_NOT_FOUND);
+        }
+        if(merchantProfile.getAuditStatus() != PENDING_AUDIT){
+            throw new BizException(MERCHANT_AUDIT_ERROR);
+        }
+        merchantProfile.setAuditStatus(auditDTO.getAuditStatus());
+        if(auditDTO.getAuditStatus() == REJECT){
+            merchantProfile.setAuditReason(auditDTO.getAuditReason());
+        }
+        merchantProfileMapper.updateById(merchantProfile);
     }
 }

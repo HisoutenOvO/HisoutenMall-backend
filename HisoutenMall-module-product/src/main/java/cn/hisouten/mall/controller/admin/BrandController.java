@@ -1,8 +1,10 @@
 package cn.hisouten.mall.controller.admin;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.common.pojo.Result;
+import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandAddDTO;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.brand.AdminBrandUpdateDTO;
@@ -15,6 +17,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import static cn.hisouten.mall.constant.ExceptionMessageConstant.NO_PERMISSION;
+import static cn.hisouten.mall.constant.RoleConstant.ADMIN;
 
 @RestController("adminBrandController")
 @RequiredArgsConstructor
@@ -32,6 +37,9 @@ public class BrandController {
     @GetMapping("/page")
     @Operation(summary = "品牌分页查询")
     public Result<PageResult<AdminBrandPageResultVO>> pageQuery(@Valid AdminBrandPageQueryDTO adminBrandPageQueryDTO){
+        if (!StpUtil.hasRole(ADMIN)) {
+            throw new BizException(NO_PERMISSION);
+        }
         log.info("品牌分页查询");
         PageResult<AdminBrandPageResultVO> pageResult = brandService.pageQuery(adminBrandPageQueryDTO);
         return Result.success(pageResult);
@@ -45,6 +53,9 @@ public class BrandController {
     @GetMapping("/{brandId}")
     @Operation(summary = "查询品牌详情")
     public Result<AdminBrandDetailVO> detailQuery(@PathVariable Long brandId){
+        if (!StpUtil.hasRole(ADMIN)) {
+            throw new BizException(NO_PERMISSION);
+        }
         log.info("查询品牌详情：{}",brandId);
         AdminBrandDetailVO adminBrandDetailVO = brandService.detailQuery(brandId);
         return Result.success(adminBrandDetailVO);
@@ -59,6 +70,9 @@ public class BrandController {
     @Log("管理端新增品牌")
     @Operation(summary = "新增品牌")
     public Result addBrand(@Valid @RequestBody AdminBrandAddDTO adminBrandAddDTO){
+        if (!StpUtil.hasRole(ADMIN)) {
+            throw new BizException(NO_PERMISSION);
+        }
         log.info("新增品牌");
         brandService.addBrand(adminBrandAddDTO);
         return Result.success();
@@ -73,6 +87,9 @@ public class BrandController {
     @Log("管理端修改品牌")
     @Operation(summary = "修改品牌")
     public Result updateBrand(@PathVariable Long brandId ,@Valid @RequestBody AdminBrandUpdateDTO adminBrandUpdateDTO){
+        if (!StpUtil.hasRole(ADMIN)) {
+            throw new BizException(NO_PERMISSION);
+        }
         log.info("修改品牌：{}",brandId);
         brandService.updateBrand(brandId,adminBrandUpdateDTO);
         return Result.success();
@@ -88,6 +105,9 @@ public class BrandController {
     @Log("管理端修改品牌上下架状态")
     @Operation(summary = "修改品牌上下架状态")
     public Result changeStatus(@PathVariable Long brandId,@RequestParam Integer status){
+        if (!StpUtil.hasRole(ADMIN)) {
+            throw new BizException(NO_PERMISSION);
+        }
         log.info("修改品牌状态：{}",brandId);
         brandService.changeStatus(brandId,status);
         return Result.success();
@@ -102,6 +122,9 @@ public class BrandController {
     @Log("管理端逻辑删除品牌")
     @Operation(summary = "逻辑删除品牌")
     public Result logicDelete(@PathVariable Long brandId){
+        if (!StpUtil.hasRole(ADMIN)) {
+            throw new BizException(NO_PERMISSION);
+        }
         log.info("逻辑删除品牌：{}",brandId);
         brandService.logicDelete(brandId);
         return Result.success();

@@ -8,6 +8,7 @@ import cn.hisouten.mall.common.pojo.BasePageQueryDTO;
 import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.review.ReviewPageQueryBO;
 import cn.hisouten.mall.pojo.bo.review.ReviewPageResultBO;
+import cn.hisouten.mall.pojo.dto.review.AdminReviewPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.review.UserReviewAddDTO;
 import cn.hisouten.mall.pojo.dto.review.ReviewPageQueryDTO;
 import cn.hisouten.mall.pojo.entity.Order;
@@ -33,6 +34,7 @@ import java.util.Map;
 import static cn.hisouten.mall.constant.CommonConstant.DEFAULT_RATING;
 import static cn.hisouten.mall.constant.CommonConstant.DEFAULT_REVIEW;
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
+import static cn.hisouten.mall.constant.RoleConstant.ADMIN_ROLE;
 import static cn.hisouten.mall.constant.StatusConstant.COMPLETED;
 
 @Service
@@ -91,7 +93,7 @@ public class ReviewServiceImpl implements ReviewService {
      * @return 返回值
      */
     @Override
-    public PageResult<UserReviewPageResultVO> userPageResult(ReviewPageQueryDTO pageQueryDTO) {
+    public PageResult<UserReviewPageResultVO> userPageQuery(ReviewPageQueryDTO pageQueryDTO) {
         Page<ReviewPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
         ReviewPageQueryBO pageQueryBO = new ReviewPageQueryBO();
         pageQueryBO.setProductId(pageQueryDTO.getProductId());
@@ -121,7 +123,7 @@ public class ReviewServiceImpl implements ReviewService {
      * @return 返回值
      */
     @Override
-    public PageResult<UserSelfReviewPageResultVO> selfPageResult(Long userId, ReviewPageQueryDTO pageQueryDTO) {
+    public PageResult<UserSelfReviewPageResultVO> selfPageQuery(Long userId, ReviewPageQueryDTO pageQueryDTO) {
         Page<ReviewPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
         ReviewPageQueryBO pageQueryBO = new ReviewPageQueryBO();
         pageQueryBO.setProductId(pageQueryDTO.getProductId());
@@ -150,7 +152,7 @@ public class ReviewServiceImpl implements ReviewService {
      * @return 返回值
      */
     @Override
-    public PageResult<MerchantReviewPageResultVO> merchantPageResult(Long merchantId, ReviewPageQueryDTO pageQueryDTO) {
+    public PageResult<MerchantReviewPageResultVO> merchantPageQuery(Long merchantId, ReviewPageQueryDTO pageQueryDTO) {
         Page<ReviewPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
         ReviewPageQueryBO pageQueryBO = new ReviewPageQueryBO();
         pageQueryBO.setProductId(pageQueryDTO.getProductId());
@@ -242,5 +244,45 @@ public class ReviewServiceImpl implements ReviewService {
         vo.setGoodRate(goodRate);
         vo.setRatingCountMap(ratingCountMap);
         return vo;
+    }
+
+    /**
+     * 管理端分页查询评价
+     * @param adminId 管理员id
+     * @param pageQueryDTO 分页查询条件
+     * @return 返回值
+     */
+    @Override
+    public PageResult<AdminReviewPageResultVO> adminPageQuery(Long adminId, AdminReviewPageQueryDTO pageQueryDTO) {
+        Page<ReviewPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        ReviewPageQueryBO pageQueryBO = new ReviewPageQueryBO();
+        pageQueryBO.setProductId(pageQueryDTO.getProductId());
+        pageQueryBO.setRating(pageQueryDTO.getRating());
+        pageQueryBO.setMerchantId(pageQueryDTO.getMerchantId());
+        pageQueryBO.setMerchantName(pageQueryDTO.getMerchantName());
+        Page<ReviewPageResultBO> result = reviewMapper.pageQuery(page,pageQueryBO);
+        long total = result.getTotal();
+        List<ReviewPageResultBO> boList = result.getRecords();
+        List<AdminReviewPageResultVO> voList = new ArrayList<>();
+        for (ReviewPageResultBO bo : boList) {
+            AdminReviewPageResultVO vo = new AdminReviewPageResultVO();
+            BeanUtils.copyProperties(bo,vo);
+            String image = bo.getImages();
+            //转成单个字符串
+            List<String> images = StrUtil.split(image,",");
+            vo.setImages(images);
+            voList.add(vo);
+        }
+        return new PageResult<>(total,voList);
+    }
+
+    /**
+     * 管理员强制删除评价
+     * @param adminId 管理员id
+     * @param reviewId 评价id
+     */
+    @Override
+    public void adminDeleteReview(Long adminId, Long reviewId) {
+        reviewMapper.deleteById(reviewId);
     }
 }

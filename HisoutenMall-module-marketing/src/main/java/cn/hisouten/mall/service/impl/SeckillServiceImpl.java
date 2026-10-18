@@ -4,7 +4,9 @@ import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.SeckillActivityMapper;
 import cn.hisouten.mall.mapper.SeckillProductMapper;
 import cn.hisouten.mall.common.pojo.PageResult;
-import cn.hisouten.mall.pojo.bo.SeckillProductBO;
+import cn.hisouten.mall.pojo.bo.activity.SeckillActivityPageQueryBO;
+import cn.hisouten.mall.pojo.bo.product.SeckillProductDetailBO;
+import cn.hisouten.mall.pojo.dto.activity.AdminSeckillActivityPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.activity.MerchantSeckillActivityPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.activity.MerchantSeckillActivitySaveDTO;
 import cn.hisouten.mall.pojo.dto.product.MerchantSeckillProductAddDTO;
@@ -13,14 +15,13 @@ import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.entity.ProductSku;
 import cn.hisouten.mall.pojo.entity.SeckillActivity;
 import cn.hisouten.mall.pojo.entity.SeckillProduct;
-import cn.hisouten.mall.pojo.vo.activity.MerchantSeckillActivityDetailVO;
-import cn.hisouten.mall.pojo.vo.activity.MerchantSeckillActivityPageResultVO;
-import cn.hisouten.mall.pojo.vo.activity.UserSeckillActivityDetailVO;
-import cn.hisouten.mall.pojo.vo.activity.UserSeckillActivityListVO;
+import cn.hisouten.mall.pojo.vo.activity.*;
 import cn.hisouten.mall.pojo.vo.product.MerchantSeckillProductVO;
 import cn.hisouten.mall.pojo.vo.product.UserSeckillProductVO;
 import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.service.SeckillService;
+import cn.hisouten.mall.user.pojo.entity.AdminProfile;
+import cn.hisouten.mall.user.service.AdminProfileService;
 import cn.hisouten.mall.user.service.MerchantProfileService;
 import cn.hisouten.mall.util.CacheClientUtils;
 import cn.hutool.core.bean.BeanUtil;
@@ -56,6 +57,7 @@ public class SeckillServiceImpl implements SeckillService {
     private final SeckillProductMapper seckillProductMapper;
 
     private final MerchantProfileService merchantProfileService;
+    private final AdminProfileService adminProfileService;
     private final ProductService productService;
 
     private final StringRedisTemplate stringRedisTemplate;
@@ -109,11 +111,13 @@ public class SeckillServiceImpl implements SeckillService {
      */
     @Override
     public PageResult<MerchantSeckillActivityPageResultVO> pageQueryMerchant(Long merchantId, MerchantSeckillActivityPageQueryDTO pageQueryDTO) {
-        Page<SeckillActivity> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        Page<SeckillActivityPageQueryBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        SeckillActivityPageQueryBO pageQueryBO = new SeckillActivityPageQueryBO();
+        BeanUtils.copyProperties(pageQueryDTO,pageQueryBO);
         if(pageQueryDTO.getDeleted() == null){
             pageQueryDTO.setDeleted(DISABLED);
         }
-        Page<SeckillActivity> result = seckillActivityMapper.pageQuery(merchantId,page,pageQueryDTO);
+        Page<SeckillActivity> result = seckillActivityMapper.pageQuery(merchantId,page,pageQueryBO);
         long total = result.getTotal();
         List<SeckillActivity> seckillActivityList = result.getRecords();
         List<MerchantSeckillActivityPageResultVO> records = new ArrayList<>();
@@ -137,7 +141,7 @@ public class SeckillServiceImpl implements SeckillService {
         MerchantSeckillActivityDetailVO detailVO = new MerchantSeckillActivityDetailVO();
         BeanUtils.copyProperties(seckillActivity,detailVO);
         //查询秒杀商品列表
-        List<SeckillProductBO> boList = seckillProductMapper.selectSkusByActivityId(activityId);
+        List<SeckillProductDetailBO> boList = seckillProductMapper.selectSkusByActivityId(activityId);
         List<MerchantSeckillProductVO> productItemVOList = BeanUtil.copyToList(boList,MerchantSeckillProductVO.class);
         //拼装商品列表
         detailVO.setProducts(productItemVOList);
@@ -379,9 +383,9 @@ public class SeckillServiceImpl implements SeckillService {
         UserSeckillActivityDetailVO detailVO = new UserSeckillActivityDetailVO();
         BeanUtils.copyProperties(seckillActivity,detailVO);
         //查询秒杀商品列表
-        List<SeckillProductBO> productItemVOList = seckillProductMapper.selectSkusByActivityId(activityId);
+        List<SeckillProductDetailBO> productItemVOList = seckillProductMapper.selectSkusByActivityId(activityId);
         List<UserSeckillProductVO> voList = new ArrayList<>();
-        for (SeckillProductBO bo : productItemVOList) {
+        for (SeckillProductDetailBO bo : productItemVOList) {
             UserSeckillProductVO vo = UserSeckillProductVO.builder()
                     .skuId(bo.getSkuId())
                     .productName(bo.getProductName())
@@ -396,6 +400,33 @@ public class SeckillServiceImpl implements SeckillService {
         //拼装商品列表
         detailVO.setProducts(voList);
         return detailVO;
+    }
+
+    /**
+     * 管理端分页查询秒杀活动
+     * @param adminId 管理员id
+     * @param pageQueryDTO 分页条件参数
+     * @return 返回值
+     */
+    @Override
+    public PageResult<AdminSeckillActivityPageResultVO> pageQueryAdmin(Long adminId, AdminSeckillActivityPageQueryDTO pageQueryDTO) {
+        Page<SeckillActivityPageQueryBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        SeckillActivityPageQueryBO pageQueryBO = new SeckillActivityPageQueryBO();
+        BeanUtils.copyProperties(pageQueryDTO,pageQueryBO);
+        //默认查找没被删除的
+        if(pageQueryDTO.getDeleted() == null){
+            pageQueryDTO.setDeleted(DISABLED);
+        }
+        Page<SeckillActivity> result = seckillActivityMapper.pageQuery(null,page,pageQueryBO);
+        long total = result.getTotal();
+        List<SeckillActivity> seckillActivityList = result.getRecords();
+        List<AdminSeckillActivityPageResultVO> records = new ArrayList<>();
+        for (SeckillActivity activity : seckillActivityList) {
+            AdminSeckillActivityPageResultVO vo = new AdminSeckillActivityPageResultVO();
+            BeanUtils.copyProperties(activity,vo);
+            records.add(vo);
+        }
+        return new PageResult<>(total,records);
     }
 
     /**

@@ -1,7 +1,9 @@
-package cn.hisouten.mall.controller.Admin;
+package cn.hisouten.mall.controller.admin;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.common.pojo.Result;
+import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.pojo.dto.order.AdminOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.vo.order.AdminOrderPageResultVO;
 import cn.hisouten.mall.service.OrderService;
@@ -13,6 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static cn.hisouten.mall.constant.ExceptionMessageConstant.NO_PERMISSION;
+import static cn.hisouten.mall.constant.RoleConstant.ADMIN;
 
 @RestController("adminOrderController")
 @RequestMapping("/admin/order")
@@ -30,6 +35,9 @@ public class OrderController {
     @GetMapping("/page")
     @Operation(summary = "分页查询订单")
     public Result<PageResult<AdminOrderPageResultVO>> pageQuery(@Valid AdminOrderPageQueryDTO adminOrderPageResultDTO){
+        if (!StpUtil.hasRole(ADMIN)) {
+            throw new BizException(NO_PERMISSION);
+        }
         log.info("管理员分页查询订单");
         PageResult<AdminOrderPageResultVO> pageResult = orderService.adminPageQuery(adminOrderPageResultDTO);
         return Result.success(pageResult);

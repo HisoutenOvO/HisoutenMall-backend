@@ -161,4 +161,19 @@ public interface ProductService {
      * @return 返回sku列表
      */
     List<ProductSku> getSkuListBySkuIds(List<Long> skuIds);
+
+    /**
+     * 管理端分页查询商品
+     * @param adminId 管理员id
+     * @param pageQueryDTO 条件查询参数
+     * @return 返回值
+     */
+    PageResult<AdminProductPageResultVO> adminPageQuery(Long adminId, AdminProductPageQueryDTO pageQueryDTO);
+
+    /**
+     * 管理员强制下架商品
+     * @param adminId 管理员id
+     * @param productId 商品id
+     */
+    void offlineProduct(Long adminId, Long productId);
 }

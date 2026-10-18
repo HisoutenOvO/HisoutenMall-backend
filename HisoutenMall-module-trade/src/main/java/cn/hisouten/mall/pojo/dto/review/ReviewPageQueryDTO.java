@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
- * 通用的分页查询商品评价参数
+ * 用户端和商家端通用的分页查询商品评价参数
  */
 @Data
 public class ReviewPageQueryDTO extends BasePageQueryDTO {

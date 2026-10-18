@@ -15,7 +15,7 @@
         on sp.activity_id = sa.id
         where sa.status = 1
     </select>
-    <select id="selectSkusByActivityId" resultType="cn.hisouten.mall.pojo.bo.SeckillProductBO">
+    <select id="selectSkusByActivityId" resultType="cn.hisouten.mall.pojo.bo.product.SeckillProductDetailBO">
         select sp.id, sp.sku_id, sp.seckill_price,sp.seckill_stock,sp.limit_per_user,
                p.name as productName,
                ps.specs as skuSpecs,ps.image, ps.price as originalPrice,ps.stock as skuStock

@@ -1,5 +1,6 @@
 package cn.hisouten.mall.mapper;
 
+import cn.hisouten.mall.pojo.bo.activity.SeckillActivityPageQueryBO;
 import cn.hisouten.mall.pojo.dto.activity.MerchantSeckillActivityPageQueryDTO;
 import cn.hisouten.mall.pojo.entity.SeckillActivity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -36,10 +37,10 @@ public interface SeckillActivityMapper extends BaseMapper<SeckillActivity> {
      * 分页查询秒杀活动
      * @param merchantId 商家id
      * @param page 分页条件
-     * @param pageQueryDTO 查询条件
+     * @param pageQueryBO 查询条件
      * @return 返回值
      */
-    Page<SeckillActivity> pageQuery(Long merchantId,Page<SeckillActivity> page, MerchantSeckillActivityPageQueryDTO pageQueryDTO);
+    Page<SeckillActivity> pageQuery(Long merchantId,Page<SeckillActivityPageQueryBO> page, SeckillActivityPageQueryBO pageQueryBO);
 
     /**
      * 根据skuId查询秒杀活动，排出自己

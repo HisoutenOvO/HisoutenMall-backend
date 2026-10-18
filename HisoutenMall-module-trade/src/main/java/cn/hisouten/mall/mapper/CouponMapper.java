@@ -1,5 +1,7 @@
 package cn.hisouten.mall.mapper;
 
+import cn.hisouten.mall.pojo.bo.coupon.CouponPageQueryBO;
+import cn.hisouten.mall.pojo.bo.coupon.CouponPageResultBO;
 import cn.hisouten.mall.pojo.dto.coupon.AvailableCouponPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.coupon.MerchantCouponPageQueryDTO;
 import cn.hisouten.mall.pojo.entity.Coupon;
@@ -29,10 +31,10 @@ public interface CouponMapper extends BaseMapper<Coupon> {
      * 分页查询优惠券
      * @param merchantId 商家id
      * @param page 分页参数
-     * @param pageQueryDTO 查询参数
+     * @param pageQueryBO 查询参数
      * @return 返回值
      */
-    Page<MerchantCouponPageResultVO> pageQuery(Long merchantId, Page<MerchantCouponPageResultVO> page, MerchantCouponPageQueryDTO pageQueryDTO);
+    Page<CouponPageResultBO> pageQuery(Long merchantId, Page<CouponPageResultBO> page, CouponPageQueryBO pageQueryBO);
 
     /**
      * 分页查询可领取优惠券

@@ -1,6 +1,6 @@
 package cn.hisouten.mall.mapper;
 
-import cn.hisouten.mall.pojo.bo.SeckillProductBO;
+import cn.hisouten.mall.pojo.bo.product.SeckillProductDetailBO;
 import cn.hisouten.mall.pojo.entity.SeckillProduct;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Delete;
@@ -38,7 +38,7 @@ public interface SeckillProductMapper extends BaseMapper<SeckillProduct> {
      * @param activityId 活动id
      * @return 返回值
      */
-    List<SeckillProductBO> selectSkusByActivityId(Long activityId);
+    List<SeckillProductDetailBO> selectSkusByActivityId(Long activityId);
 
     /**
      * 根据活动id删除秒杀商品

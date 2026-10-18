@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.RedisConstant.*;
+import static cn.hisouten.mall.constant.RoleConstant.ADMIN_ROLE;
 import static cn.hisouten.mall.constant.StatusConstant.*;
 
 @Service
@@ -156,7 +157,7 @@ public class ProductServiceImpl implements ProductService {
         // 校验商家是否审核通过
         Integer auditStatus = productMapper.selectMerchantAuditStatus(StpUtil.getLoginIdAsLong());
         if (auditStatus == null || auditStatus != PASSED) {
-            throw new BizException(MERCHANT_AUDIT_STATUS_INVALID);
+            throw new BizException(MERCHANT_NOT_AUDIT);
         }
         BeanUtils.copyProperties(merchantProductAddDTO,product);
         product.setMerchantId(StpUtil.getLoginIdAsLong());
@@ -411,6 +412,64 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductSku> getSkuListBySkuIds(List<Long> skuIds) {
         return productSkuMapper.selectBatchIds(skuIds);
+    }
+
+    /**
+     * 管理端分页查询商品
+     * @param adminId 管理员id
+     * @param pageQueryDTO 条件查询参数
+     * @return 返回值
+     */
+    @Override
+    public PageResult<AdminProductPageResultVO> adminPageQuery(Long adminId, AdminProductPageQueryDTO pageQueryDTO) {
+        Page<ProductPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        ProductPageQueryBO productPageQueryBO = new ProductPageQueryBO();
+        BeanUtils.copyProperties(pageQueryDTO,productPageQueryBO);
+        // 如果前端没传deleted条件，默认查未删除的
+        if (productPageQueryBO.getDeleted() == null) {
+            productPageQueryBO.setDeleted(DISABLED);
+        }
+        Page<ProductPageResultBO> result = productMapper.pageQuery(page, productPageQueryBO);
+        long total = result.getTotal();
+        List<AdminProductPageResultVO> records = new ArrayList<>();
+        for (ProductPageResultBO bo : result.getRecords()) {
+            AdminProductPageResultVO vo = AdminProductPageResultVO.builder()
+                    .id(bo.getId())
+                    .merchantId(bo.getMerchantId())
+                    .categoryId(bo.getCategoryId())
+                    .brandId(bo.getBrandId())
+                    .name(bo.getName())
+                    .merchantName(bo.getMerchantName())
+                    .categoryName(bo.getCategoryName())
+                    .brandName(bo.getBrandName())
+                    .mainImage(bo.getMainImage())
+                    .status(bo.getStatus())
+                    .updateTime(bo.getUpdateTime())
+                    .minPrice(bo.getMinPrice())
+                    .totalStock(bo.getTotalStock())
+                    .deleted(bo.getDeleted())
+                    .build();
+            records.add(vo);
+        }
+        return new PageResult<>(total, records);
+    }
+
+    /**
+     * 管理员强制下架商品
+     * @param adminId 管理员id
+     * @param productId 商品id
+     */
+    @Override
+    public void offlineProduct(Long adminId, Long productId) {
+        Product product = productMapper.selectById(productId);
+        if(product == null){
+            throw new BizException(PRODUCT_NOT_FOUND);
+        }
+        if(product.getStatus() != ENABLED){
+            throw new BizException(PRODUCT_HAS_DISABLED);
+        }
+        product.setStatus(DISABLED);
+        productMapper.updateById(product);
     }
     //=======================================用户端逻辑================================================
 

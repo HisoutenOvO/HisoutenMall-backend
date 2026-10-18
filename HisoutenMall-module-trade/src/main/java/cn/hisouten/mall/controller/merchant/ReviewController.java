@@ -35,7 +35,7 @@ public class ReviewController {
     public Result<PageResult<MerchantReviewPageResultVO>> pageQuery(@Valid ReviewPageQueryDTO pageQueryDTO){
         Long merchantId = StpUtil.getLoginIdAsLong();
         log.info("商家:{} 分页查询自己的评价记录",merchantId);
-        PageResult<MerchantReviewPageResultVO> pageResult = reviewService.merchantPageResult(merchantId,pageQueryDTO);
+        PageResult<MerchantReviewPageResultVO> pageResult = reviewService.merchantPageQuery(merchantId,pageQueryDTO);
         return Result.success(pageResult);
     }
 

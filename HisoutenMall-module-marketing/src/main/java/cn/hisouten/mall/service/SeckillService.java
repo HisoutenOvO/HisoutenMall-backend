@@ -1,14 +1,12 @@
 package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.common.pojo.PageResult;
+import cn.hisouten.mall.pojo.dto.activity.AdminSeckillActivityPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.activity.MerchantSeckillActivityPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.activity.MerchantSeckillActivitySaveDTO;
 import cn.hisouten.mall.pojo.dto.product.MerchantSeckillProductAddDTO;
 import cn.hisouten.mall.pojo.dto.product.MerchantSeckillProductUpdateDTO;
-import cn.hisouten.mall.pojo.vo.activity.MerchantSeckillActivityDetailVO;
-import cn.hisouten.mall.pojo.vo.activity.MerchantSeckillActivityPageResultVO;
-import cn.hisouten.mall.pojo.vo.activity.UserSeckillActivityListVO;
-import cn.hisouten.mall.pojo.vo.activity.UserSeckillActivityDetailVO;
+import cn.hisouten.mall.pojo.vo.activity.*;
 
 import java.util.List;
 
@@ -91,4 +89,12 @@ public interface SeckillService {
      * @return 返回值
      */
     UserSeckillActivityDetailVO loadDetailFromDB(Long activityId);
+
+    /**
+     * 管理端分页查询秒杀活动
+     * @param adminId 管理员id
+     * @param pageQueryDTO 分页条件参数
+     * @return 返回值
+     */
+    PageResult<AdminSeckillActivityPageResultVO> pageQueryAdmin(Long adminId, AdminSeckillActivityPageQueryDTO pageQueryDTO);
 }

@@ -1,4 +1,4 @@
-package cn.hisouten.mall.pojo.bo;
+package cn.hisouten.mall.pojo.bo.product;
 
 import lombok.Data;
 
@@ -8,7 +8,7 @@ import java.math.BigDecimal;
  * 用于中转秒杀商品详情的BO类
  */
 @Data
-public class SeckillProductBO {
+public class SeckillProductDetailBO {
     private Long id;              // seckill_product.id
 
     private Long skuId;

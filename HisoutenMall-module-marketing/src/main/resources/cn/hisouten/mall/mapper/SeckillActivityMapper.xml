@@ -3,19 +3,25 @@
 <mapper namespace="cn.hisouten.mall.mapper.SeckillActivityMapper">
 
     <select id="pageQuery" resultType="cn.hisouten.mall.pojo.entity.SeckillActivity">
-        select sa.*,sum(sp.seckill_stock) as productCount from seckill_activity sa
-        left join seckill_product sp
-        on sp.activity_id = sa.id
+        select sa.*,sum(sp.seckill_stock) as productCount,mp.shop_name as merchantName
+        from seckill_activity sa
+        left join seckill_product sp on sp.activity_id = sa.id
+        left join merchant_profile mp on sa.merchant_id = mp.user_id
         <where>
-            and merchant_id = #{merchantId}
-            <if test="pageQueryDTO.keyword != null and pageQueryDTO.keyword != ''">
-                and name like concat('%', #{pageQueryDTO.keyword}, '%')
+            <if test="merchantId != null">
+                and merchant_id = #{merchantId}
             </if>
-        <if test="pageQueryDTO.status != null">
-            and status = #{pageQueryDTO.status}
+        <if test="pageQueryBO.merchantName != null and pageQueryBO.merchantName != ''">
+            and mp.shop_name like concat('%',#{pageQueryBO.merchantName},'%')
         </if>
-        <if test="pageQueryDTO.deleted != null">
-            and deleted = #{pageQueryDTO.deleted}
+            <if test="pageQueryBO.keyword != null and pageQueryBO.keyword != ''">
+                and sa.name like concat('%', #{pageQueryBO.keyword}, '%')
+            </if>
+        <if test="pageQueryBO.status != null">
+            and status = #{pageQueryBO.status}
+        </if>
+        <if test="pageQueryBO.deleted != null">
+            and deleted = #{pageQueryBO.deleted}
         </if>
         </where>
         group by sa.id

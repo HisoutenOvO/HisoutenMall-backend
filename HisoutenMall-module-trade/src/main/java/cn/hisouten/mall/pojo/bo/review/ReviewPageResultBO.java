@@ -12,6 +12,10 @@ public class ReviewPageResultBO {
 
     private Long id;
 
+    private String productName;
+
+    private String merchantName;
+
     private String nickname;     // 脱敏的用户昵称
 
     private String avatar;

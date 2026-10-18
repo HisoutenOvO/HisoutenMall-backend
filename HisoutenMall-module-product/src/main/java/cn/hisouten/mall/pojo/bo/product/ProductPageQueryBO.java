@@ -20,4 +20,6 @@ public class ProductPageQueryBO extends BasePageQueryDTO {
     private Long merchantId;
 
     private Integer deleted;
+
+    private String merchantName;
 }

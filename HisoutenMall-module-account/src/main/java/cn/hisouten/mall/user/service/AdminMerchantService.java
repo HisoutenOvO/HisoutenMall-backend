@@ -1,9 +1,11 @@
 package cn.hisouten.mall.user.service;
 
 import cn.hisouten.mall.common.pojo.PageResult;
+import cn.hisouten.mall.user.pojo.dto.AdminAuditMerchantDTO;
 import cn.hisouten.mall.user.pojo.dto.AdminMerchantPageQueryDTO;
 import cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantDetailVO;
 import cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantPageResultVO;
+import jakarta.validation.Valid;
 
 public interface AdminMerchantService {
 
@@ -27,4 +29,12 @@ public interface AdminMerchantService {
      * @param status 状态
      */
     void changeStatus(Long merchantId, Integer status);
+
+    /**
+     * 管理员审核商家
+     * @param adminId 管理员id
+     * @param merchantId 商家id
+     * @param auditDTO 审核参数
+     */
+    void auditMerchant(Long adminId, Long merchantId, @Valid AdminAuditMerchantDTO auditDTO);
 }

@@ -4,16 +4,12 @@ import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.mapper.CouponMapper;
 import cn.hisouten.mall.mapper.UserCouponMapper;
 import cn.hisouten.mall.common.pojo.PageResult;
-import cn.hisouten.mall.pojo.dto.coupon.AvailableCouponPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.coupon.MerchantCouponAddDTO;
-import cn.hisouten.mall.pojo.dto.coupon.MerchantCouponPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.coupon.MerchantCouponUpdateDTO;
+import cn.hisouten.mall.pojo.bo.coupon.CouponPageQueryBO;
+import cn.hisouten.mall.pojo.bo.coupon.CouponPageResultBO;
+import cn.hisouten.mall.pojo.dto.coupon.*;
 import cn.hisouten.mall.pojo.entity.Coupon;
 import cn.hisouten.mall.pojo.entity.UserCoupon;
-import cn.hisouten.mall.pojo.vo.coupon.AvailableCouponPageResultVO;
-import cn.hisouten.mall.pojo.vo.coupon.MerchantCouponDetailVO;
-import cn.hisouten.mall.pojo.vo.coupon.MerchantCouponPageResultVO;
-import cn.hisouten.mall.pojo.vo.coupon.UserUsableCouponVO;
+import cn.hisouten.mall.pojo.vo.coupon.*;
 import cn.hisouten.mall.service.CouponService;
 import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.collection.CollUtil;
@@ -33,6 +29,7 @@ import java.util.Objects;
 import static cn.hisouten.mall.constant.CommonConstant.AMOUNT_OFF_COUPON;
 import static cn.hisouten.mall.constant.CommonConstant.DISCOUNT_COUPON;
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
+import static cn.hisouten.mall.constant.RoleConstant.ADMIN_ROLE;
 import static cn.hisouten.mall.constant.StatusConstant.*;
 
 @Service
@@ -117,14 +114,16 @@ public class CouponServiceImpl implements CouponService {
      */
     @Override
     public PageResult<MerchantCouponPageResultVO> merchantPageQuery(Long merchantId, MerchantCouponPageQueryDTO pageQueryDTO) {
-        Page<MerchantCouponPageResultVO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
-        Page<MerchantCouponPageResultVO> result = couponMapper.pageQuery(merchantId,page,pageQueryDTO);
+        Page<CouponPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        CouponPageQueryBO pageQueryBO = new CouponPageQueryBO();
+        BeanUtils.copyProperties(pageQueryDTO,pageQueryBO);
+        Page<CouponPageResultBO> result = couponMapper.pageQuery(merchantId,page,pageQueryBO);
         if(result == null){
             return null;
         }
         long total = result.getTotal();
         List<MerchantCouponPageResultVO> records = new ArrayList<>();
-        for (MerchantCouponPageResultVO record : result.getRecords()) {
+        for (CouponPageResultBO record : result.getRecords()) {
             MerchantCouponPageResultVO vo = new MerchantCouponPageResultVO();
             BeanUtils.copyProperties(record,vo);
             if(record.getStartTime().isAfter(LocalDateTime.now())){
@@ -286,5 +285,38 @@ public class CouponServiceImpl implements CouponService {
             voList.add(vo);
         }
         return voList;
+    }
+
+
+    /**
+     * 管理员分页条件查询全平台优惠券
+     * @param adminId 管理员id
+     * @param pageQueryDTO 分页条件参数
+     * @return 返回值
+     */
+    @Override
+    public PageResult<AdminCouponPageResultVO> adminPageQuery(Long adminId, AdminCouponPageQueryDTO pageQueryDTO) {
+        Page<CouponPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        CouponPageQueryBO pageQueryBO = new CouponPageQueryBO();
+        BeanUtils.copyProperties(pageQueryDTO,pageQueryBO);
+        Page<CouponPageResultBO> result = couponMapper.pageQuery(null,page,pageQueryBO);
+        if(result == null){
+            return null;
+        }
+        long total = result.getTotal();
+        List<AdminCouponPageResultVO> records = new ArrayList<>();
+        for (CouponPageResultBO record : result.getRecords()) {
+            AdminCouponPageResultVO vo = new AdminCouponPageResultVO();
+            BeanUtils.copyProperties(record,vo);
+            if(record.getStartTime().isAfter(LocalDateTime.now())){
+                vo.setStatus(NOT_START);
+            } else if (record.getStartTime().isBefore(LocalDateTime.now()) && record.getEndTime().isAfter(LocalDateTime.now())) {
+                vo.setStatus(IN_PROGRESS);
+            }else{
+                vo.setStatus(FINISHED);
+            }
+            records.add(vo);
+        }
+        return new PageResult<>(total,records);
     }
 }
