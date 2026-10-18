@@ -6,8 +6,10 @@ import cn.hisouten.mall.user.pojo.dto.login.UserLoginDTO;
 import cn.hisouten.mall.user.pojo.dto.register.MerchantRegisterDTO;
 import cn.hisouten.mall.user.pojo.dto.register.UserRegisterDTO;
 import cn.hisouten.mall.user.pojo.dto.update.PasswordUpdateDTO;
+import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.vo.LoginVO;
 import cn.hisouten.mall.user.pojo.vo.user.UserInfoVO;
+import org.apache.ibatis.annotations.Select;
 
 public interface AuthService {
     /**
@@ -56,4 +58,12 @@ public interface AuthService {
      * @param passwordUpdateDTO 密码
      */
     void updatePwd(Long userId, PasswordUpdateDTO passwordUpdateDTO);
+
+    /**
+     * 根据用户id查询用户
+     * @param userId 用户id
+     * @return 返回值
+     */
+    @Select("select * from user where id = #{userId}")
+    User getUserByUserId(Long userId);
 }

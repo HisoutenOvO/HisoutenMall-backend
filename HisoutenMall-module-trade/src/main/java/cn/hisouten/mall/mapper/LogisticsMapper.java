@@ -10,9 +10,8 @@ public interface LogisticsMapper extends BaseMapper<Logistics> {
     /**
      * 根据订单id查询物流详情
      * @param orderId 订单id
-     * @param userId 用户id
      * @return 返回值
      */
     @Select("select * from logistics where order_id = #{orderId}")
-    Logistics selectByOrderId(Long userId, Long orderId);
+    Logistics selectByOrderId(Long orderId);
 }

@@ -471,6 +471,47 @@ public class ProductServiceImpl implements ProductService {
         product.setStatus(DISABLED);
         productMapper.updateById(product);
     }
+
+    /**
+     * 管理员查询商品详情
+     * @param productId 商品id
+     * @return 返回值
+     */
+    @Override
+    public AdminProductDetailVO adminDetailQuery(Long productId) {
+        Product product = productMapper.selectByIdIgnoreLogic(productId);
+        //如果商品不存在或已被逻辑删除，抛出异常
+        if(product == null) {
+            throw new BizException(PRODUCT_NOT_FOUND);
+        }
+        AdminProductDetailVO adminProductDetailVO = new AdminProductDetailVO();
+        BeanUtils.copyProperties(product, adminProductDetailVO);
+        String categoryName = categoryService.getCategoryNameByCategoryId(product.getCategoryId());
+        String merchantName = productMapper.getMerchantNameByMerchantId(product.getMerchantId());
+        String brandName = brandService.getBrandNameByBrandId(product.getBrandId());
+        adminProductDetailVO.setBrandName(brandName);
+        adminProductDetailVO.setCategoryName(categoryName);
+        adminProductDetailVO.setMerchantName(merchantName);
+
+        //拼装skuList
+        List<ProductSku> skuList = productSkuMapper.selectByProductId(productId);
+        List<AdminProductSkuVO> skuVOList = new ArrayList<>();
+        for (ProductSku sku : skuList) {
+            AdminProductSkuVO skuVO = new AdminProductSkuVO();
+            skuVO.setId(sku.getId());
+            skuVO.setSpecs(sku.getSpecs());
+            skuVO.setPrice(sku.getPrice());
+            skuVO.setStock(sku.getStock());
+            skuVO.setImage(sku.getImage());
+            skuVO.setStatus(sku.getStatus());
+            skuVO.setCreateTime(sku.getCreateTime());
+            skuVO.setUpdateTime(sku.getUpdateTime());
+            skuVO.setDeleted(sku.getDeleted());
+            skuVOList.add(skuVO);
+        }
+        adminProductDetailVO.setSkuList(skuVOList);
+        return adminProductDetailVO;
+    }
     //=======================================用户端逻辑================================================
 
     /**

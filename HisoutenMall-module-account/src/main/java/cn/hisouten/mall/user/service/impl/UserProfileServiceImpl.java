@@ -92,4 +92,14 @@ public class UserProfileServiceImpl implements UserProfileService {
     public String getUserNicknameByUserId(Long userId) {
         return userProfileMapper.selectUserNicknameByUserId(userId);
     }
+
+    /**
+     * 通过用户id查询用户信息
+     * @param userId 用户id
+     * @return 返回值
+     */
+    @Override
+    public UserProfile getProfileByUserId(Long userId) {
+        return userProfileMapper.selectProfileByUserId(userId);
+    }
 }

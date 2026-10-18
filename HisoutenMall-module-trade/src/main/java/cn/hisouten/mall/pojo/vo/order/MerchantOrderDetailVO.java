@@ -1,5 +1,7 @@
 package cn.hisouten.mall.pojo.vo.order;
 
+import cn.hisouten.mall.pojo.vo.coupon.OrderCouponVO;
+import cn.hisouten.mall.pojo.vo.logistics.UserLogisticsVO;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -20,6 +22,10 @@ public class MerchantOrderDetailVO {
 
     private BigDecimal payAmount;
 
+    private BigDecimal discountAmount;
+
+    private UserLogisticsVO logistics; // 未发货为空
+
     private String buyerUsername;
 
     private String receiverName;
@@ -35,5 +41,8 @@ public class MerchantOrderDetailVO {
     private List<OrderItemVO> items;
 
     private Integer source;
+
+    // 优惠券信息（未用券则为 null）
+    private OrderCouponVO couponInfo;
 
 }

@@ -5,6 +5,7 @@ import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.pojo.dto.coupon.AdminCouponPageQueryDTO;
+import cn.hisouten.mall.pojo.vo.coupon.AdminCouponDetailVO;
 import cn.hisouten.mall.pojo.vo.coupon.AdminCouponPageResultVO;
 import cn.hisouten.mall.service.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,5 +43,22 @@ public class CouponController {
         log.info("管理员:{} 分页查询全平台优惠券",adminId);
         PageResult<AdminCouponPageResultVO> pageResult = couponService.adminPageQuery(adminId,pageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    /**
+     * 查询优惠券详情
+     * @param couponId 优惠券id
+     * @return 返回值
+     */
+    @GetMapping("/{couponId}")
+    @Operation(summary = "查询优惠券详情")
+    public Result<AdminCouponDetailVO> detailQuery(@PathVariable Long couponId){
+        if (!StpUtil.hasRole(ADMIN)) {
+            throw new BizException(NO_PERMISSION);
+        }
+        Long adminId = StpUtil.getLoginIdAsLong();
+        log.info("管理员:{} 查询优惠券详情:{} ",adminId,couponId);
+        AdminCouponDetailVO detailVO = couponService.adminDetailQuery(couponId);
+        return Result.success(detailVO);
     }
 }

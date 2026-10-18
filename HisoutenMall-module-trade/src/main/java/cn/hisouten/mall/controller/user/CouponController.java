@@ -28,7 +28,7 @@ public class CouponController {
     private final CouponService couponService;
 
     /**
-     * 分页查询可灵气优惠券列表
+     * 分页查询可领取优惠券列表
      * @param pageQueryDTO 分页参数
      * @return 返回值
      */

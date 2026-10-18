@@ -1,6 +1,7 @@
 package cn.hisouten.mall.user.service;
 
 import cn.hisouten.mall.user.pojo.dto.update.UserUpdateDTO;
+import cn.hisouten.mall.user.pojo.entity.UserProfile;
 import cn.hisouten.mall.user.pojo.vo.user.UserDetailVO;
 
 public interface UserProfileService {
@@ -25,4 +26,11 @@ public interface UserProfileService {
      * @return 返回值
      */
     String getUserNicknameByUserId(Long userId);
+
+    /**
+     * 通过用户id查询用户信息
+     * @param userId 用户id
+     * @return 返回值
+     */
+    UserProfile getProfileByUserId(Long userId);
 }

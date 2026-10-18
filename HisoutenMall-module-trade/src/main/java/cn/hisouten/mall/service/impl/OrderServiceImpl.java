@@ -10,10 +10,13 @@ import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.cart.CartItemListBO;
 import cn.hisouten.mall.pojo.dto.order.*;
 import cn.hisouten.mall.pojo.entity.*;
+import cn.hisouten.mall.pojo.vo.coupon.OrderCouponVO;
 import cn.hisouten.mall.pojo.vo.logistics.UserLogisticsVO;
 import cn.hisouten.mall.pojo.vo.order.*;
+import cn.hisouten.mall.pojo.vo.product.AdminProductDetailVO;
 import cn.hisouten.mall.service.OrderService;
 import cn.hisouten.mall.service.ProductService;
+import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
 import cn.hisouten.mall.user.pojo.entity.UserAddress;
 import cn.hisouten.mall.user.service.MerchantProfileService;
 import cn.hisouten.mall.user.service.UserAddressService;
@@ -262,9 +265,35 @@ public class OrderServiceImpl implements OrderService {
         if(merchantName == null){
             merchantName = MERCHANT_NOT_FOUND;
         }
-        UserOrderDetailVO userOrderDetailVO = new UserOrderDetailVO();
-        BeanUtils.copyProperties(order,userOrderDetailVO);
-        userOrderDetailVO.setMerchantName(merchantName);
+        UserOrderDetailVO detailVO = new UserOrderDetailVO();
+        BeanUtils.copyProperties(order,detailVO);
+        detailVO.setMerchantName(merchantName);
+        detailVO.setDiscountAmount(order.getTotalAmount().subtract(order.getPayAmount()));
+
+        //查询物流信息 (如果订单状态是已发货或已完成)
+        if (Objects.equals(order.getStatus(), ORDER_SHIPPED) || Objects.equals(order.getStatus(), COMPLETED)) {
+            Logistics logistics = logisticsMapper.selectByOrderId(order.getId());
+            if (logistics != null) {
+                UserLogisticsVO logisticsVO = new UserLogisticsVO();
+                BeanUtils.copyProperties(logistics, logisticsVO);
+                detailVO.setLogistics(logisticsVO);
+            }
+        }
+
+        //查优惠券使用情况(如果实付金额比总金额少就是用了优惠券)
+        if (detailVO.getDiscountAmount().compareTo(BigDecimal.ZERO) > 0) {
+            UserCoupon userCoupon = userCouponMapper.selectByOrderId(order.getId());
+            if (userCoupon != null) {
+                Coupon coupon = couponMapper.selectById(userCoupon.getCouponId());
+                if (coupon != null) {
+                    OrderCouponVO couponVO = new OrderCouponVO();
+                    couponVO.setCouponName(coupon.getName());
+                    couponVO.setType(coupon.getType());
+                    couponVO.setValue(coupon.getValue());
+                    detailVO.setCouponInfo(couponVO);
+                }
+            }
+        }
 
         //查找订单项
         List<OrderItem> itemList = orderItemMapper.selectByOrderId(order.getId());
@@ -274,8 +303,10 @@ public class OrderServiceImpl implements OrderService {
             BeanUtils.copyProperties(item,orderItemVO);
             itemVOList.add(orderItemVO);
         }
-        userOrderDetailVO.setItems(itemVOList);
-        return userOrderDetailVO;
+        detailVO.setItems(itemVOList);
+
+
+        return detailVO;
     }
 
     /**
@@ -333,9 +364,35 @@ public class OrderServiceImpl implements OrderService {
         if(buyerName == null){
             buyerName = USER_NOT_FOUND;
         }
-        MerchantOrderDetailVO merchantOrderDetailVO = new MerchantOrderDetailVO();
-        BeanUtils.copyProperties(order,merchantOrderDetailVO);
-        merchantOrderDetailVO.setBuyerUsername(buyerName);
+        MerchantOrderDetailVO detailVO = new MerchantOrderDetailVO();
+        BeanUtils.copyProperties(order,detailVO);
+        detailVO.setBuyerUsername(buyerName);
+        detailVO.setDiscountAmount(order.getTotalAmount().subtract(order.getPayAmount()));
+
+        //查物流
+        if (Objects.equals(order.getStatus(), ORDER_SHIPPED) || Objects.equals(order.getStatus(), COMPLETED)) {
+            Logistics logistics = logisticsMapper.selectByOrderId(order.getId());
+            if (logistics != null) {
+                UserLogisticsVO logisticsVO = new UserLogisticsVO();
+                BeanUtils.copyProperties(logistics, logisticsVO);
+                detailVO.setLogistics(logisticsVO);
+            }
+        }
+
+        //查优惠券使用情况
+        if (detailVO.getDiscountAmount().compareTo(BigDecimal.ZERO) > 0) {
+            UserCoupon userCoupon = userCouponMapper.selectByOrderId(order.getId());
+            if (userCoupon != null) {
+                Coupon coupon = couponMapper.selectById(userCoupon.getCouponId());
+                if (coupon != null) {
+                    OrderCouponVO couponVO = new OrderCouponVO();
+                    couponVO.setCouponName(coupon.getName());
+                    couponVO.setType(coupon.getType());
+                    couponVO.setValue(coupon.getValue());
+                    detailVO.setCouponInfo(couponVO);
+                }
+            }
+        }
 
         //查找订单项
         List<OrderItem> itemList = orderItemMapper.selectByOrderId(order.getId());
@@ -345,8 +402,8 @@ public class OrderServiceImpl implements OrderService {
             BeanUtils.copyProperties(item,orderItemVO);
             itemVOList.add(orderItemVO);
         }
-        merchantOrderDetailVO.setItems(itemVOList);
-        return merchantOrderDetailVO;
+        detailVO.setItems(itemVOList);
+        return detailVO;
     }
 
     /**
@@ -363,7 +420,7 @@ public class OrderServiceImpl implements OrderService {
         if (order.getStatus() != PAID) {
             throw new BizException(ORDER_STATUS_ERROR);
         }
-        Logistics exsitedlogistics = logisticsMapper.selectByOrderId(order.getUserId(),order.getId());
+        Logistics exsitedlogistics = logisticsMapper.selectByOrderId(order.getId());
         if(exsitedlogistics != null){
             throw new BizException(LOGISTICS_ALREADY_EXIST);
         }
@@ -488,7 +545,7 @@ public class OrderServiceImpl implements OrderService {
         if(order == null || !order.getUserId().equals(userId)){
             throw new BizException(ORDER_NOT_FOUND);
         }
-        Logistics logistics = logisticsMapper.selectByOrderId(userId,order.getId());
+        Logistics logistics = logisticsMapper.selectByOrderId(order.getId());
         if(logistics == null){
             throw new BizException(ORDER_NOT_FOUND);
         }
@@ -510,7 +567,7 @@ public class OrderServiceImpl implements OrderService {
         if(order == null || !order.getUserId().equals(userId)){
             throw new BizException(ORDER_NOT_FOUND);
         }
-        Logistics logistics = logisticsMapper.selectByOrderId(userId,order.getId());
+        Logistics logistics = logisticsMapper.selectByOrderId(order.getId());
         if(logistics == null){
             throw new BizException(ORDER_NOT_FOUND);
         }
@@ -522,6 +579,67 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(COMPLETED);
         order.setFinishTime(LocalDateTime.now());
         orderMapper.updateById(order);
+    }
+
+    /**
+     * 管理员查询订单详情
+     * @param orderNo 订单号
+     * @return 返回值
+     */
+    @Override
+    public AdminOrderDetailVO adminDetailQuery(String orderNo) {
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if(order == null){
+            throw new BizException(ORDER_NOT_FOUND);
+        }
+        String buyerName = userProfileService.getUserNicknameByUserId(order.getUserId());
+        if(buyerName == null){
+            buyerName = USER_NOT_FOUND;
+        }
+        String merchantName = merchantProfileService.getMerchantNameByMerchantId(order.getMerchantId());
+        if(merchantName == null){
+            merchantName = MERCHANT_NOT_FOUND;
+        }
+        AdminOrderDetailVO detailVO = new AdminOrderDetailVO();
+        BeanUtils.copyProperties(order,detailVO);
+        detailVO.setBuyerUsername(buyerName);
+        detailVO.setMerchantName(merchantName);
+        detailVO.setDiscountAmount(order.getTotalAmount().subtract(order.getPayAmount()));
+
+        //查物流
+        if (Objects.equals(order.getStatus(), ORDER_SHIPPED) || Objects.equals(order.getStatus(), COMPLETED)) {
+            Logistics logistics = logisticsMapper.selectByOrderId(order.getId());
+            if (logistics != null) {
+                UserLogisticsVO logisticsVO = new UserLogisticsVO();
+                BeanUtils.copyProperties(logistics, logisticsVO);
+                detailVO.setLogistics(logisticsVO);
+            }
+        }
+        //查优惠券使用情况
+        if (detailVO.getDiscountAmount().compareTo(BigDecimal.ZERO) > 0) {
+            UserCoupon userCoupon = userCouponMapper.selectByOrderId(order.getId());
+            if (userCoupon != null) {
+                Coupon coupon = couponMapper.selectById(userCoupon.getCouponId());
+                if (coupon != null) {
+                    OrderCouponVO couponVO = new OrderCouponVO();
+                    couponVO.setCouponName(coupon.getName());
+                    couponVO.setType(coupon.getType());
+                    couponVO.setValue(coupon.getValue());
+                    detailVO.setCouponInfo(couponVO);
+                }
+            }
+        }
+
+        //查找订单项
+        List<OrderItem> itemList = orderItemMapper.selectByOrderId(order.getId());
+        List<OrderItemVO> itemVOList = new ArrayList<>();
+        for (OrderItem item : itemList) {
+            OrderItemVO orderItemVO = new OrderItemVO();
+            BeanUtils.copyProperties(item,orderItemVO);
+            itemVOList.add(orderItemVO);
+        }
+        detailVO.setItems(itemVOList);
+        return detailVO;
     }
 
     /**

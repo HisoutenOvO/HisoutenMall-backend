@@ -430,6 +430,28 @@ public class SeckillServiceImpl implements SeckillService {
     }
 
     /**
+     * 管理端查询秒杀活动详情
+     * @param activityId 活动id
+     * @return 返回值
+     */
+    @Override
+    public AdminSeckillActivityDetailVO adminActivityDetailQuery(Long activityId) {
+        SeckillActivity seckillActivity = seckillActivityMapper.selectById(activityId);
+        if(seckillActivity == null){
+            throw new BizException(ACTIVITY_NOT_FOUND);
+        }
+        AdminSeckillActivityDetailVO detailVO = new AdminSeckillActivityDetailVO();
+        BeanUtils.copyProperties(seckillActivity,detailVO);
+        detailVO.setMerchantName(merchantProfileService.getMerchantNameByMerchantId(seckillActivity.getMerchantId()));
+        //查询秒杀商品列表
+        List<SeckillProductDetailBO> boList = seckillProductMapper.selectSkusByActivityId(activityId);
+        List<MerchantSeckillProductVO> productItemVOList = BeanUtil.copyToList(boList,MerchantSeckillProductVO.class);
+        //拼装商品列表
+        detailVO.setProducts(productItemVOList);
+        return detailVO;
+    }
+
+    /**
      * 抽取公共方法——校验活动归属及是否存在
      * @param merchantId 商家id
      * @param activityId 活动id

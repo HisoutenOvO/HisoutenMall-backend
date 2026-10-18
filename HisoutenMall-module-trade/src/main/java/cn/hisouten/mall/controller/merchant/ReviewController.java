@@ -6,6 +6,7 @@ import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.dto.review.ReviewPageQueryDTO;
 import cn.hisouten.mall.pojo.vo.review.MerchantReviewPageResultVO;
 import cn.hisouten.mall.pojo.vo.review.MerchantReviewStatisticsVO;
+import cn.hisouten.mall.pojo.vo.review.ReviewDetailVO;
 import cn.hisouten.mall.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,6 +38,17 @@ public class ReviewController {
         log.info("商家:{} 分页查询自己的评价记录",merchantId);
         PageResult<MerchantReviewPageResultVO> pageResult = reviewService.merchantPageQuery(merchantId,pageQueryDTO);
         return Result.success(pageResult);
+    }
+
+
+
+    @GetMapping("/{reviewId}")
+    @Operation(summary = "查询评价详情")
+    public Result<ReviewDetailVO> detailQuery(@PathVariable Long reviewId){
+        Long merchantId = StpUtil.getLoginIdAsLong();
+        log.info("商家:{} 查询评价详情:{} ",merchantId,reviewId);
+        ReviewDetailVO detailVO = reviewService.detailQuery(merchantId,reviewId);
+        return Result.success(detailVO);
     }
 
     /**

@@ -75,4 +75,12 @@ public interface ReviewService {
      * @param reviewId 评价id
      */
     void adminDeleteReview(Long adminId, Long reviewId);
+
+    /**
+     * 用户端查询评价详情
+     * @param userId 商家id
+     * @param reviewId 评价id
+     * @return 返回值
+     */
+    ReviewDetailVO detailQuery(Long userId, Long reviewId);
 }

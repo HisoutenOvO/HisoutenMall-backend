@@ -7,6 +7,7 @@ import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.dto.review.UserReviewAddDTO;
 import cn.hisouten.mall.pojo.dto.review.ReviewPageQueryDTO;
+import cn.hisouten.mall.pojo.vo.review.ReviewDetailVO;
 import cn.hisouten.mall.pojo.vo.review.UserPendingReviewPageResultVO;
 import cn.hisouten.mall.pojo.vo.review.UserReviewPageResultVO;
 import cn.hisouten.mall.pojo.vo.review.UserSelfReviewPageResultVO;
@@ -39,6 +40,20 @@ public class ReviewController {
         log.info("用户:{} 新增评价",userId);
         reviewService.addReview(userId,addDTO);
         return Result.success();
+    }
+
+    /**
+     * 查询评价详情
+     * @param reviewId 评价id
+     * @return 返回值
+     */
+    @GetMapping("/{reviewId}")
+    @Operation(summary = "查询评价详情")
+    public Result<ReviewDetailVO> detailQuery(@PathVariable Long reviewId){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 查询评价详情:{}",userId,reviewId);
+        ReviewDetailVO detailVO = reviewService.detailQuery(userId,reviewId);
+        return Result.success(detailVO);
     }
 
     /**

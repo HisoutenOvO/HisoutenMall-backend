@@ -97,4 +97,11 @@ public interface SeckillService {
      * @return 返回值
      */
     PageResult<AdminSeckillActivityPageResultVO> pageQueryAdmin(Long adminId, AdminSeckillActivityPageQueryDTO pageQueryDTO);
+
+    /**
+     * 管理端查询秒杀活动详情
+     * @param activityId 活动id
+     * @return 返回值
+     */
+    AdminSeckillActivityDetailVO adminActivityDetailQuery(Long activityId);
 }

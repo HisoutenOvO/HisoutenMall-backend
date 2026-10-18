@@ -176,4 +176,11 @@ public interface ProductService {
      * @param productId 商品id
      */
     void offlineProduct(Long adminId, Long productId);
+
+    /**
+     * 管理员查询商品详情
+     * @param productId 商品id
+     * @return 返回值
+     */
+    AdminProductDetailVO adminDetailQuery(Long productId);
 }

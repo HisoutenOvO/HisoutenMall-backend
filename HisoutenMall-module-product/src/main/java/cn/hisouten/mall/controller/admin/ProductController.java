@@ -5,6 +5,7 @@ import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.pojo.dto.product.AdminProductPageQueryDTO;
+import cn.hisouten.mall.pojo.vo.product.AdminProductDetailVO;
 import cn.hisouten.mall.pojo.vo.product.AdminProductPageResultVO;
 import cn.hisouten.mall.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,6 +41,24 @@ public class ProductController {
         log.info("管理员:{} 分页查询商品",adminId);
         PageResult<AdminProductPageResultVO> pageResult = productService.adminPageQuery(adminId,pageQueryDTO);
         return Result.success(pageResult);
+    }
+
+
+    /**
+     * 查询商品详情
+     * @param productId 商品id
+     * @return 返回值
+     */
+    @GetMapping("/{productId}")
+    @Operation(summary = "管理员查询商品详情")
+    public Result<AdminProductDetailVO> detailQuery(@PathVariable Long productId){
+        if (!StpUtil.hasRole(ADMIN)) {
+            throw new BizException(NO_PERMISSION);
+        }
+        Long adminId = StpUtil.getLoginIdAsLong();
+        log.info("管理员:{} 查询商品:{} 详情",adminId,productId);
+        AdminProductDetailVO detailVO = productService.adminDetailQuery(productId);
+        return Result.success(detailVO);
     }
 
     /**

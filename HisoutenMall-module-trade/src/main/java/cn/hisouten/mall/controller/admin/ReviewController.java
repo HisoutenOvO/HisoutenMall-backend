@@ -6,6 +6,7 @@ import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.pojo.dto.review.AdminReviewPageQueryDTO;
 import cn.hisouten.mall.pojo.vo.review.AdminReviewPageResultVO;
+import cn.hisouten.mall.pojo.vo.review.ReviewDetailVO;
 import cn.hisouten.mall.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,6 +41,23 @@ public class ReviewController {
         log.info("管理员:{} 分页查询全平台评价",adminId);
         PageResult<AdminReviewPageResultVO> pageResult = reviewService.adminPageQuery(adminId,pageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    /**
+     * 查询评价详情
+     * @param reviewId 评价id
+     * @return 返回值
+     */
+    @GetMapping("/{reviewId}")
+    @Operation(summary = "查询评价详情")
+    public Result<ReviewDetailVO> detailQuery(@PathVariable Long reviewId){
+        if (!StpUtil.hasRole(ADMIN)) {
+            throw new BizException(NO_PERMISSION);
+        }
+        Long adminId = StpUtil.getLoginIdAsLong();
+        log.info("管理员:{} 查询评价详情:{} ",adminId,reviewId);
+        ReviewDetailVO detailVO = reviewService.detailQuery(adminId,reviewId);
+        return Result.success(detailVO);
     }
 
     /**

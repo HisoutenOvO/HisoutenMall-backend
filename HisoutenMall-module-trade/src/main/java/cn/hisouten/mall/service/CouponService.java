@@ -77,4 +77,11 @@ public interface CouponService {
      * @return 返回值
      */
     PageResult<AdminCouponPageResultVO> adminPageQuery(Long adminId, AdminCouponPageQueryDTO pageQueryDTO);
+
+    /**
+     * 管理员查询优惠券详情
+     * @param couponId 优惠券id
+     * @return 返回值
+     */
+    AdminCouponDetailVO adminDetailQuery(Long couponId);
 }

@@ -11,13 +11,15 @@ import cn.hisouten.mall.pojo.bo.review.ReviewPageResultBO;
 import cn.hisouten.mall.pojo.dto.review.AdminReviewPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.review.UserReviewAddDTO;
 import cn.hisouten.mall.pojo.dto.review.ReviewPageQueryDTO;
-import cn.hisouten.mall.pojo.entity.Order;
-import cn.hisouten.mall.pojo.entity.OrderItem;
-import cn.hisouten.mall.pojo.entity.Product;
-import cn.hisouten.mall.pojo.entity.ProductReview;
+import cn.hisouten.mall.pojo.entity.*;
 import cn.hisouten.mall.pojo.vo.review.*;
 import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.service.ReviewService;
+import cn.hisouten.mall.user.pojo.entity.User;
+import cn.hisouten.mall.user.pojo.entity.UserProfile;
+import cn.hisouten.mall.user.service.AuthService;
+import cn.hisouten.mall.user.service.MerchantProfileService;
+import cn.hisouten.mall.user.service.UserProfileService;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ import static cn.hisouten.mall.constant.CommonConstant.DEFAULT_RATING;
 import static cn.hisouten.mall.constant.CommonConstant.DEFAULT_REVIEW;
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.RoleConstant.ADMIN_ROLE;
+import static cn.hisouten.mall.constant.RoleConstant.MERCHANT_ROLE;
 import static cn.hisouten.mall.constant.StatusConstant.COMPLETED;
 
 @Service
@@ -45,6 +48,9 @@ public class ReviewServiceImpl implements ReviewService {
     private final OrderItemMapper orderItemMapper;
 
     private final ProductService productService;
+    private final AuthService authService;
+    private final MerchantProfileService merchantProfileService;
+    private final UserProfileService userProfileService;
 
     /**
      * 用户新增评价
@@ -284,5 +290,53 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public void adminDeleteReview(Long adminId, Long reviewId) {
         reviewMapper.deleteById(reviewId);
+    }
+
+    /**
+     * 查询评价详情
+     * @param userId 商家id
+     * @param reviewId 评价id
+     * @return 返回值
+     */
+    @Override
+    public ReviewDetailVO detailQuery(Long userId, Long reviewId) {
+        User user = authService.getUserByUserId(userId);
+        if(user == null){
+            throw new BizException(NO_PERMISSION);
+        }
+        ProductReview review = reviewMapper.selectById(reviewId);
+        if(review == null){
+            throw new BizException(REVIEW_NOT_FOUND);
+        }
+        if(user.getRole() == MERCHANT_ROLE) {
+            Product product = productService.getProductByProductId(review.getProductId());
+            if (product == null || !product.getMerchantId().equals(userId)) {
+                throw new BizException(PRODUCT_NOT_FOUND);
+            }
+        }
+        ReviewDetailVO detailVO = new ReviewDetailVO();
+        BeanUtils.copyProperties(review,detailVO);
+        UserProfile userProfile = userProfileService.getProfileByUserId(review.getUserId());
+        if(userProfile != null){
+            detailVO.setNickname(userProfile.getNickname());
+            detailVO.setAvatar(userProfile.getAvatar());
+        }
+        Product product = productService.getProductByProductId(review.getProductId());
+        if(product == null){
+            throw new BizException(PRODUCT_NOT_FOUND);
+        }
+        detailVO.setProductName(product.getName());
+        List<String> images = StrUtil.split(review.getImage(),",");
+        detailVO.setImages(images);
+        detailVO.setProductImage(product.getMainImage());
+        Order order = orderMapper.selectById(review.getOrderId());
+        if(order == null){
+            throw new BizException(ORDER_NOT_FOUND);
+        }
+        detailVO.setOrderNo(order.getOrderNo());
+        if(user.getRole() != MERCHANT_ROLE) {
+            detailVO.setMerchantName(merchantProfileService.getMerchantNameByMerchantId(order.getMerchantId()));
+        }
+        return detailVO;
     }
 }

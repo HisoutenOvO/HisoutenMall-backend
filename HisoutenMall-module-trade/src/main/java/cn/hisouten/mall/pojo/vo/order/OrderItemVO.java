@@ -5,7 +5,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 /**
- * 用户查询订单项返回值
+ * 通用的查询订单项返回值
  */
 @Data
 public class OrderItemVO {

@@ -6,6 +6,7 @@ import cn.hisouten.mall.pojo.entity.Order;
 import cn.hisouten.mall.pojo.entity.OrderItem;
 import cn.hisouten.mall.pojo.vo.logistics.UserLogisticsVO;
 import cn.hisouten.mall.pojo.vo.order.*;
+import cn.hisouten.mall.pojo.vo.product.AdminProductDetailVO;
 
 
 public interface OrderService {
@@ -112,4 +113,11 @@ public interface OrderService {
      * @param orderNo 订单号
      */
     void receive(Long userId, String orderNo);
+
+    /**
+     * 管理员查询订单详情
+     * @param orderNo 订单号
+     * @return 返回值
+     */
+    AdminOrderDetailVO adminDetailQuery(String orderNo);
 }
