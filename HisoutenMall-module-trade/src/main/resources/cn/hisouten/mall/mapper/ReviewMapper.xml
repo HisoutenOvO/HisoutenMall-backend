@@ -44,4 +44,11 @@
           and r.id is null   -- 未评价
         order by o.finish_time desc
     </select>
+    <select id="selectTotalReviewCount" resultType="java.lang.Long">
+        select count(pr.id)
+        from product_review pr
+        left join product p on p.id = pr.product_id
+        where p.merchant_id = #{merchantId}
+        and pr.deleted = 0
+    </select>
 </mapper>

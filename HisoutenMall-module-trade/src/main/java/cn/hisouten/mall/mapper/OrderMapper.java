@@ -5,6 +5,7 @@ import cn.hisouten.mall.pojo.dto.order.MerchantOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.order.UserOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.entity.Order;
 import cn.hisouten.mall.pojo.vo.order.AdminOrderPageResultVO;
+import cn.hisouten.mall.pojo.vo.order.DailySalesVO;
 import cn.hisouten.mall.pojo.vo.order.MerchantOrderPageResultVO;
 import cn.hisouten.mall.pojo.vo.order.UserOrderPageResultVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -13,6 +14,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -58,4 +60,55 @@ public interface OrderMapper extends BaseMapper<Order> {
      * @return 返回值
      */
     Page<AdminOrderPageResultVO> AdminPageQuery(Page<AdminOrderPageResultVO> page,@Param("dto") AdminOrderPageQueryDTO adminOrderPageQueryDTO);
+
+    /**
+     * 获取商家今日营业额
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    BigDecimal selectTodaySales(Long merchantId);
+
+
+    /**
+     * 获取商家今日订单数
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    Long selectTodayOrderCount(Long merchantId);
+
+    /**
+     * 获取商家累计销售额
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    BigDecimal selectTotalSales(Long merchantId);
+
+    /**
+     * 获取商家待发货数量
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    @Select("select count(*) from `order` where merchant_id = #{merchantId} and status = 1")
+    Long selectPendingShipCount(Long merchantId);
+
+    /**
+     * 获取今日平台总销售额
+     * @return 返回值
+     */
+    @Select("select ifnull(sum(pay_amount), 0) from `order` where status in (1,2,3) and date(create_time) = curdate()")
+    BigDecimal selectTodayPlatformSales();
+
+    /**
+     * 获取今日平台总订单数
+     * @return 返回值
+     */
+    @Select("select count(*) from `order` where date(create_time) = curdate()")
+    Long selectTodayPlatformOrderCount();
+
+    /**
+     * 获取近7天销售趋势
+     * @return 返回值
+     */
+    List<DailySalesVO> getSalesTrend();
+
 }

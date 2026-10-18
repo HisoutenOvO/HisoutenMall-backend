@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.RedisConstant.*;
-import static cn.hisouten.mall.constant.RoleConstant.ADMIN_ROLE;
 import static cn.hisouten.mall.constant.StatusConstant.*;
 
 @Service
@@ -108,7 +107,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
-     * 用户查询商家详情回源方法
+     * 商家查询商家详情回源方法
      * @param productId 商家id
      * @return 返回商家信息
      */
@@ -352,166 +351,6 @@ public class ProductServiceImpl implements ProductService {
         return product;
     }
 
-
-    /**
-     * 通过商家id下架商家所有商品
-     * @param merchantId 商家id
-     */
-    @Override
-    public void disableAllProductByMerchantId(Long merchantId) {
-        productMapper.removeAllProductsByMerchantId(merchantId);
-    }
-
-    /**
-     * 根据skuId查询sku
-     * @param skuId skuId
-     * @return 返回值
-     */
-    @Override
-    public ProductSku getSkuBySkuId(Long skuId) {
-        return productSkuMapper.selectById(skuId);
-    }
-
-    /**
-     * 根据商品id查询商品
-     * @param productId 商品id
-     * @return 返回值
-     */
-    @Override
-    public Product getProductByProductId(Long productId) {
-        return productMapper.selectById(productId);
-    }
-
-    /**
-     * 扣减sku库存
-     * @param skuId skuId
-     * @param quantity 扣减数量
-     * @return 返回影响行数
-     */
-    @Override
-    public int deductStock(Long skuId, Integer quantity) {
-        return productSkuMapper.deductStock(skuId,quantity);
-    }
-
-
-    /**
-     * 回滚库存
-     * @param skuId skuId
-     * @param quantity 回滚数量
-     */
-    @Override
-    public void restoreStock(Long skuId, Integer quantity) {
-        productSkuMapper.restoreStock(skuId,quantity);
-    }
-
-    /**
-     * 根据skuIds获取sku列表
-     * @param skuIds skuId集合
-     * @return 返回sku列表
-     */
-    @Override
-    public List<ProductSku> getSkuListBySkuIds(List<Long> skuIds) {
-        return productSkuMapper.selectBatchIds(skuIds);
-    }
-
-    /**
-     * 管理端分页查询商品
-     * @param adminId 管理员id
-     * @param pageQueryDTO 条件查询参数
-     * @return 返回值
-     */
-    @Override
-    public PageResult<AdminProductPageResultVO> adminPageQuery(Long adminId, AdminProductPageQueryDTO pageQueryDTO) {
-        Page<ProductPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
-        ProductPageQueryBO productPageQueryBO = new ProductPageQueryBO();
-        BeanUtils.copyProperties(pageQueryDTO,productPageQueryBO);
-        // 如果前端没传deleted条件，默认查未删除的
-        if (productPageQueryBO.getDeleted() == null) {
-            productPageQueryBO.setDeleted(DISABLED);
-        }
-        Page<ProductPageResultBO> result = productMapper.pageQuery(page, productPageQueryBO);
-        long total = result.getTotal();
-        List<AdminProductPageResultVO> records = new ArrayList<>();
-        for (ProductPageResultBO bo : result.getRecords()) {
-            AdminProductPageResultVO vo = AdminProductPageResultVO.builder()
-                    .id(bo.getId())
-                    .merchantId(bo.getMerchantId())
-                    .categoryId(bo.getCategoryId())
-                    .brandId(bo.getBrandId())
-                    .name(bo.getName())
-                    .merchantName(bo.getMerchantName())
-                    .categoryName(bo.getCategoryName())
-                    .brandName(bo.getBrandName())
-                    .mainImage(bo.getMainImage())
-                    .status(bo.getStatus())
-                    .updateTime(bo.getUpdateTime())
-                    .minPrice(bo.getMinPrice())
-                    .totalStock(bo.getTotalStock())
-                    .deleted(bo.getDeleted())
-                    .build();
-            records.add(vo);
-        }
-        return new PageResult<>(total, records);
-    }
-
-    /**
-     * 管理员强制下架商品
-     * @param adminId 管理员id
-     * @param productId 商品id
-     */
-    @Override
-    public void offlineProduct(Long adminId, Long productId) {
-        Product product = productMapper.selectById(productId);
-        if(product == null){
-            throw new BizException(PRODUCT_NOT_FOUND);
-        }
-        if(product.getStatus() != ENABLED){
-            throw new BizException(PRODUCT_HAS_DISABLED);
-        }
-        product.setStatus(DISABLED);
-        productMapper.updateById(product);
-    }
-
-    /**
-     * 管理员查询商品详情
-     * @param productId 商品id
-     * @return 返回值
-     */
-    @Override
-    public AdminProductDetailVO adminDetailQuery(Long productId) {
-        Product product = productMapper.selectByIdIgnoreLogic(productId);
-        //如果商品不存在或已被逻辑删除，抛出异常
-        if(product == null) {
-            throw new BizException(PRODUCT_NOT_FOUND);
-        }
-        AdminProductDetailVO adminProductDetailVO = new AdminProductDetailVO();
-        BeanUtils.copyProperties(product, adminProductDetailVO);
-        String categoryName = categoryService.getCategoryNameByCategoryId(product.getCategoryId());
-        String merchantName = productMapper.getMerchantNameByMerchantId(product.getMerchantId());
-        String brandName = brandService.getBrandNameByBrandId(product.getBrandId());
-        adminProductDetailVO.setBrandName(brandName);
-        adminProductDetailVO.setCategoryName(categoryName);
-        adminProductDetailVO.setMerchantName(merchantName);
-
-        //拼装skuList
-        List<ProductSku> skuList = productSkuMapper.selectByProductId(productId);
-        List<AdminProductSkuVO> skuVOList = new ArrayList<>();
-        for (ProductSku sku : skuList) {
-            AdminProductSkuVO skuVO = new AdminProductSkuVO();
-            skuVO.setId(sku.getId());
-            skuVO.setSpecs(sku.getSpecs());
-            skuVO.setPrice(sku.getPrice());
-            skuVO.setStock(sku.getStock());
-            skuVO.setImage(sku.getImage());
-            skuVO.setStatus(sku.getStatus());
-            skuVO.setCreateTime(sku.getCreateTime());
-            skuVO.setUpdateTime(sku.getUpdateTime());
-            skuVO.setDeleted(sku.getDeleted());
-            skuVOList.add(skuVO);
-        }
-        adminProductDetailVO.setSkuList(skuVOList);
-        return adminProductDetailVO;
-    }
     //=======================================用户端逻辑================================================
 
     /**
@@ -610,6 +449,106 @@ public class ProductServiceImpl implements ProductService {
         userProductDetailVO.setSkuList(skuVOList);
 
         return userProductDetailVO;
+    }
+
+    //=======================================管理端逻辑================================================
+    /**
+     * 管理端分页查询商品
+     * @param adminId 管理员id
+     * @param pageQueryDTO 条件查询参数
+     * @return 返回值
+     */
+    @Override
+    public PageResult<AdminProductPageResultVO> adminPageQuery(Long adminId, AdminProductPageQueryDTO pageQueryDTO) {
+        Page<ProductPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        ProductPageQueryBO productPageQueryBO = new ProductPageQueryBO();
+        BeanUtils.copyProperties(pageQueryDTO,productPageQueryBO);
+        // 如果前端没传deleted条件，默认查未删除的
+        if (productPageQueryBO.getDeleted() == null) {
+            productPageQueryBO.setDeleted(DISABLED);
+        }
+        Page<ProductPageResultBO> result = productMapper.pageQuery(page, productPageQueryBO);
+        long total = result.getTotal();
+        List<AdminProductPageResultVO> records = new ArrayList<>();
+        for (ProductPageResultBO bo : result.getRecords()) {
+            AdminProductPageResultVO vo = AdminProductPageResultVO.builder()
+                    .id(bo.getId())
+                    .merchantId(bo.getMerchantId())
+                    .categoryId(bo.getCategoryId())
+                    .brandId(bo.getBrandId())
+                    .name(bo.getName())
+                    .merchantName(bo.getMerchantName())
+                    .categoryName(bo.getCategoryName())
+                    .brandName(bo.getBrandName())
+                    .mainImage(bo.getMainImage())
+                    .status(bo.getStatus())
+                    .updateTime(bo.getUpdateTime())
+                    .minPrice(bo.getMinPrice())
+                    .totalStock(bo.getTotalStock())
+                    .deleted(bo.getDeleted())
+                    .build();
+            records.add(vo);
+        }
+        return new PageResult<>(total, records);
+    }
+
+    /**
+     * 管理员强制下架商品
+     * @param adminId 管理员id
+     * @param productId 商品id
+     */
+    @Override
+    public void offlineProduct(Long adminId, Long productId) {
+        Product product = productMapper.selectById(productId);
+        if(product == null){
+            throw new BizException(PRODUCT_NOT_FOUND);
+        }
+        if(product.getStatus() != ENABLED){
+            throw new BizException(PRODUCT_HAS_DISABLED);
+        }
+        product.setStatus(DISABLED);
+        productMapper.updateById(product);
+    }
+
+    /**
+     * 管理员查询商品详情
+     * @param productId 商品id
+     * @return 返回值
+     */
+    @Override
+    public AdminProductDetailVO adminDetailQuery(Long productId) {
+        Product product = productMapper.selectByIdIgnoreLogic(productId);
+        //如果商品不存在或已被逻辑删除，抛出异常
+        if(product == null) {
+            throw new BizException(PRODUCT_NOT_FOUND);
+        }
+        AdminProductDetailVO adminProductDetailVO = new AdminProductDetailVO();
+        BeanUtils.copyProperties(product, adminProductDetailVO);
+        String categoryName = categoryService.getCategoryNameByCategoryId(product.getCategoryId());
+        String merchantName = productMapper.getMerchantNameByMerchantId(product.getMerchantId());
+        String brandName = brandService.getBrandNameByBrandId(product.getBrandId());
+        adminProductDetailVO.setBrandName(brandName);
+        adminProductDetailVO.setCategoryName(categoryName);
+        adminProductDetailVO.setMerchantName(merchantName);
+
+        //拼装skuList
+        List<ProductSku> skuList = productSkuMapper.selectByProductId(productId);
+        List<AdminProductSkuVO> skuVOList = new ArrayList<>();
+        for (ProductSku sku : skuList) {
+            AdminProductSkuVO skuVO = new AdminProductSkuVO();
+            skuVO.setId(sku.getId());
+            skuVO.setSpecs(sku.getSpecs());
+            skuVO.setPrice(sku.getPrice());
+            skuVO.setStock(sku.getStock());
+            skuVO.setImage(sku.getImage());
+            skuVO.setStatus(sku.getStatus());
+            skuVO.setCreateTime(sku.getCreateTime());
+            skuVO.setUpdateTime(sku.getUpdateTime());
+            skuVO.setDeleted(sku.getDeleted());
+            skuVOList.add(skuVO);
+        }
+        adminProductDetailVO.setSkuList(skuVOList);
+        return adminProductDetailVO;
     }
 
     //=======================================商品SKU逻辑================================================
@@ -796,4 +735,76 @@ public class ProductServiceImpl implements ProductService {
         return sku;
     }
 
+    //=======================================向其他模块提供的接口================================================
+    /**
+     * 获取商家在售商品数
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    @Override
+    public Long getOnSaleProductCount(Long merchantId) {
+        return productMapper.selectOnSaleProductCount(merchantId);
+    }
+
+
+    /**
+     * 通过商家id下架商家所有商品
+     * @param merchantId 商家id
+     */
+    @Override
+    public void disableAllProductByMerchantId(Long merchantId) {
+        productMapper.removeAllProductsByMerchantId(merchantId);
+    }
+
+    /**
+     * 根据skuId查询sku
+     * @param skuId skuId
+     * @return 返回值
+     */
+    @Override
+    public ProductSku getSkuBySkuId(Long skuId) {
+        return productSkuMapper.selectById(skuId);
+    }
+
+    /**
+     * 根据商品id查询商品
+     * @param productId 商品id
+     * @return 返回值
+     */
+    @Override
+    public Product getProductByProductId(Long productId) {
+        return productMapper.selectById(productId);
+    }
+
+    /**
+     * 扣减sku库存
+     * @param skuId skuId
+     * @param quantity 扣减数量
+     * @return 返回影响行数
+     */
+    @Override
+    public int deductStock(Long skuId, Integer quantity) {
+        return productSkuMapper.deductStock(skuId,quantity);
+    }
+
+
+    /**
+     * 回滚库存
+     * @param skuId skuId
+     * @param quantity 回滚数量
+     */
+    @Override
+    public void restoreStock(Long skuId, Integer quantity) {
+        productSkuMapper.restoreStock(skuId,quantity);
+    }
+
+    /**
+     * 根据skuIds获取sku列表
+     * @param skuIds skuId集合
+     * @return 返回sku列表
+     */
+    @Override
+    public List<ProductSku> getSkuListBySkuIds(List<Long> skuIds) {
+        return productSkuMapper.selectBatchIds(skuIds);
+    }
 }

@@ -48,4 +48,11 @@ public interface ReviewMapper extends BaseMapper<ProductReview> {
      */
     @Select("select * from product_review where product_id = #{productId} and deleted = 0")
     List<ProductReview> selectByProductId(Long productId);
+
+    /**
+     * 获取商家评价总数
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    Long selectTotalReviewCount(Long merchantId);
 }

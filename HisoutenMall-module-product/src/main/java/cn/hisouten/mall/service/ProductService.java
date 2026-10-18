@@ -183,4 +183,12 @@ public interface ProductService {
      * @return 返回值
      */
     AdminProductDetailVO adminDetailQuery(Long productId);
+
+    /**
+     * 获取商家在售商品数
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    Long getOnSaleProductCount(Long merchantId);
+
 }

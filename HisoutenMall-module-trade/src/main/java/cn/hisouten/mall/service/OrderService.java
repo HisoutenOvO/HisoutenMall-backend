@@ -6,7 +6,10 @@ import cn.hisouten.mall.pojo.entity.Order;
 import cn.hisouten.mall.pojo.entity.OrderItem;
 import cn.hisouten.mall.pojo.vo.logistics.UserLogisticsVO;
 import cn.hisouten.mall.pojo.vo.order.*;
-import cn.hisouten.mall.pojo.vo.product.AdminProductDetailVO;
+import org.apache.ibatis.annotations.Select;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 
 public interface OrderService {
@@ -120,4 +123,52 @@ public interface OrderService {
      * @return 返回值
      */
     AdminOrderDetailVO adminDetailQuery(String orderNo);
+
+    /**
+     * 获取商家今日营业额
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    BigDecimal getTodaySales(Long merchantId);
+
+
+    /**
+     * 获取商家今日订单数
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    Long getTodayOrderCount(Long merchantId);
+
+    /**
+     * 获取商家累计销售额
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    BigDecimal getTotalSales(Long merchantId);
+
+    /**
+     * 获取商家待发货数量
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    @Select("select count(*) from `order` where merchant_id = #{merchantId} and status = 1")
+    Long getPendingShipCount(Long merchantId);
+
+    /**
+     * 获取今日平台总销售额
+     * @return 返回值
+     */
+    BigDecimal getTodayPlatformSales();
+
+    /**
+     * 获取今日平台总订单数
+     * @return 返回值
+     */
+    Long getTodayPlatformOrders();
+
+    /**
+     * 获取近7日销售趋势
+     * @return 返回值
+     */
+    List<DailySalesVO> getSalesTrend();
 }

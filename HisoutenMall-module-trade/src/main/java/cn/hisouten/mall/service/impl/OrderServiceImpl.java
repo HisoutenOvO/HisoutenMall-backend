@@ -13,10 +13,8 @@ import cn.hisouten.mall.pojo.entity.*;
 import cn.hisouten.mall.pojo.vo.coupon.OrderCouponVO;
 import cn.hisouten.mall.pojo.vo.logistics.UserLogisticsVO;
 import cn.hisouten.mall.pojo.vo.order.*;
-import cn.hisouten.mall.pojo.vo.product.AdminProductDetailVO;
 import cn.hisouten.mall.service.OrderService;
 import cn.hisouten.mall.service.ProductService;
-import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
 import cn.hisouten.mall.user.pojo.entity.UserAddress;
 import cn.hisouten.mall.user.service.MerchantProfileService;
 import cn.hisouten.mall.user.service.UserAddressService;
@@ -640,6 +638,73 @@ public class OrderServiceImpl implements OrderService {
         }
         detailVO.setItems(itemVOList);
         return detailVO;
+    }
+
+    /**
+     * 获取商家今日营业额
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    @Override
+    public BigDecimal getTodaySales(Long merchantId) {
+        return orderMapper.selectTodaySales(merchantId);
+    }
+
+    /**
+     * 获取商家今日订单数
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    @Override
+    public Long getTodayOrderCount(Long merchantId) {
+        return orderMapper.selectTodayOrderCount(merchantId);
+    }
+
+    /**
+     * 获取商家累计销售额
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    @Override
+    public BigDecimal getTotalSales(Long merchantId) {
+        return orderMapper.selectTodaySales(merchantId);
+    }
+
+    /**
+     * 获取商家待发货数量
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    @Override
+    public Long getPendingShipCount(Long merchantId) {
+        return orderMapper.selectPendingShipCount(merchantId);
+    }
+
+    /**
+     * 获取今日平台总销售额
+     * @return 返回值
+     */
+    @Override
+    public BigDecimal getTodayPlatformSales() {
+        return orderMapper.selectTodayPlatformSales();
+    }
+
+    /**
+     * 获取今日平台总订单数
+     * @return 返回值
+     */
+    @Override
+    public Long getTodayPlatformOrders() {
+        return orderMapper.selectTodayPlatformOrderCount();
+    }
+
+    /**
+     * 获取近7日销售趋势
+     * @return 返回值
+     */
+    @Override
+    public List<DailySalesVO> getSalesTrend() {
+        return orderMapper.getSalesTrend();
     }
 
     /**

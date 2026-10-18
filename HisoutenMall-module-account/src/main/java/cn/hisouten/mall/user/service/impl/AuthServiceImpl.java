@@ -243,4 +243,40 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(cn.dev33.satoken.secure.BCrypt.hashpw(passwordUpdateDTO.getNewPwd()));
         authMapper.updateById(user);
     }
+
+    /**
+     * 获取总用户数
+     * @return 返回值
+     */
+    @Override
+    public User getUserByUserId(Long userId) {
+        return authMapper.getUserByUserId(userId);
+    }
+
+    /**
+     * 获取总用户数
+     * @return 返回值
+     */
+    @Override
+    public Long getTotalUserCount() {
+        return authMapper.countTotalUsers();
+    }
+
+    /**
+     * 获取总商家数
+     * @return 返回值
+     */
+    @Override
+    public Long getTotalMerchantCount() {
+        return authMapper.countTotalMerchants();
+    }
+
+    /**
+     * 获取待审核商家数
+     * @return 返回值
+     */
+    @Override
+    public Long getPendingMerchantAudit() {
+        return authMapper.countPendingMerchants();
+    }
 }

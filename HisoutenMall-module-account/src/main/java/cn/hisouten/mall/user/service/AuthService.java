@@ -64,6 +64,24 @@ public interface AuthService {
      * @param userId 用户id
      * @return 返回值
      */
-    @Select("select * from user where id = #{userId}")
     User getUserByUserId(Long userId);
+
+    /**
+     * 获取总用户数
+     * @return 返回值
+     */
+    Long getTotalUserCount();
+
+
+    /**
+     * 获取总商家数
+     * @return 返回值
+     */
+    Long getTotalMerchantCount();
+
+    /**
+     * 获取待审核商家数
+     * @return
+     */
+    Long getPendingMerchantAudit();
 }

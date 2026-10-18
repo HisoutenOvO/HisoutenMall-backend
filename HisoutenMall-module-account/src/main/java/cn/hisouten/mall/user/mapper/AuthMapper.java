@@ -22,4 +22,33 @@ public interface AuthMapper extends BaseMapper<User> {
      */
     @Select("select username from user where username = #{username}")
     String selectExistedUserName(String username);
+
+    /**
+     * 查询用户总数
+     * @return 返回值
+     */
+    @Select("select count(*) from user where role = 1 and deleted = 0")
+    Long countTotalUsers();
+
+    /**
+     * 查询待审核商家总数
+     * @return 返回值
+     */
+    @Select("select count(*) from merchant_profile where audit_status = 0")
+    Long countPendingMerchants();
+
+    /**
+     * 根据用户id查询用户
+     * @param userId 用户id
+     * @return 返回值
+     */
+    @Select("select * from user where id = #{userId}")
+    User getUserByUserId(Long userId);
+
+    /**
+     * 查询商家总数
+     * @return 返回值
+     */
+    @Select("select count(*) from user where role = 2 and deleted = 0")
+    Long countTotalMerchants();
 }

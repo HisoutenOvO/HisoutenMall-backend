@@ -83,4 +83,11 @@ public interface ReviewService {
      * @return 返回值
      */
     ReviewDetailVO detailQuery(Long userId, Long reviewId);
+
+    /**
+     * 获取商家评价总数
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    Long getTotalReviewCount(Long merchantId);
 }

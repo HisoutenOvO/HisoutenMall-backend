@@ -60,4 +60,24 @@
             order by m.create_time desc
         </where>
     </select>
+    <select id="selectTodaySales" resultType="java.math.BigDecimal">
+        select ifnull(sum(pay_amount),0)
+        from `order`
+        where merchant_id = #{merchantId} and status in (1,2,3) and date(create_time) = curdate()
+    </select>
+    <select id="selectTodayOrderCount" resultType="java.lang.Long">
+        select count(*) from `order`
+        where merchant_id = #{mercahntId} and date(create_time) = curdate()
+    </select>
+    <select id="selectTotalSales" resultType="java.math.BigDecimal">
+        select ifnull(sum(pay_amount),0)
+        from `order`
+        where merchant_id = #{merchantId} and status in (1,2,3)
+    </select>
+    <select id="getSalesTrend" resultType="cn.hisouten.mall.pojo.vo.order.DailySalesVO">
+        select date_format(create_time, '%m-%d') as date, ifnull(sum(pay_amount), 0) as amount
+        from `order` where status in (1,2,3) and create_time >= date_sub(curdate(), interval 7 day)
+        group by date(create_time) order by date(create_time)
+    </select>
+
 </mapper>

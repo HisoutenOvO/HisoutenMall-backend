@@ -8,7 +8,6 @@ import cn.hisouten.mall.pojo.bo.product.ProductPageResultBO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.*;
-import org.springframework.stereotype.Service;
 
 @Mapper
 public interface ProductMapper extends BaseMapper<Product> {
@@ -103,4 +102,12 @@ public interface ProductMapper extends BaseMapper<Product> {
      */
     @Select("select audit_status from merchant_profile where user_id = #{merchantId}")
     Integer selectMerchantAuditStatus(Long merchantId);
+
+    /**
+     * 查找商家在售商品数
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    @Select("select count(*) from product where merchant_id = #{merchantId} and status = 1 and deleted = 0")
+    Long selectOnSaleProductCount(Long merchantId);
 }

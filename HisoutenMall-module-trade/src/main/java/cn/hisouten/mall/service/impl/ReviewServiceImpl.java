@@ -339,4 +339,14 @@ public class ReviewServiceImpl implements ReviewService {
         }
         return detailVO;
     }
+
+    /**
+     * 获取商家评价总数
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    @Override
+    public Long getTotalReviewCount(Long merchantId) {
+        return reviewMapper.selectTotalReviewCount(merchantId);
+    }
 }
