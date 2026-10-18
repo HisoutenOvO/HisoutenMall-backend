@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.RoleConstant.*;
 import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
+import static cn.hisouten.mall.constant.StatusConstant.PENDING_AUDIT;
 
 @Service
 @RequiredArgsConstructor
@@ -85,7 +86,7 @@ public class AuthServiceImpl implements AuthService {
         profile.setUserId(user.getId());
         profile.setShopName(merchantRegisterDTO.getShopName());
         profile.setContactPhone(merchantRegisterDTO.getContactPhone());
-        profile.setAuditStatus(ENABLED); //默认通过，后期改成管理员审核
+        profile.setAuditStatus(PENDING_AUDIT);
         merchantProfileMapper.insert(profile);
     }
 

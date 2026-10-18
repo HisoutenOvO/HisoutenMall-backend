@@ -95,4 +95,12 @@ public interface ProductMapper extends BaseMapper<Product> {
      */
     @Update("update product set status = 0 where merchant_id = #{merchanId}")
     void removeAllProductsByMerchantId(Long merchantId);
+
+    /**
+     * 根据商家id查询商家状态
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    @Select("select audit_status from merchant_profile where user_id = #{merchantId}")
+    Integer selectMerchantAuditStatus(Long merchantId);
 }

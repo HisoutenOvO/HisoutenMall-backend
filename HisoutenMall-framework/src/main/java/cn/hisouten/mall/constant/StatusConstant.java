@@ -43,4 +43,12 @@ public class StatusConstant {
 
     public static final int EXPIRED = 2; //已过期
 
+
+    //审核状态
+    public static final int PENDING_AUDIT = 0; //待审核
+
+    public static final int PASSED = 1; //通过
+
+    public static final int REJECT = 2; //驳回
+
 }

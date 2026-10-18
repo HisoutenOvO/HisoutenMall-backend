@@ -31,8 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.RedisConstant.*;
-import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
-import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
+import static cn.hisouten.mall.constant.StatusConstant.*;
 
 @Service
 @RequiredArgsConstructor
@@ -153,6 +152,11 @@ public class ProductServiceImpl implements ProductService {
         String existedProductName = productMapper.selectExistedProductName(merchantProductAddDTO.getName(),StpUtil.getLoginIdAsLong(),null);
         if(existedProductName != null){
             throw new BizException(PRODUCT_NAME_ALREADY_EXIST);
+        }
+        // 校验商家是否审核通过
+        Integer auditStatus = productMapper.selectMerchantAuditStatus(StpUtil.getLoginIdAsLong());
+        if (auditStatus == null || auditStatus != PASSED) {
+            throw new BizException(MERCHANT_AUDIT_STATUS_INVALID);
         }
         BeanUtils.copyProperties(merchantProductAddDTO,product);
         product.setMerchantId(StpUtil.getLoginIdAsLong());
