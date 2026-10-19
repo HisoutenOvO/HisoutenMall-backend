@@ -22,6 +22,7 @@ public class SaTokenConfig implements WebMvcConfigurer {
                     .notMatch("/error", "/favicon.ico")
                     .notMatch("/doc.html", "/webjars/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**")
                     .notMatch("/user/product/**", "/user/category/**")
+                    .notMatch("/**/pay/**")
                     .check(r -> StpUtil.checkLogin());
 
             // 角色路由：排除各自登录注册接口

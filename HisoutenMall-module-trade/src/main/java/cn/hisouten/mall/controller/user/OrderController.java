@@ -6,6 +6,7 @@ import cn.hisouten.mall.common.annotation.RepeatSubmit;
 import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.dto.order.UserOrderCreateDTO;
+import cn.hisouten.mall.pojo.dto.order.UserOrderFromCartDTO;
 import cn.hisouten.mall.pojo.dto.order.UserOrderPageQueryDTO;
 import cn.hisouten.mall.pojo.dto.order.UserOrderPayDTO;
 import cn.hisouten.mall.pojo.vo.logistics.UserLogisticsVO;
@@ -31,17 +32,17 @@ public class OrderController {
 
     /**
      * 用户从购物车里结算下单
-     * @param addressId 地址id
+     * @param dto 下单参数
      * @return 返回值
      */
     @PostMapping("/create-from-cart")
     @Log("购物车下单")
     @RepeatSubmit(interval = 3) //3秒防重复
     @Operation(summary = "从购物车里结算")
-    public Result<UserOrderCreateVO> createFromCart(@RequestParam Long addressId,@RequestParam Long userCouponId) {
+    public Result<UserOrderCreateVO> createFromCart(@RequestBody UserOrderFromCartDTO dto) {
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户：{}从购物车结算订单", userId);
-        UserOrderCreateVO userOrderCreateVO = orderService.createFromCart(userId, addressId,userCouponId);
+        UserOrderCreateVO userOrderCreateVO = orderService.createFromCart(userId, dto.getAddressId(),dto.getUserCouponId());
         return Result.success(userOrderCreateVO);
     }
 
@@ -60,23 +61,6 @@ public class OrderController {
         UserOrderCreateVO userOrderCreateVO = orderService.createDirect(userId, userOrderCreateDTO);
         return Result.success(userOrderCreateVO);
     }
-
-    /**
-     * 用户支付订单
-     * @param userOrderPayDTO 支付订单参数
-     * @return 返回值
-     */
-    @PostMapping("/pay")
-    @Log("支付订单")
-    @RepeatSubmit(interval = 3)
-    @Operation(summary = "用户支付订单")
-    public Result pay(@Valid @RequestBody UserOrderPayDTO userOrderPayDTO) {
-        Long userId = StpUtil.getLoginIdAsLong();
-        log.info("用户:{}支付订单", userId);
-        orderService.pay(userId, userOrderPayDTO);
-        return Result.success();
-    }
-
 
     /**
      * 订单取消支付

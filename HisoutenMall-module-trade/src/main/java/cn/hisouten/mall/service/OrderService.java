@@ -30,12 +30,6 @@ public interface OrderService {
     UserOrderCreateVO createDirect(Long userId, UserOrderCreateDTO userOrderCreateDTO);
 
     /**
-     * 用户支付订单
-     * @param userOrderPayDTO 支付订单参数
-     */
-    void pay(Long userId, UserOrderPayDTO userOrderPayDTO);
-
-    /**
      * 订单取消支付
      * @param orderNo 订单编号
      */
@@ -171,4 +165,10 @@ public interface OrderService {
      * @return 返回值
      */
     List<DailySalesVO> getSalesTrend();
+
+    /**
+     * 支付成功后的回调处理
+     * @param orderNo 订单号
+     */
+    void paySuccess(String orderNo);
 }

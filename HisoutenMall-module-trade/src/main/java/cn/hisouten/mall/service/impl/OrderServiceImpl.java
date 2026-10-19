@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 import static cn.hisouten.mall.constant.CommonConstant.AMOUNT_OFF_COUPON;
 import static cn.hisouten.mall.constant.CommonConstant.DEFAULT_LOGISTICS_COMPANY;
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
+import static cn.hisouten.mall.constant.PayMethodConstant.ALIPAY;
 import static cn.hisouten.mall.constant.PayMethodConstant.WECHAT;
 import static cn.hisouten.mall.constant.SeckillConstant.NORMAL;
 import static cn.hisouten.mall.constant.SeckillConstant.SECKILL;
@@ -134,37 +135,38 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 用户支付订单
-     * @param userOrderPayDTO 支付订单参数
+     * 支付成功逻辑
+     * @param orderNo 订单号
      */
     @Override
     @Transactional
-    public void pay(Long userId, UserOrderPayDTO userOrderPayDTO) {
-        for (String orderNo : userOrderPayDTO.getOrderNos()) {
-            Order order = orderMapper.selectByOrderNo(orderNo);
-            // 校验归属
-            if (order == null || !order.getUserId().equals(userId)) {
-                throw new BizException(ORDER_NOT_FOUND);
-            }
-            // 校验状态
-            if (!Objects.equals(order.getStatus(), PENDING_PAYMENT)) {
-                throw new BizException(ORDER_STATUS_ERROR);
-            }
-            //修改订单状态
-            order.setStatus(PAID);
-            order.setPayTime(LocalDateTime.now());
-            orderMapper.updateById(order);
-            //添加payment
-            Payment payment = new Payment();
-            payment.setOrderId(order.getId());
-            payment.setPayNo(System.currentTimeMillis() + String.format("%04d", ThreadLocalRandom.current().nextInt(10000)));
-            payment.setAmount(order.getPayAmount());
-            payment.setPayType(WECHAT);
-            payment.setStatus(PAID);
-            payment.setPayTime(LocalDateTime.now());
-            paymentMapper.insert(payment);
+    public void paySuccess(String orderNo) {
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if (order == null) {
+            throw new BizException(ORDER_NOT_FOUND);
         }
+        // 幂等校验：只有待支付状态才能修改（防止支付宝重复回调）
+        if (!Objects.equals(order.getStatus(), PENDING_PAYMENT)) {
+            return; // 已经是已支付状态了，直接返回，不报错
+        }
+
+        // 1. 修改订单状态
+        order.setStatus(PAID);
+        order.setPayTime(LocalDateTime.now());
+        orderMapper.updateById(order);
+
+        // 2. 添加 payment 记录
+        Payment payment = new Payment();
+        payment.setOrderId(order.getId());
+        payment.setPayNo(System.currentTimeMillis() + String.format("%04d", ThreadLocalRandom.current().nextInt(10000)));
+        payment.setAmount(order.getPayAmount());
+        payment.setPayType(ALIPAY);
+        payment.setStatus(PAID);
+        payment.setPayTime(LocalDateTime.now());
+        paymentMapper.insert(payment);
+
     }
+
 
     /**
      * 订单取消支付

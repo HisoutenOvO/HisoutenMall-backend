@@ -32,7 +32,7 @@ minio:
   secret-key: minioadmin
   bucket-name: mall-images
 rocketmq:
-  name-server: 10.143.156.32:9876
+  name-server: 10.143.167.222:9876
   producer:
     group: mall-producer-group
 knife4j:
@@ -46,6 +46,16 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+alipay:
+  app-id: ${alipay.appid}
+  private-key: ${alipay.private-key}
+  alipay-public-key: ${alipay.alipay-public-key}
+  gateway-url: ${alipay.gateway-url}
+  # 内网穿透地址 + 回调接口
+  notify-url: ${alipay.notify-url}
+  # 支付成功后的前端跳转页
+  return-url: ${alipay.return-url}
+
 
 
 ############## Sa-Token 配置 (文档: https://sa-token.com) ##############

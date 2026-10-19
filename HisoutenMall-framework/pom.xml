@@ -73,6 +73,10 @@
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.alipay.sdk</groupId>
+            <artifactId>alipay-sdk-java</artifactId>
+        </dependency>
         <!-- Lombok 和 test 不用写，从父 pom 继承 -->
     </dependencies>
 </project>

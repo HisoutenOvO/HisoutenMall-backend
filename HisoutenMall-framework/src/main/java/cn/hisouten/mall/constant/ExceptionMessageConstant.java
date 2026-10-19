@@ -77,4 +77,8 @@ public class ExceptionMessageConstant {
     public static final String COUPON_NOT_USE = "优惠券未使用！";
     public static final String MERCHANT_NOT_AUDIT = "店铺正在审核或审核不通过，无法进行该操作！";
     public static final String MERCHANT_AUDIT_ERROR = "商家不处于待审核状态，不可进行审核";
+    public static final String PAYMENT_CALL_FAILED = "支付调用失败！";
+    public static final String SIGNATURE_VERIFY_FAILED = "签名验证失败！";
+    public static final String AMOUNT_VERIFY_FAILED = "支付金额验证失败！";
+    public static final String HANDLE_NOTIFY_FAILED = "处理支付回调失败！";
 }
