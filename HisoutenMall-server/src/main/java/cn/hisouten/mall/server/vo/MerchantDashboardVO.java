@@ -1,11 +1,13 @@
 package cn.hisouten.mall.server.vo;
 
+import cn.hisouten.mall.pojo.vo.order.DailySalesVO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 商家端查询统计数据返回值
@@ -31,4 +33,7 @@ public class MerchantDashboardVO {
     private Long onSaleProductCount;    // 在售商品数
 
     private Long totalReviewCount;      // 累计评价数
+
+    private List<DailySalesVO> salesTrend; // 近 7 天销售趋势
+
 }

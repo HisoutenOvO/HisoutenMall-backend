@@ -5,8 +5,11 @@ package cn.hisouten.mall.constant;
  */
 public class RedisConstant {
 
-    //商品详情键前缀
-    public static final String CACHE_PRODUCT_DETAIL_PREFIX = "cache:product:detail:";
+    //商家端查询商品详情键前缀
+    public static final String CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX = "cache:product:mrchant:detail:";
+
+    //用户端查询商品详情键前缀
+    public static final String CACHE_PRODUCT_USER_DETAIL_PREFIX = "cache:product:key:detail:";
 
     //商品详情锁前缀
     public static final String LOCK_PRODUCT_DETAIL_PREFIX = "lock:product:detail:";

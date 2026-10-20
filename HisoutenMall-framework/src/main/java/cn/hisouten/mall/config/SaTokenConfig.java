@@ -1,8 +1,10 @@
 package cn.hisouten.mall.config;
 
+import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpUtil;
+import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -13,6 +15,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class SaTokenConfig implements WebMvcConfigurer {
 
+    @PostConstruct
+    public void init() {
+        System.out.println("========= SaTokenConfig 初始化完成 =========");
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new SaInterceptor(handler -> {
@@ -22,8 +29,8 @@ public class SaTokenConfig implements WebMvcConfigurer {
                     .notMatch("/error", "/favicon.ico")
                     .notMatch("/doc.html", "/webjars/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**")
                     .notMatch("/user/product/**", "/user/category/**")
-                    .notMatch("/**/pay/**")
-                    .check(r -> StpUtil.checkLogin());
+                    .notMatch("/admin/login", "/merchant/login", "/merchant/register", "/user/login", "/user/register")
+                    .check(r -> {System.out.println("========= 拦截器正在校验路径: " + SaHolder.getRequest().getRequestPath()); StpUtil.checkLogin();});
 
             // 角色路由：排除各自登录注册接口
             SaRouter.match("/admin/**")

@@ -35,6 +35,7 @@ public class DashboardServiceImpl implements DashboardService{
         Long pendingShipCount = orderService.getPendingShipCount(merchantId);
         Long onSaleProductCount = productService.getOnSaleProductCount(merchantId);
         Long totalReviewCount = reviewService.getTotalReviewCount(merchantId);
+        List<DailySalesVO> salesTrend = orderService.getMerchantSalesTrend(merchantId);
 
         return MerchantDashboardVO.builder().
                 todaySales(todaySales)
@@ -44,6 +45,7 @@ public class DashboardServiceImpl implements DashboardService{
                 .pendingShipCount(pendingShipCount)
                 .onSaleProductCount(onSaleProductCount)
                 .totalReviewCount(totalReviewCount)
+                .salesTrend(salesTrend)
                 .build();
     }
 

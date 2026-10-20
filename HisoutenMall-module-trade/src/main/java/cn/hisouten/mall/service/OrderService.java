@@ -171,4 +171,11 @@ public interface OrderService {
      * @param orderNo 订单号
      */
     void paySuccess(String orderNo);
+
+    /**
+     * 查询商家7天销售趋势
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    List<DailySalesVO> getMerchantSalesTrend(Long merchantId);
 }

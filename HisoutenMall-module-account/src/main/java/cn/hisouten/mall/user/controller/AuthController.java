@@ -35,7 +35,6 @@ public class AuthController {
      */
     @SaIgnore
     @PostMapping("/merchant/login")
-    @RepeatSubmit
     @Log("商家登录")
     @Operation(summary = "商家登录")
     public Result<LoginVO> merchantLogin(@Valid @RequestBody MerchantLoginDTO merchantLoginDTO){
@@ -66,7 +65,6 @@ public class AuthController {
      */
     @SaIgnore
     @PostMapping("/user/login")
-    @RepeatSubmit
     @Log("用户登录")
     @Operation(summary = "用户登录")
     public Result<LoginVO> userLogin(@Valid @RequestBody UserLoginDTO userLoginDTO){
@@ -82,7 +80,6 @@ public class AuthController {
      */
     @SaIgnore
     @PostMapping("/admin/login")
-    @RepeatSubmit
     @Log("管理员登录")
     @Operation(summary = "管理员登录")
     public Result<LoginVO> adminLogin(@Valid @RequestBody AdminLoginDTO adminLoginDTO){

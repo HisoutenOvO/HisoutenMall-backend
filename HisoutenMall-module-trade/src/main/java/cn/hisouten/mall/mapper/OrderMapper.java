@@ -111,4 +111,11 @@ public interface OrderMapper extends BaseMapper<Order> {
      */
     List<DailySalesVO> getSalesTrend();
 
+    /**
+     * 获取商家近7天销售趋势
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    List<DailySalesVO> getMerchantSalesTrend(Long merchantId);
+
 }

@@ -77,7 +77,13 @@
     <select id="getSalesTrend" resultType="cn.hisouten.mall.pojo.vo.order.DailySalesVO">
         select date_format(create_time, '%m-%d') as date, ifnull(sum(pay_amount), 0) as amount
         from `order` where status in (1,2,3) and create_time >= date_sub(curdate(), interval 7 day)
-        group by date(create_time) order by date(create_time)
+        group by date_format(create_time, '%m-%d') order by date_format(create_time, '%m-%d')
+    </select>
+    <select id="getMerchantSalesTrend" resultType="cn.hisouten.mall.pojo.vo.order.DailySalesVO">
+        select date_format(create_time, '%m-%d') as date, ifnull(sum(pay_amount), 0) as amount
+        from `order` where status in (1,2,3) and create_time >= date_sub(curdate(), interval 7 day)
+        and merchant_id = #{merchantId}
+        group by date_format(create_time, '%m-%d') order by date_format(create_time, '%m-%d')
     </select>
 
 </mapper>

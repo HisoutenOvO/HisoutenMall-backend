@@ -95,9 +95,8 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public MerchantProductDetailVO merchantDetailQuery(Long productId) {
-        return cacheClientUtils.queryWithLogicExpire(
-                CACHE_PRODUCT_DETAIL_PREFIX,
-                LOCK_PRODUCT_DETAIL_PREFIX,
+        return cacheClientUtils.queryWithPassThrough(
+                CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX,
                 productId,
                 MerchantProductDetailVO.class,
                 this::loadMerchantProductDetailFromDB,
@@ -112,7 +111,8 @@ public class ProductServiceImpl implements ProductService {
      * @return 返回商家信息
      */
     private MerchantProductDetailVO loadMerchantProductDetailFromDB(Long productId){
-        Product product = checkProductOwnership(productId);
+        Product product = productMapper.selectById(productId);
+        if (product == null) return null;
         MerchantProductDetailVO merchantProductDetailVO = new MerchantProductDetailVO();
         BeanUtils.copyProperties(product, merchantProductDetailVO);
         String categoryName = categoryService.getCategoryNameByCategoryId(product.getCategoryId());
@@ -255,6 +255,8 @@ public class ProductServiceImpl implements ProductService {
                 productSkuMapper.deleteById(sku.getId());
             }
         }
+        cacheClientUtils.delete(CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX, productId);
+        cacheClientUtils.delete(CACHE_PRODUCT_USER_DETAIL_PREFIX, productId);
     }
 
     /**
@@ -277,6 +279,8 @@ public class ProductServiceImpl implements ProductService {
         }
         product.setStatus(status);
         productMapper.updateById(product);
+        cacheClientUtils.delete(CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX, productId);
+        cacheClientUtils.delete(CACHE_PRODUCT_USER_DETAIL_PREFIX, productId);
     }
 
     /**
@@ -291,6 +295,8 @@ public class ProductServiceImpl implements ProductService {
         throw new BizException(REMOVE_PRODUCT_BEFORE_DELETE);
         }
         productMapper.deleteById(productId);
+        cacheClientUtils.delete(CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX, productId);
+        cacheClientUtils.delete(CACHE_PRODUCT_USER_DETAIL_PREFIX, productId);
     }
 
     /**
@@ -314,6 +320,8 @@ public class ProductServiceImpl implements ProductService {
             throw new BizException(PRODUCT_HAS_NOT_DELETED);
         }
         productMapper.recoveryProduct(productId);
+        cacheClientUtils.delete(CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX, productId);
+        cacheClientUtils.delete(CACHE_PRODUCT_USER_DETAIL_PREFIX, productId);
     }
 
     /**
@@ -403,7 +411,7 @@ public class ProductServiceImpl implements ProductService {
     public UserProductDetailVO userDetailQuery(Long productId) {
         //逻辑过期方法，防止被击穿
         return cacheClientUtils.queryWithLogicExpire(
-                CACHE_PRODUCT_DETAIL_PREFIX,
+                CACHE_PRODUCT_USER_DETAIL_PREFIX,
                 LOCK_PRODUCT_DETAIL_PREFIX,
                 productId,
                 UserProductDetailVO.class,
@@ -608,6 +616,8 @@ public class ProductServiceImpl implements ProductService {
         }
         BeanUtils.copyProperties(merchantProductSkuDTO,productSku);
         productSkuMapper.updateById(productSku);
+        cacheClientUtils.delete(CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX, productSku.getProductId());
+        cacheClientUtils.delete(CACHE_PRODUCT_USER_DETAIL_PREFIX, productSku.getProductId());
     }
 
     /**
@@ -635,6 +645,8 @@ public class ProductServiceImpl implements ProductService {
         }
         sku.setStatus(status);
         productSkuMapper.updateById(sku);
+        cacheClientUtils.delete(CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX, sku.getProductId());
+        cacheClientUtils.delete(CACHE_PRODUCT_USER_DETAIL_PREFIX, sku.getProductId());
     }
 
     /**
@@ -665,6 +677,8 @@ public class ProductServiceImpl implements ProductService {
         if(existedSkuList == null || existedSkuList.isEmpty()){
             throw new BizException(NO_SKU_EXIST);
         }
+        cacheClientUtils.delete(CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX, sku.getProductId());
+        cacheClientUtils.delete(CACHE_PRODUCT_USER_DETAIL_PREFIX, sku.getProductId());
     }
 
     /**
@@ -689,6 +703,8 @@ public class ProductServiceImpl implements ProductService {
             throw new BizException(SKU_HAS_NOT_DELETED);
         }
         productSkuMapper.recoverySku(skuId);
+        cacheClientUtils.delete(CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX, sku.getProductId());
+        cacheClientUtils.delete(CACHE_PRODUCT_USER_DETAIL_PREFIX, sku.getProductId());
     }
 
     /**

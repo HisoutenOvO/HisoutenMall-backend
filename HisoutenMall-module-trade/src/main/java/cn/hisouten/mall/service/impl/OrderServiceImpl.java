@@ -167,6 +167,16 @@ public class OrderServiceImpl implements OrderService {
 
     }
 
+    /**
+     * 查询商家7天销售趋势
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    @Override
+    public List<DailySalesVO> getMerchantSalesTrend(Long merchantId) {
+        return orderMapper.getMerchantSalesTrend(merchantId);
+    }
+
 
     /**
      * 订单取消支付
