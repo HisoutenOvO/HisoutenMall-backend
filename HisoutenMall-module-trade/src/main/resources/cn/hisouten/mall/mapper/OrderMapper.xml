@@ -25,9 +25,13 @@
                u.nickname as buyerName,o.source
         from `order` o
         left join user_profile u on o.user_id = u.user_id
+        left join merchant_profile mp on o.merchant_id = mp.id
         <where>
-        <if test="dto.keyword != null and dto.keyword != ''">
-            and order_no like concat('%', #{dto.keyword}, '%')
+        <if test="dto.orderNo != null and dto.orderNo != ''">
+            and order_no like concat('%', #{dto.orderNo}, '%')
+        </if>
+        <if test="dto.buyerName != null and dto.buyerName != ''">
+            and u.nickname like concat('%', #{dto.buyerName}, '%')
         </if>
         <if test="dto.status != null ">
             and status = #{dto.status}
@@ -36,8 +40,8 @@
             and o.source = #{dto.source}
         </if>
         and deleted = 0 and o.merchant_id = #{merchantId}
-        order by o.create_time desc
         </where>
+        order by o.create_time desc
     </select>
     <select id="AdminPageQuery" resultType="cn.hisouten.mall.pojo.vo.order.AdminOrderPageResultVO">
         select o.id,o.order_no as orderNo,o.pay_amount as payAmount,o.status,o.create_time as createTime,
@@ -47,18 +51,18 @@
         left join merchant_profile m on m.user_id = o.merchant_id
         left join user_profile u on o.user_id = u.user_id
         <where>
-            <if test="dto.keyword != null and dto.keyword != ''">
-                and order_no like concat('%', #{dto.keyword}, '%')
+            <if test="dto.orderNo != null and dto.orderNo != ''">
+                and order_no like concat('%', #{dto.orderNo}, '%')
             </if>
-            <if test="dto.status != null ">
-                and status = #{dto.status}
+            <if test="dto.merchantName != null and dto.merchantName != ''">
+                and m.shop_name like concat('%', #{dto.merchantName}, '%')
             </if>
-            <if test="dto.source != null">
-                and o.source = #{source}
+            <if test="dto.buyerName != null and dto.buyerName != ''">
+                and u.nickname like concat('%', #{dto.buyerName}, '%')
             </if>
             and o.deleted = 0
-            order by m.create_time desc
         </where>
+        order by m.create_time desc
     </select>
     <select id="selectTodaySales" resultType="java.math.BigDecimal">
         select ifnull(sum(pay_amount),0)

@@ -16,4 +16,6 @@ public class AdminMerchantPageQueryDTO extends BasePageQueryDTO {
     private Integer status;
 
     private Integer deleted;
+
+    private Integer auditStatus;
 }

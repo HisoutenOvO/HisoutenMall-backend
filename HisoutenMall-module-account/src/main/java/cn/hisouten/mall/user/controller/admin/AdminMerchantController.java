@@ -66,7 +66,7 @@ public class AdminMerchantController {
      * @param status 状态
      * @return 返回值
      */
-    @PostMapping("/{merchantId}/status")
+    @PutMapping("/{merchantId}/status")
     @Log("管理端修改商家状态")
     @Operation(summary = "修改商家状态")
     public Result changeStatus(@PathVariable Long merchantId,@RequestParam Integer status){

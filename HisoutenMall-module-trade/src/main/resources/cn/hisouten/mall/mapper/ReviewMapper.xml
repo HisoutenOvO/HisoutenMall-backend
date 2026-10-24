@@ -22,6 +22,9 @@
         <if test="pageQueryBO.rating != null">
             and p.rating = #{pageQueryBO.rating}
         </if>
+            <if test="pageQueryBO.content != null">
+                and p.content like concat('%', #{pageQueryBO.content},'%')
+            </if>
         <if test="pageQueryBO.merchantName != null and pageQueryBO.merchantName != ''">
             and mp.shop_name like concat('%',#{pageQueryBO.merchantName},'%')
         </if>

@@ -15,6 +15,7 @@ import cn.hisouten.mall.pojo.entity.ProductSku;
 import cn.hisouten.mall.pojo.vo.product.*;
 import cn.hisouten.mall.service.BrandService;
 import cn.hisouten.mall.service.CategoryService;
+import cn.hisouten.mall.service.FavoriteService;
 import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.util.CacheClientUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -42,6 +43,7 @@ public class ProductServiceImpl implements ProductService {
     //注入别人的service
     private final CategoryService categoryService;
     private final BrandService brandService;
+    private final FavoriteService favoriteService;
 
     //注入工具类
     private final CacheClientUtils cacheClientUtils;
@@ -111,7 +113,7 @@ public class ProductServiceImpl implements ProductService {
      * @return 返回商家信息
      */
     private MerchantProductDetailVO loadMerchantProductDetailFromDB(Long productId){
-        Product product = productMapper.selectById(productId);
+        Product product = productMapper.selectByIdIgnoreLogic(productId);
         if (product == null) return null;
         MerchantProductDetailVO merchantProductDetailVO = new MerchantProductDetailVO();
         BeanUtils.copyProperties(product, merchantProductDetailVO);
@@ -295,6 +297,8 @@ public class ProductServiceImpl implements ProductService {
         throw new BizException(REMOVE_PRODUCT_BEFORE_DELETE);
         }
         productMapper.deleteById(productId);
+        //级联删除收藏夹数据
+        favoriteService.deleteByProductId(productId);
         cacheClientUtils.delete(CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX, productId);
         cacheClientUtils.delete(CACHE_PRODUCT_USER_DETAIL_PREFIX, productId);
     }

@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 用于中转评价分页查询的BO类
+ * 用于中转评价分页查询返回值的BO类
  */
 @Data
 public class ReviewPageResultBO {

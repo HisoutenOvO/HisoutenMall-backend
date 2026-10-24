@@ -33,7 +33,7 @@ public class ProductReview {
 
     private String content;
 
-    private String image;
+    private String images;
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;

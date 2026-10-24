@@ -63,7 +63,7 @@ public class CouponServiceImpl implements CouponService {
             throw new BizException(COUPON_INFO_INVALID);
         }
         //且减满金额不能大于最低金额，不能出现满100减200
-        if(coupon.getValue().compareTo(coupon.getMinAmount()) >= 0){
+        if(addDTO.getValue().compareTo(addDTO.getMinAmount()) >= 0){
             throw new BizException(COUPON_INFO_INVALID);
         }
         //若是折扣券，则折扣必须在0-1之间
@@ -221,8 +221,11 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public void receiveCoupon(Long userId, Long couponId) {
         Coupon coupon = couponMapper.selectById(couponId);
-        if(coupon == null || coupon.getRemain() <= 0){
+        if(coupon == null){
             throw new BizException(COUPON_NOT_FOUND);
+        }
+        if(coupon.getRemain() <= 0){
+            throw new BizException(OUT_OF_STOCK);
         }
         //查看是否在有效期内
         if(!(coupon.getStartTime().isBefore(LocalDateTime.now()) && coupon.getEndTime().isAfter(LocalDateTime.now()))){
@@ -270,6 +273,8 @@ public class CouponServiceImpl implements CouponService {
             if(coupon == null) continue;
             if(userCoupon.getStatus() != NOT_USED) continue;
             if (userCoupon.getExpireTime().isBefore(LocalDateTime.now())) continue;
+            //防止卡在过期时间边界
+            if (coupon.getStartTime().isAfter(LocalDateTime.now()) || coupon.getEndTime().isBefore(LocalDateTime.now())) continue;
             if(!coupon.getMerchantId().equals(merchantId)) continue;
             if(orderAmount.compareTo(coupon.getMinAmount()) < 0) continue;
             UserUsableCouponVO vo = new UserUsableCouponVO();

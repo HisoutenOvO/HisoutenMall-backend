@@ -15,7 +15,7 @@ public class CouponPageResultBO {
 
     private Long merchantId;
 
-    private Long merchantName;
+    private String merchantName;
 
     private String name;
 

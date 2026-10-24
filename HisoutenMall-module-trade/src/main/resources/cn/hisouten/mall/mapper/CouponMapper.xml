@@ -4,7 +4,7 @@
     <select id="pageQuery" resultType="cn.hisouten.mall.pojo.bo.coupon.CouponPageResultBO">
         select c.id,c.name,c.type,c.value,c.min_amount,c.start_time,c.end_time,c.total,c.remain,
                (c.total - c.remain) as receivedCount,c.create_time,count(uc.use_time) as usedCount,
-               mp.shop_name as merchantName,mp.user_id as merchantId
+               mp.shop_name as merchantName,c.merchant_id as merchantId
         from coupon c
         left join user_coupon uc on c.id = uc.coupon_id
         left join merchant_profile mp on c.merchant_id = mp.user_id

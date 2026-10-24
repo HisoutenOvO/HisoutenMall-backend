@@ -3,17 +3,20 @@
 <mapper namespace="cn.hisouten.mall.user.mapper.MerchantProfileMapper">
     <select id="pageQuery" resultType="cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantPageResultVO">
         select u.id,u.username,u.status,u.deleted,u.create_time,u.update_time,
-               mp.shop_name,mp.shop_logo,mp.contact_phone
+               mp.shop_name,mp.shop_logo,mp.contact_phone,mp.audit_status,mp.audit_reason
         from user u
         left join merchant_profile mp
         on u.id = mp.user_id
         <where>
                and u.role = 2
             <if test="dto.keyword != null and dto.keyword != ''">
-                and username like concat('%',#{dto.keyword},'%')
+                and mp.shop_name like concat('%',#{dto.keyword},'%')
             </if>
             <if test="dto.status != null">
-                and status = #{dto.status}
+                and u.status = #{dto.status}
+            </if>
+            <if test="dto.auditStatus != null">
+                and mp.audit_status = #{dto.auditStatus}
             </if>
             <if test="dto.deleted != null">
                 and deleted = #{dto.deleted}

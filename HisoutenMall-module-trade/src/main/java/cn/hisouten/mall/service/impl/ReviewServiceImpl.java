@@ -89,7 +89,7 @@ public class ReviewServiceImpl implements ReviewService {
         if(addDTO.getContent() == null){
             review.setContent(DEFAULT_REVIEW);
         }
-        review.setImage(addDTO.getImages());
+        review.setImages(addDTO.getImages());
         reviewMapper.insert(review);
     }
 
@@ -164,6 +164,7 @@ public class ReviewServiceImpl implements ReviewService {
         pageQueryBO.setProductId(pageQueryDTO.getProductId());
         pageQueryBO.setRating(pageQueryDTO.getRating());
         pageQueryBO.setMerchantId(merchantId);
+        pageQueryBO.setContent(pageQueryDTO.getKeyword());
         Page<ReviewPageResultBO> result = reviewMapper.pageQuery(page,pageQueryBO);
         long total = result.getTotal();
         List<ReviewPageResultBO> boList = result.getRecords();
@@ -217,7 +218,16 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public MerchantReviewStatisticsVO statisticsQuery(Long merchantId, Long productId) {
         Product product = productService.getProductByProductId(productId);
-        if(product == null || !product.getMerchantId().equals(merchantId)){
+        if(product == null){
+            MerchantReviewStatisticsVO vo = new MerchantReviewStatisticsVO();
+            vo.setAvgRating(BigDecimal.ZERO);
+            vo.setGoodCount(0);
+            vo.setGoodRate(0);
+            vo.setRatingCountMap(null);
+            vo.setTotalCount(0);
+            return vo;
+        }
+        if(!product.getMerchantId().equals(merchantId)){
             throw new BizException(PRODUCT_NOT_FOUND);
         }
         List<ProductReview> reviewList = reviewMapper.selectByProductId(productId);
@@ -266,6 +276,7 @@ public class ReviewServiceImpl implements ReviewService {
         pageQueryBO.setRating(pageQueryDTO.getRating());
         pageQueryBO.setMerchantId(pageQueryDTO.getMerchantId());
         pageQueryBO.setMerchantName(pageQueryDTO.getMerchantName());
+        pageQueryBO.setContent(pageQueryDTO.getKeyword());
         Page<ReviewPageResultBO> result = reviewMapper.pageQuery(page,pageQueryBO);
         long total = result.getTotal();
         List<ReviewPageResultBO> boList = result.getRecords();
@@ -322,20 +333,22 @@ public class ReviewServiceImpl implements ReviewService {
             detailVO.setAvatar(userProfile.getAvatar());
         }
         Product product = productService.getProductByProductId(review.getProductId());
-        if(product == null){
-            throw new BizException(PRODUCT_NOT_FOUND);
+        if(product != null){
+            detailVO.setProductName(product.getName());
+            detailVO.setProductImage(product.getMainImage());
+        }else {
+            detailVO.setProductName(PRODUCT_NOT_FOUND);
         }
-        detailVO.setProductName(product.getName());
-        List<String> images = StrUtil.split(review.getImage(),",");
+        List<String> images = StrUtil.split(review.getImages(),",");
         detailVO.setImages(images);
-        detailVO.setProductImage(product.getMainImage());
         Order order = orderMapper.selectById(review.getOrderId());
-        if(order == null){
-            throw new BizException(ORDER_NOT_FOUND);
-        }
-        detailVO.setOrderNo(order.getOrderNo());
-        if(user.getRole() != MERCHANT_ROLE) {
-            detailVO.setMerchantName(merchantProfileService.getMerchantNameByMerchantId(order.getMerchantId()));
+        if(order != null) {
+            detailVO.setOrderNo(order.getOrderNo());
+            if (user.getRole() != MERCHANT_ROLE) {
+                detailVO.setMerchantName(merchantProfileService.getMerchantNameByMerchantId(order.getMerchantId()));
+            }
+        }else {
+            detailVO.setOrderNo(ORDER_NOT_FOUND);
         }
         return detailVO;
     }

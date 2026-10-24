@@ -60,6 +60,9 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     public void deleteHistory(Long userId, Long productId) {
         UserBrowseHistory history = historyMapper.selectByProductId(userId,productId);
+        if(history == null){
+            return;
+        }
         historyMapper.deleteById(history);
     }
 

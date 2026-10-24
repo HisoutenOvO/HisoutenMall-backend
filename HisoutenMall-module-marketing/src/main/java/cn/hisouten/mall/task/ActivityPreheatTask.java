@@ -54,7 +54,7 @@ public class ActivityPreheatTask {
         // 预热活动详情
         for (Long activityId : activityIds) {
             UserSeckillActivityDetailVO detail = seckillService.loadDetailFromDB(activityId);
-            if (detail == null) return;
+            if (detail == null) continue;
             cacheClientUtils.setWithLogic(
                     CACHE_SECKILL_PRODUCT_DETAIL_PREFIX + activityId,
                     detail,

@@ -57,7 +57,6 @@ public class SeckillServiceImpl implements SeckillService {
     private final SeckillProductMapper seckillProductMapper;
 
     private final MerchantProfileService merchantProfileService;
-    private final AdminProfileService adminProfileService;
     private final ProductService productService;
 
     private final StringRedisTemplate stringRedisTemplate;
@@ -156,7 +155,10 @@ public class SeckillServiceImpl implements SeckillService {
     @Override
     @Transactional
     public void delete(Long merchantId, Long activityId) {
-        checkValidAndTime(merchantId,activityId);
+        SeckillActivity activity = checkValid(merchantId, activityId);
+        if(activity.getStatus() == RUNNING){
+            throw new BizException(ACTIVITY_HAS_START);
+        }
         seckillActivityMapper.deleteById(activityId);
         //级联删除秒杀商品
         seckillProductMapper.deleteByActivityId(activityId);

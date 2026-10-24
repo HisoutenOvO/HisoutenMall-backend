@@ -25,6 +25,10 @@ public class AdminMerchantPageResultVO {
 
     private String contactPhone;
 
+    private Integer auditStatus;
+
+    private String auditReason;
+
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;

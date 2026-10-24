@@ -17,4 +17,6 @@ public class AdminReviewPageQueryDTO extends BasePageQueryDTO {
 
     private String merchantName; //模糊查询
 
+    private String keyword;
+
 }

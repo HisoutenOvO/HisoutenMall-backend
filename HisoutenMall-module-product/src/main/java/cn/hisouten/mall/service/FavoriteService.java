@@ -2,6 +2,7 @@ package cn.hisouten.mall.service;
 
 import cn.hisouten.mall.common.pojo.BasePageQueryDTO;
 import cn.hisouten.mall.common.pojo.PageResult;
+import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.pojo.vo.favorite.UserFavoritePageResultVO;
 
 public interface FavoriteService {
@@ -40,4 +41,10 @@ public interface FavoriteService {
      * @return 返回值
      */
     Integer count(Long userId);
+
+    /**
+     * 根据商品id删除收藏信息
+     * @param productId 商品id
+     */
+    void deleteByProductId(Long productId);
 }

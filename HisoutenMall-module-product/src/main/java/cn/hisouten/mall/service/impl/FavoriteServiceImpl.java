@@ -87,4 +87,13 @@ public class FavoriteServiceImpl implements FavoriteService {
     public Integer count(Long userId) {
         return Math.toIntExact(favoriteMapper.selectCount(userId,null));
     }
+
+    /**
+     * 根据商品id删除收藏信息
+     * @param productId 商品id
+     */
+    @Override
+    public void deleteByProductId(Long productId) {
+        favoriteMapper.deleteByProductId(null,productId);
+    }
 }

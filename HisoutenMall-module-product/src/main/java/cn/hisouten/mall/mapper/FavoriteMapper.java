@@ -42,6 +42,5 @@ public interface FavoriteMapper extends BaseMapper<UserFavorite> {
      * @param userId 用户id
      * @return 返回值
      */
-    @Delete("delete from user_favorite where product_id = #{productId} and user_id = #{userId}")
     Product deleteByProductId(Long userId,Long productId);
 }

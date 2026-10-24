@@ -23,7 +23,7 @@ import static cn.hisouten.mall.constant.RoleConstant.ADMIN;
 @RestController("adminCouponController")
 @RequestMapping("/admin/coupon")
 @Slf4j
-@Tag(name = "管理端-优惠券接口")
+@Tag(name = "管理端——优惠券接口")
 @RequiredArgsConstructor
 public class CouponController {
     private final CouponService couponService;

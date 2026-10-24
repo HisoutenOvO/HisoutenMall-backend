@@ -8,6 +8,7 @@
         left join seckill_product sp on sp.activity_id = sa.id
         left join merchant_profile mp on sa.merchant_id = mp.user_id
         <where>
+            and deleted = 0
             <if test="merchantId != null">
                 and merchant_id = #{merchantId}
             </if>

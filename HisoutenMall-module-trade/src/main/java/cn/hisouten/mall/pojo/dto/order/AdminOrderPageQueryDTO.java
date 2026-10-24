@@ -10,8 +10,14 @@ import lombok.Data;
 @Data
 public class AdminOrderPageQueryDTO extends BasePageQueryDTO {
 
-    @Size(max = 64, message = "搜索关键词过长")
-    private String keyword;
+    @Size(max = 64, message = "订单过长")
+    private String orderNo;
+
+    @Size(max = 64, message = "商家名称过长")
+    private String merchantName;
+
+    @Size(max = 64, message = "买家名称过长")
+    private String buyerName;
 
     private Integer status;
 
