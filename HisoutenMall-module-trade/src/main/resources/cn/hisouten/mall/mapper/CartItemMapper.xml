@@ -11,11 +11,12 @@
     <select id="selectListByUserId" resultType="cn.hisouten.mall.pojo.bo.cart.CartItemListBO">
         select
             c.id, c.product_id, c.sku_id, c.quantity, c.checked,
-            p.name as productName,p.main_image as mainImage,p.status as productStatus,p.deleted as productDeleted,
+            p.name as productName,p.main_image as mainImage,p.status as productStatus,p.deleted as productDeleted, p.merchant_id as merchantId, mp.shop_name as merchantName,
             s.specs as skuSpecs,s.image as skuImage,s.price,s.stock,s.status as skuStatus,s.deleted as skuDeleted
         from cart_item c
         left join product p on c.product_id = p.id
         left join product_sku s on c.sku_id = s.id
+        left join merchant_profile mp on p.merchant_id = mp.user_id
         where c.user_id = #{userId}
         order by c.create_time desc
     </select>

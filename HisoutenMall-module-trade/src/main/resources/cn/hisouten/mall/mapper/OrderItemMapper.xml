@@ -3,7 +3,7 @@
 <mapper namespace="cn.hisouten.mall.mapper.OrderItemMapper">
     <select id="selectByOrderIds" resultType="cn.hisouten.mall.pojo.vo.order.OrderItemVO">
         select id, order_id, product_id, sku_id, product_name,
-        sku_specs, price, quantity, total_price
+        sku_specs, price, quantity, total_price,image
         from order_item
         where order_id IN
         <foreach collection="orderIds" item="item" separator="," open="(" close=")">

@@ -19,6 +19,10 @@ public class UserCartItemListVO {
 
     private Long productId;
 
+    private Long merchantId;
+
+    private String merchantName;
+
     private Long skuId;
 
     private String productName;

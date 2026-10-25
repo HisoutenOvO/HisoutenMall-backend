@@ -29,15 +29,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import static cn.hisouten.mall.constant.CommonConstant.AMOUNT_OFF_COUPON;
-import static cn.hisouten.mall.constant.CommonConstant.DEFAULT_LOGISTICS_COMPANY;
+import static cn.hisouten.mall.constant.CommonConstant.*;
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.PayMethodConstant.ALIPAY;
 import static cn.hisouten.mall.constant.PayMethodConstant.WECHAT;
@@ -69,12 +65,12 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 用户从购物车里结算下单
      * @param addressId 地址id
-     * @param userCouponId 用户优惠券id
+     * @param userCouponIds 用户优惠券id
      * @return 返回值
      */
     @Override
     @Transactional
-    public UserOrderCreateVO createFromCart(Long userId, Long addressId,Long userCouponId) {
+    public UserOrderCreateVO createFromCart(Long userId, Long addressId,List<Long> userCouponIds) {
         //查看购物车勾选项
         List<CartItemListBO> cartItemList = cartItemMapper.selectCheckedItemByUserId(userId);
         if (cartItemList == null || cartItemList.isEmpty()) {
@@ -93,7 +89,7 @@ public class OrderServiceImpl implements OrderService {
 
         //获取下单后清除的购物车项id
         List<Long> clearIds = cartItemList.stream().map(CartItemListBO::getId).toList();
-        return doCreateOrder(userId,addressId,cartItemList,clearIds,userCouponId);
+        return doCreateOrder(userId,addressId,cartItemList,clearIds,userCouponIds);
     }
 
     /**
@@ -131,7 +127,12 @@ public class OrderServiceImpl implements OrderService {
         item.setSkuSpecs(sku.getSpecs());
         item.setPrice(sku.getPrice());
         item.setQuantity(userOrderCreateDTO.getQuantity());
-        return doCreateOrder(userId,userOrderCreateDTO.getAddressId(),List.of(item),null,userOrderCreateDTO.getUserCouponId());
+
+        List<Long> userCouponIds = new ArrayList<>();
+        if(userOrderCreateDTO.getUserCouponId() != null){
+            userCouponIds.add(userOrderCreateDTO.getUserCouponId());
+        }
+        return doCreateOrder(userId,userOrderCreateDTO.getAddressId(),List.of(item),null,userCouponIds);
     }
 
     /**
@@ -175,6 +176,114 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<DailySalesVO> getMerchantSalesTrend(Long merchantId) {
         return orderMapper.getMerchantSalesTrend(merchantId);
+    }
+
+    /**
+     * 用户预计算下单信息
+     * @param userId 用户id
+     * @param addressId 地址id
+     * @param userCouponIds 用户优惠券列表
+     * @return 返回值
+     */
+    @Override
+    public UserOrderPreviewVO previewOrder(Long userId, Long addressId, List<Long> userCouponIds) {
+        //先查购物车里已经勾选了的商品
+        List<CartItemListBO> cartItemList = cartItemMapper.selectCheckedItemByUserId(userId);
+        if(cartItemList == null || cartItemList.isEmpty()){
+            throw new BizException(CART_NOT_FOUND);
+        }
+
+        //再查地址信息
+        UserAddress address = userAddressService.getById(addressId);
+        if(address == null || !address.getUserId().equals(userId)){
+            throw new BizException(ADDRESS_NOT_FOUND);
+        }
+
+        //再把用户勾选的券以及券的信息查出来，按商家id分组存
+        Map<Long,UserCoupon> userCouponMap = new HashMap<>();
+        Map<Long,Coupon> couponMap = new HashMap<>();
+        //检验优惠券是否存在
+        if(userCouponIds != null && !userCouponIds.isEmpty()){
+            for (Long userCouponId : userCouponIds) {
+                UserCoupon userCoupon = userCouponMapper.selectById(userCouponId);
+                //校验用户券的有效性
+                if(userCoupon != null && userCoupon.getStatus() == NOT_USED && userCoupon.getExpireTime().isAfter(LocalDateTime.now()) && userCoupon.getUserId().equals(userId)){
+                    Coupon coupon = couponMapper.selectById(userCoupon.getCouponId());
+                    if(coupon != null){
+                        //按商家id分组存
+                        userCouponMap.put(coupon.getMerchantId(),userCoupon);
+                        couponMap.put(coupon.getMerchantId(),coupon);
+                    }
+                }
+            }
+        }
+
+        //将商品也按照商家id分组并初始化各种属性
+        Map<Long,List<CartItemListBO>> cartListMap = cartItemList.stream().collect(Collectors.groupingBy(CartItemListBO::getMerchantId));
+        //总价
+        BigDecimal totalProductAmount = BigDecimal.ZERO;
+        //扣减金额
+        BigDecimal totalDiscountAmount = BigDecimal.ZERO;
+        //实付金额
+        BigDecimal totalPayAmount = BigDecimal.ZERO;
+        List<UserOrderPreviewVO.MerchantPreview> merchantList = new ArrayList<>();
+
+        //分组分别对每个商家的商品分别计算
+        for (Map.Entry<Long, List<CartItemListBO>> entry : cartListMap.entrySet()) {
+            Long merchantId = entry.getKey();
+            List<CartItemListBO> cartList = entry.getValue();
+
+            //算总价
+            //其中一个店铺商品总价
+            BigDecimal totalAmount = BigDecimal.ZERO;
+            for (CartItemListBO item : cartList) {
+                //累加商品价格*数量拿到该店铺的商品总价
+                totalAmount = totalAmount.add(item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+            }
+
+            //算优惠
+            //该店铺的优惠
+            BigDecimal discount = BigDecimal.ZERO;
+            UserCoupon userCoupon = userCouponMap.get(merchantId);
+            Coupon coupon = couponMap.get(merchantId);
+            //校验券和券信息的合法性
+            if(coupon != null && userCoupon != null && coupon.getMinAmount().compareTo(totalAmount) <= 0){
+                if(coupon.getType() == AMOUNT_OFF_COUPON){
+                    discount = coupon.getValue();
+                }else if(coupon.getType() == DISCOUNT_COUPON){
+                    discount = totalAmount.subtract(totalAmount.multiply(coupon.getValue())).setScale(2,RoundingMode.HALF_UP);
+                }
+            }
+            //该店实付金额
+            BigDecimal merchantPay = totalAmount.subtract(discount);
+            if(merchantPay.compareTo(BigDecimal.ZERO) < 0){
+                merchantPay = BigDecimal.ZERO;
+            }
+
+            //累加到总计
+            totalProductAmount = totalProductAmount.add(totalAmount);
+            totalDiscountAmount = totalDiscountAmount.add(discount);
+            totalPayAmount = totalPayAmount.add(merchantPay);
+
+            //构造商家预览信息
+            UserOrderPreviewVO.MerchantPreview merchantPreview = new UserOrderPreviewVO.MerchantPreview();
+            merchantPreview.setMerchantId(merchantId);
+            merchantPreview.setMerchantName(merchantProfileService.getMerchantNameByMerchantId(merchantId));
+            merchantPreview.setMerchantProductAmount(totalAmount);
+            merchantPreview.setMerchantDiscount(discount);
+            merchantPreview.setMerchantPayAmount(merchantPay);
+            merchantPreview.setItems(cartList);
+            merchantList.add(merchantPreview);
+        }
+
+        //返回结果
+        UserOrderPreviewVO previewVO = new UserOrderPreviewVO();
+        previewVO.setMerchantList(merchantList);
+        previewVO.setTotalProductAmount(totalProductAmount);
+        previewVO.setPayAmount(totalPayAmount);
+        previewVO.setTotalDiscountAmount(totalDiscountAmount);
+
+        return previewVO;
     }
 
 
@@ -725,10 +834,11 @@ public class OrderServiceImpl implements OrderService {
      * @param addressId 地址id
      * @param items 待下单商品
      * @param clearCartItemIds 需要清理的购物车项id
+     * @param userCouponIds 用户优惠券id列表
      * @return 订单号列表
      */
     @Transactional
-    protected UserOrderCreateVO doCreateOrder(Long userId, Long addressId, List<CartItemListBO> items, List<Long> clearCartItemIds, Long userCouponId) {
+    protected UserOrderCreateVO doCreateOrder(Long userId, Long addressId, List<CartItemListBO> items, List<Long> clearCartItemIds, List<Long> userCouponIds) {
         //1.校验地址属于登录用户
         UserAddress userAddress = userAddressService.getById(addressId);
         if (userAddress == null || !Objects.equals(userAddress.getUserId(), userId)) {
@@ -738,17 +848,23 @@ public class OrderServiceImpl implements OrderService {
         //2.拼装地址字符串
         String receiverAddress = userAddress.getProvince() + userAddress.getCity() + userAddress.getDistrict() + userAddress.getDetail();
 
-        //3.提前校验优惠券（如果传了的话）
-        UserCoupon userCoupon = null;
-        Coupon coupon = null;
-        if (userCouponId != null) {
-            userCoupon = userCouponMapper.selectByIdAndUserId(userCouponId, userId);
-            if (userCoupon == null) throw new BizException(COUPON_NOT_FOUND);
-            if (userCoupon.getStatus() != NOT_USED) throw new BizException(COUPON_NOT_USABLE);
-            if (userCoupon.getExpireTime().isBefore(LocalDateTime.now())) throw new BizException(COUPON_EXPIRE_OUT);
-
-            coupon = couponMapper.selectById(userCoupon.getCouponId());
-            if (coupon == null) throw new BizException(COUPON_NOT_FOUND);
+        //3.提前校验优惠券，按商家id分组存（如果传了的话）
+        Map<Long,UserCoupon> userCouponMap = new HashMap<>();
+        Map<Long,Coupon> couponMap = new HashMap<>();
+        //检验优惠券是否存在
+        if(userCouponIds != null && !userCouponIds.isEmpty()){
+            for (Long userCouponId : userCouponIds) {
+                UserCoupon userCoupon = userCouponMapper.selectById(userCouponId);
+                //校验用户券的有效性
+                if(userCoupon != null && userCoupon.getStatus() == NOT_USED && userCoupon.getExpireTime().isAfter(LocalDateTime.now()) && userCoupon.getUserId().equals(userId)){
+                    Coupon coupon = couponMapper.selectById(userCoupon.getCouponId());
+                    if(coupon != null){
+                        //按商家id分组存
+                        userCouponMap.put(coupon.getMerchantId(),userCoupon);
+                        couponMap.put(coupon.getMerchantId(),coupon);
+                    }
+                }
+            }
         }
 
         //4.按商家id分组
@@ -774,6 +890,8 @@ public class OrderServiceImpl implements OrderService {
             BigDecimal discount = BigDecimal.ZERO;
 
             //6.如果传了券，且正好是当前商家的
+            UserCoupon userCoupon = userCouponMap.get(merchantId);
+            Coupon coupon = couponMap.get(merchantId);
             if (userCoupon != null && Objects.equals(coupon.getMerchantId(), merchantId)) {
                 if (totalPrice.compareTo(coupon.getMinAmount()) < 0) {
                     throw new BizException(COUPON_NOT_USABLE);
@@ -849,7 +967,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         //8.用户传了券，但购物车里没有该商家的商品
-        if (userCouponId != null && !couponUsed) {
+        if (userCouponIds != null && !couponUsed) {
             throw new BizException(COUPON_NOT_USE);
         }
 

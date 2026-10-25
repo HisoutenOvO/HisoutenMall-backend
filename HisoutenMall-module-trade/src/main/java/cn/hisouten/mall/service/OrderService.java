@@ -17,10 +17,10 @@ public interface OrderService {
     /**
      * 用户从购物车里结算下单
      * @param addressId 地址id
-     * @param userCouponId 用户优惠券id
+     * @param userCouponIds 用户优惠券id
      * @return 返回值
      */
-    UserOrderCreateVO createFromCart(Long userId, Long addressId,Long userCouponId);
+    UserOrderCreateVO createFromCart(Long userId, Long addressId,List<Long> userCouponIds);
 
     /**
      * 用户立即购买下单
@@ -178,4 +178,13 @@ public interface OrderService {
      * @return 返回值
      */
     List<DailySalesVO> getMerchantSalesTrend(Long merchantId);
+
+    /**
+     * 用户预计算下单信息
+     * @param userId 用户id
+     * @param addressId 地址id
+     * @param userCouponIds 用户优惠券列表
+     * @return 返回值
+     */
+    UserOrderPreviewVO previewOrder(Long userId, Long addressId, List<Long> userCouponIds);
 }

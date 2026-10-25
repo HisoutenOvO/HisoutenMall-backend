@@ -438,9 +438,19 @@ public class ProductServiceImpl implements ProductService {
         }
         UserProductDetailVO userProductDetailVO = new UserProductDetailVO();
         BeanUtils.copyProperties(product, userProductDetailVO);
-        String categoryName = categoryService.getCategoryNameByCategoryId(product.getCategoryId());
+        String categoryName = null;
+        String brandName = null;
+        if(product.getCategoryId() != null){
+            categoryName = categoryService.getCategoryNameByCategoryId(product.getCategoryId());
+        }else{
+            categoryName = CATEGORY_NOT_FOUND;
+        }
+        if(product.getBrandId() != null){
+            brandName = brandService.getBrandNameByBrandId(product.getBrandId());
+        }else{
+            brandName = BRAND_NOT_FOUND;
+        }
         String merchantName = productMapper.getMerchantNameByMerchantId(product.getMerchantId());
-        String brandName = brandService.getBrandNameByBrandId(product.getBrandId());
         userProductDetailVO.setBrandName(brandName);
         userProductDetailVO.setCategoryName(categoryName);
         userProductDetailVO.setMerchantName(merchantName);

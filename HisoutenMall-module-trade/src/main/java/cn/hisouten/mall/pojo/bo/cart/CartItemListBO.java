@@ -19,6 +19,8 @@ public class CartItemListBO {
 
     private Long merchantId;
 
+    private String merchantName;
+
     private Long productId;
 
     private Long skuId;

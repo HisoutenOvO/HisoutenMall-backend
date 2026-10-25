@@ -13,6 +13,7 @@ import cn.hisouten.mall.pojo.vo.logistics.UserLogisticsVO;
 import cn.hisouten.mall.pojo.vo.order.UserOrderCreateVO;
 import cn.hisouten.mall.pojo.vo.order.UserOrderDetailVO;
 import cn.hisouten.mall.pojo.vo.order.UserOrderPageResultVO;
+import cn.hisouten.mall.pojo.vo.order.UserOrderPreviewVO;
 import cn.hisouten.mall.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,6 +21,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController("userOrderController")
 @RequestMapping("/user/order")
@@ -42,7 +45,7 @@ public class OrderController {
     public Result<UserOrderCreateVO> createFromCart(@RequestBody UserOrderFromCartDTO dto) {
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户：{}从购物车结算订单", userId);
-        UserOrderCreateVO userOrderCreateVO = orderService.createFromCart(userId, dto.getAddressId(),dto.getUserCouponId());
+        UserOrderCreateVO userOrderCreateVO = orderService.createFromCart(userId, dto.getAddressId(),dto.getUserCouponIds());
         return Result.success(userOrderCreateVO);
     }
 
@@ -60,6 +63,21 @@ public class OrderController {
         log.info("用户：{}直接下单", userId);
         UserOrderCreateVO userOrderCreateVO = orderService.createDirect(userId, userOrderCreateDTO);
         return Result.success(userOrderCreateVO);
+    }
+
+    /**
+     * 预计算订单信息
+     * @param addressId 地址id
+     * @param userCouponIds 用户优惠券id列表
+     * @return 返回值
+     */
+    @GetMapping("/preview")
+    @Operation(summary = "商家预计算订单信息")
+    public Result<UserOrderPreviewVO> previewOrder(@RequestParam Long addressId, @RequestParam List<Long> userCouponIds){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 预计算订单信息",userId);
+        UserOrderPreviewVO previewVO = orderService.previewOrder(userId,addressId,userCouponIds);
+        return Result.success(previewVO);
     }
 
     /**
