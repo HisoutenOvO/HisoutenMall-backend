@@ -13,6 +13,8 @@ public class SeckillProductDetailBO {
 
     private Long skuId;
 
+    private Long productId; // SPU ID
+
     private String productName;   // 商品名
 
     private String skuSpecs;      // 规格

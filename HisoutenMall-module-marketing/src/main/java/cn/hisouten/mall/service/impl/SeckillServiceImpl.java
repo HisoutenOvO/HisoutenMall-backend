@@ -329,6 +329,7 @@ public class SeckillServiceImpl implements SeckillService {
             UserSeckillActivityListVO vo = UserSeckillActivityListVO.builder()
                     .id(activity.getId())
                     .name(activity.getName())
+                    .merchantName(activity.getMerchantName())
                     .startTime(activity.getStartTime())
                     .endTime(activity.getEndTime())
                     .status(activity.getStatus())
@@ -384,17 +385,30 @@ public class SeckillServiceImpl implements SeckillService {
         }
         UserSeckillActivityDetailVO detailVO = new UserSeckillActivityDetailVO();
         BeanUtils.copyProperties(seckillActivity,detailVO);
+
+        //计算 remainSeconds (剩余秒数)
+        LocalDateTime now = LocalDateTime.now();
+        long seconds = 0;
+        if (seckillActivity.getStatus() == 0) { // 0-未开始
+            seconds = java.time.Duration.between(now, seckillActivity.getStartTime()).getSeconds();
+        } else if (seckillActivity.getStatus() == 1) { // 1-进行中
+            seconds = java.time.Duration.between(now, seckillActivity.getEndTime()).getSeconds();
+        }
+        detailVO.setRemainSeconds(Math.max(0, seconds)); // 防止负数
+
         //查询秒杀商品列表
         List<SeckillProductDetailBO> productItemVOList = seckillProductMapper.selectSkusByActivityId(activityId);
         List<UserSeckillProductVO> voList = new ArrayList<>();
         for (SeckillProductDetailBO bo : productItemVOList) {
             UserSeckillProductVO vo = UserSeckillProductVO.builder()
                     .skuId(bo.getSkuId())
+                    .productId(bo.getProductId())
                     .productName(bo.getProductName())
                     .skuSpecs(bo.getSkuSpecs())
                     .image(bo.getImage())
                     .originalPrice(bo.getOriginalPrice())
                     .seckillPrice(bo.getSeckillPrice())
+                    .seckillStock(bo.getSeckillStock())
                     .limitPerUser(bo.getLimitPerUser())
                     .build();
             voList.add(vo);

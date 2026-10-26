@@ -18,6 +18,8 @@ public class UserSeckillProductVO {
 
     private Long skuId;
 
+    private Long productId; // SPU ID
+
     private String productName;
 
     private String skuSpecs;

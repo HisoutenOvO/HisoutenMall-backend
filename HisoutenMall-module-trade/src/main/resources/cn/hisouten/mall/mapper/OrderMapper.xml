@@ -2,11 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.hisouten.mall.mapper.OrderMapper">
     <select id="pageQuery" resultType="cn.hisouten.mall.pojo.vo.order.UserOrderPageResultVO">
-        select o.id , o.order_no as orderNo,o.merchant_id as merchantId,m.name as merchantName,
-               o.pay_amount as payAmount,o.status,o.create_time as createTime,o.source
+        select o.id , o.order_no as orderNo,o.merchant_id as merchantId,m.shop_name as merchantName,
+               o.pay_amount as payAmount,o.status,o.create_time as createTime,o.source,
+               o.receiver_name, o.receiver_phone, o.receiver_address
         from `order` o
         left join merchant_profile m on o.merchant_id = m.user_id
         <where>
+            and o.user_id = #{userId}
             <if test="dto.keyword != null and dto.keyword != ''">
                 and order_no like concat('%', #{dto.keyword}, '%')
             </if>
@@ -17,7 +19,9 @@
                 and o.source = #{dto.source}
             </if>
         and deleted = 0
-        order by m.create_time desc
+            ORDER BY
+            CASE WHEN o.status = 0 THEN 0 ELSE 1 END,
+            o.create_time DESC
         </where>
     </select>
     <select id="MerchantPageQuery" resultType="cn.hisouten.mall.pojo.vo.order.MerchantOrderPageResultVO">

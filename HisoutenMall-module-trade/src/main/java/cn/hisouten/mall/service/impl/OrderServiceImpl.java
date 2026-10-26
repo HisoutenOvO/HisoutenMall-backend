@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 import static cn.hisouten.mall.constant.CommonConstant.*;
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.PayMethodConstant.ALIPAY;
-import static cn.hisouten.mall.constant.PayMethodConstant.WECHAT;
 import static cn.hisouten.mall.constant.SeckillConstant.NORMAL;
 import static cn.hisouten.mall.constant.SeckillConstant.SECKILL;
 import static cn.hisouten.mall.constant.StatusConstant.*;
@@ -127,6 +126,8 @@ public class OrderServiceImpl implements OrderService {
         item.setSkuSpecs(sku.getSpecs());
         item.setPrice(sku.getPrice());
         item.setQuantity(userOrderCreateDTO.getQuantity());
+        item.setSkuImage(sku.getImage());
+        item.setMainImage(product.getMainImage());
 
         List<Long> userCouponIds = new ArrayList<>();
         if(userOrderCreateDTO.getUserCouponId() != null){
@@ -181,12 +182,13 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 用户预计算下单信息
      * @param userId 用户id
-     * @param addressId 地址id
-     * @param userCouponIds 用户优惠券列表
+     * @param previewDTO 预计算参数
      * @return 返回值
      */
     @Override
-    public UserOrderPreviewVO previewOrder(Long userId, Long addressId, List<Long> userCouponIds) {
+    public UserOrderPreviewVO previewOrder(Long userId, UserOrderPreviewDTO previewDTO) {
+        Long addressId = previewDTO.getAddressId();
+        List<Long> userCouponIds = previewDTO.getUserCouponIds();
         //先查购物车里已经勾选了的商品
         List<CartItemListBO> cartItemList = cartItemMapper.selectCheckedItemByUserId(userId);
         if(cartItemList == null || cartItemList.isEmpty()){
@@ -286,6 +288,74 @@ public class OrderServiceImpl implements OrderService {
         return previewVO;
     }
 
+    /**
+     * 用户直接购买预计算
+     * @param userId 用户id
+     * @param dto 参数
+     * @return 返回值
+     */
+    @Override
+    public UserOrderPreviewVO previewDirect(Long userId, UserOrderPreviewDirectDTO dto) {
+        ProductSku sku = productService.getSkuBySkuId(dto.getSkuId());
+        if (sku == null || !Objects.equals(sku.getStatus(), ENABLED)) {
+            throw new BizException(SKU_HAS_DISABLED);
+        }
+        Product product = productService.getProductByProductId(sku.getProductId());
+        if (product == null || !Objects.equals(product.getStatus(), ENABLED)) {
+            throw new BizException(PRODUCT_HAS_DISABLED);
+        }
+
+        // 组装商品信息
+        CartItemListBO item = new CartItemListBO();
+        item.setProductId(product.getId());
+        item.setSkuId(sku.getId());
+        item.setMerchantId(product.getMerchantId());
+        item.setProductName(product.getName());
+        item.setSkuSpecs(sku.getSpecs());
+        item.setPrice(sku.getPrice());
+        item.setQuantity(dto.getQuantity());
+        item.setSkuImage(sku.getImage());
+        item.setMainImage(product.getMainImage());
+
+        BigDecimal totalPrice = sku.getPrice().multiply(BigDecimal.valueOf(dto.getQuantity()));
+        BigDecimal discount = BigDecimal.ZERO;
+
+        // 算优惠券
+        if (dto.getUserCouponId() != null) {
+            UserCoupon userCoupon = userCouponMapper.selectByIdAndUserId(dto.getUserCouponId(), userId);
+            if (userCoupon != null && Objects.equals(userCoupon.getStatus(), NOT_USED)) {
+                Coupon coupon = couponMapper.selectById(userCoupon.getCouponId());
+                if (coupon != null && coupon.getMerchantId().equals(product.getMerchantId())
+                        && totalPrice.compareTo(coupon.getMinAmount()) >= 0) {
+                    if (Objects.equals(coupon.getType(), AMOUNT_OFF_COUPON)) {
+                        discount = coupon.getValue();
+                    } else {
+                        discount = totalPrice.multiply(BigDecimal.ONE.subtract(coupon.getValue())).setScale(2, RoundingMode.HALF_UP);
+                    }
+                }
+            }
+        }
+
+        BigDecimal payAmount = totalPrice.subtract(discount);
+        if (payAmount.compareTo(BigDecimal.ZERO) < 0) payAmount = BigDecimal.ZERO;
+
+        // 包装返回
+        UserOrderPreviewVO.MerchantPreview merchantPreview = new UserOrderPreviewVO.MerchantPreview();
+        merchantPreview.setMerchantId(product.getMerchantId());
+        merchantPreview.setMerchantName(merchantProfileService.getMerchantNameByMerchantId(product.getMerchantId()));
+        merchantPreview.setMerchantProductAmount(totalPrice);
+        merchantPreview.setMerchantDiscount(discount);
+        merchantPreview.setMerchantPayAmount(payAmount);
+        merchantPreview.setItems(List.of(item));
+
+        UserOrderPreviewVO vo = new UserOrderPreviewVO();
+        vo.setMerchantList(List.of(merchantPreview));
+        vo.setTotalProductAmount(totalPrice);
+        vo.setTotalDiscountAmount(discount);
+        vo.setPayAmount(payAmount);
+        return vo;
+    }
+
 
     /**
      * 订单取消支付
@@ -338,9 +408,10 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public PageResult<UserOrderPageResultVO> userPageQuery(UserOrderPageQueryDTO userOrderPageQueryDTO) {
+        Long userId = StpUtil.getLoginIdAsLong();
         //先查询订单主表
         Page<UserOrderPageResultVO> page = new Page<>(userOrderPageQueryDTO.getPage(), userOrderPageQueryDTO.getPageSize());
-        Page<UserOrderPageResultVO> result = orderMapper.pageQuery(page,userOrderPageQueryDTO);
+        Page<UserOrderPageResultVO> result = orderMapper.pageQuery(userId,page,userOrderPageQueryDTO);
         long total = result.getTotal();
         //再查询每个订单的具体项
         List<Long> orderIds = result.getRecords().stream().map(UserOrderPageResultVO::getId).toList();
@@ -967,7 +1038,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         //8.用户传了券，但购物车里没有该商家的商品
-        if (userCouponIds != null && !couponUsed) {
+        if (userCouponIds != null && !userCouponIds.isEmpty() && !couponUsed) {
             throw new BizException(COUPON_NOT_USE);
         }
 

@@ -93,7 +93,8 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
                     || seckillActivity.getEndTime().isBefore(now)) {
                 throw new BizException(ACTIVITY_INVALID);
             }
-            SeckillProduct seckillProduct = seckillProductMapper.selectBySkuId(seckillExecuteDTO.getSkuId());
+            SeckillProduct seckillProduct = seckillProductMapper.selectBySkuIdAndActivityId(
+                    seckillExecuteDTO.getSkuId(), seckillExecuteDTO.getActivityId());
             if(seckillProduct == null){
                 throw new BizException(PRODUCT_NOT_FOUND);
             }
@@ -192,7 +193,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
             }
 
             // 校验是否是秒杀商品
-            SeckillProduct seckillProduct = seckillProductMapper.selectBySkuId(skuId);
+            SeckillProduct seckillProduct = seckillProductMapper.selectBySkuIdAndActivityId(skuId, activityId);
             if (seckillProduct == null || !seckillProduct.getActivityId().equals(message.getActivityId())) {
                 throw new BizException(PRODUCT_NOT_FOUND);
             }
@@ -229,6 +230,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
             item.setSkuSpecs(productSku.getSpecs());
             item.setPrice(seckillProduct.getSeckillPrice());
             item.setQuantity(1);
+            item.setImage(productSku.getImage());
             item.setTotalPrice(seckillProduct.getSeckillPrice());
             orderService.insertOrderItem(item);
 

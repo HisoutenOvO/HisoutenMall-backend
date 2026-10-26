@@ -43,7 +43,7 @@ public interface OrderMapper extends BaseMapper<Order> {
      * @param userOrderPageQueryDTO 条件参数
      * @return 返回值
      */
-    Page<UserOrderPageResultVO> pageQuery(Page<UserOrderPageResultVO> page,@Param("dto") UserOrderPageQueryDTO userOrderPageQueryDTO);
+    Page<UserOrderPageResultVO> pageQuery(Long userId,Page<UserOrderPageResultVO> page,@Param("dto") UserOrderPageQueryDTO userOrderPageQueryDTO);
 
     /**
      * 商家分页查询订单

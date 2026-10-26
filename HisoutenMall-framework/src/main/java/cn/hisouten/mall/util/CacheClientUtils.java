@@ -166,7 +166,7 @@ public class CacheClientUtils{
             stringRedisTemplate.delete(key);
             return null;
         }
-        T object = JSONUtil.toBean((JSONObject) redisData.getData(),type);
+        T object = JSONUtil.toBean(JSONUtil.toJsonStr(redisData.getData()), type);
 
         //判断是否过期
         if(redisData.getExpire().isAfter(LocalDateTime.now())){

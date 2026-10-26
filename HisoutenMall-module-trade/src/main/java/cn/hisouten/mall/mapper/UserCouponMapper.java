@@ -1,7 +1,9 @@
 package cn.hisouten.mall.mapper;
 
 import cn.hisouten.mall.pojo.entity.UserCoupon;
+import cn.hisouten.mall.pojo.vo.coupon.UserCouponPageResultVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -70,4 +72,13 @@ public interface UserCouponMapper extends BaseMapper<UserCoupon> {
      */
     @Update("update user_coupon set status = 2 where status = 0 and expire_time < #{now}")
     int expireCoupons(LocalDateTime now);
+
+    /**
+     * 分页查询用户已有优惠券
+     * @param page 分页参数
+     * @param userId 用户id
+     * @param status 状态
+     * @return 返回值
+     */
+    Page<UserCouponPageResultVO> selectUserCouponPage(Page<UserCouponPageResultVO> page, Long userId, Integer status);
 }

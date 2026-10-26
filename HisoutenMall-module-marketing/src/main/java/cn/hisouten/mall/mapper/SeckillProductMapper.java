@@ -82,4 +82,13 @@ public interface SeckillProductMapper extends BaseMapper<SeckillProduct> {
             "INNER JOIN order_item oi ON o.id = oi.order_id " +
             "WHERE o.user_id = #{userId} AND o.source = 1 AND oi.sku_id = #{skuId} AND o.deleted = 0 AND o.status != 2")
     int countSeckillOrder(Long userId, Long skuId);
+
+    /**
+     * 根据秒杀活动id和skuid一起查秒杀商品
+     * @param skuId skuid
+     * @param activityId
+     * @return
+     */
+    @Select("select * from seckill_product where sku_id = #{skuId} and activity_id = #{activityId}")
+    SeckillProduct selectBySkuIdAndActivityId(Long skuId, Long activityId);
 }

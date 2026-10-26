@@ -6,6 +6,7 @@ import cn.hisouten.mall.pojo.entity.Order;
 import cn.hisouten.mall.pojo.entity.OrderItem;
 import cn.hisouten.mall.pojo.vo.logistics.UserLogisticsVO;
 import cn.hisouten.mall.pojo.vo.order.*;
+import jakarta.validation.Valid;
 import org.apache.ibatis.annotations.Select;
 
 import java.math.BigDecimal;
@@ -182,9 +183,16 @@ public interface OrderService {
     /**
      * 用户预计算下单信息
      * @param userId 用户id
-     * @param addressId 地址id
-     * @param userCouponIds 用户优惠券列表
+     * @param previewDTO 预计算参数
      * @return 返回值
      */
-    UserOrderPreviewVO previewOrder(Long userId, Long addressId, List<Long> userCouponIds);
+    UserOrderPreviewVO previewOrder(Long userId, UserOrderPreviewDTO previewDTO);
+
+    /**
+     * 用户直接购买预计算
+     * @param userId 用户id
+     * @param dto 参数
+     * @return 返回值
+     */
+    UserOrderPreviewVO previewDirect(Long userId, @Valid UserOrderPreviewDirectDTO dto);
 }

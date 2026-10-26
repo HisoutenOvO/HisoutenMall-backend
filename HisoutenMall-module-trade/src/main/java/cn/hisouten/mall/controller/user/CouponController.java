@@ -6,7 +6,9 @@ import cn.hisouten.mall.common.annotation.RepeatSubmit;
 import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.dto.coupon.AvailableCouponPageQueryDTO;
+import cn.hisouten.mall.pojo.dto.coupon.UserCouponPageQueryDTO;
 import cn.hisouten.mall.pojo.vo.coupon.AvailableCouponPageResultVO;
+import cn.hisouten.mall.pojo.vo.coupon.UserCouponPageResultVO;
 import cn.hisouten.mall.pojo.vo.coupon.UserUsableCouponVO;
 import cn.hisouten.mall.service.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,6 +28,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CouponController {
     private final CouponService couponService;
+
+    /**
+     * 分页查询我的优惠券列表
+     * @param pageQueryDTO 分页参数
+     * @return 返回值
+     */
+    @GetMapping("/page")
+    @Operation(summary = "分页查询我的优惠券")
+    public Result<PageResult<UserCouponPageResultVO>> pageQuery(UserCouponPageQueryDTO pageQueryDTO){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 查询我的优惠券列表",userId);
+        PageResult<UserCouponPageResultVO> pageResult = couponService.userPageQuery(userId,pageQueryDTO);
+        return Result.success(pageResult);
+    }
 
     /**
      * 分页查询可领取优惠券列表

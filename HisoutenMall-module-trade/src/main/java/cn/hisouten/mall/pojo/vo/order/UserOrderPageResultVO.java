@@ -32,5 +32,11 @@ public class UserOrderPageResultVO {
 
     private List<OrderItemVO> items;
 
+    private String receiverName;
+
+    private String receiverPhone;
+
+    private String receiverAddress;
+
     private Integer source;
 }

@@ -351,4 +351,17 @@ public class CouponServiceImpl implements CouponService {
         }
         return detailVO;
     }
+
+    /**
+     * 用户分页查询我的优惠券列表
+     * @param userId 用户id
+     * @param pageQueryDTO 分页查询参数
+     * @return 返回值
+     */
+    @Override
+    public PageResult<UserCouponPageResultVO> userPageQuery(Long userId, UserCouponPageQueryDTO pageQueryDTO) {
+        Page<UserCouponPageResultVO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        Page<UserCouponPageResultVO> result = userCouponMapper.selectUserCouponPage(page, userId, pageQueryDTO.getStatus());
+        return new PageResult<>(result.getTotal(), result.getRecords());
+    }
 }

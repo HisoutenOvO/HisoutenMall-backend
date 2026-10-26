@@ -43,7 +43,7 @@ public class UserAddressServiceImpl implements UserAddressService {
         for (UserAddress userAddress : userAddressList) {
             UserAddressListVO vo = new UserAddressListVO();
             vo.setId(userAddress.getId());
-            vo.setReceiveName(userAddress.getReceiverName());
+            vo.setReceiverName(userAddress.getReceiverName());
             vo.setProvince(userAddress.getProvince());
             vo.setCity(userAddress.getCity());
             vo.setDistrict(userAddress.getDistrict());
@@ -121,6 +121,7 @@ public class UserAddressServiceImpl implements UserAddressService {
             userAddressMapper.changeDefaultAddress(userAddress.getUserId());
         }
         userAddressMapper.updateById(userAddress);
+        cacheClientUtils.delete(CACHE_ADDRESS_DETAIL_PREFIX,addressId);
     }
 
     /**
@@ -140,6 +141,7 @@ public class UserAddressServiceImpl implements UserAddressService {
         userAddressMapper.changeDefaultAddress(userAddress.getUserId());
         userAddress.setIsDefault(ENABLED);
         userAddressMapper.updateById(userAddress);
+        cacheClientUtils.delete(CACHE_ADDRESS_DETAIL_PREFIX,addressId);
     }
 
     /**
@@ -159,6 +161,7 @@ public class UserAddressServiceImpl implements UserAddressService {
             throw new BizException(CHANGE_DEFAULT_ADDRESS_FIRST);
         }
         userAddressMapper.deleteById(addressId);
+        cacheClientUtils.delete(CACHE_ADDRESS_DETAIL_PREFIX,addressId);
     }
 
     /**

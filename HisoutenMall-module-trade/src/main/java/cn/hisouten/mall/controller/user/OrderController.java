@@ -5,10 +5,7 @@ import cn.hisouten.mall.common.annotation.Log;
 import cn.hisouten.mall.common.annotation.RepeatSubmit;
 import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.common.pojo.Result;
-import cn.hisouten.mall.pojo.dto.order.UserOrderCreateDTO;
-import cn.hisouten.mall.pojo.dto.order.UserOrderFromCartDTO;
-import cn.hisouten.mall.pojo.dto.order.UserOrderPageQueryDTO;
-import cn.hisouten.mall.pojo.dto.order.UserOrderPayDTO;
+import cn.hisouten.mall.pojo.dto.order.*;
 import cn.hisouten.mall.pojo.vo.logistics.UserLogisticsVO;
 import cn.hisouten.mall.pojo.vo.order.UserOrderCreateVO;
 import cn.hisouten.mall.pojo.vo.order.UserOrderDetailVO;
@@ -66,17 +63,29 @@ public class OrderController {
     }
 
     /**
-     * 预计算订单信息
-     * @param addressId 地址id
-     * @param userCouponIds 用户优惠券id列表
+     * 立即购买预计算下单信息
+     * @param dto 参数
      * @return 返回值
      */
-    @GetMapping("/preview")
-    @Operation(summary = "商家预计算订单信息")
-    public Result<UserOrderPreviewVO> previewOrder(@RequestParam Long addressId, @RequestParam List<Long> userCouponIds){
+    @PostMapping("/preview-direct")
+    @Operation(summary = "立即购买预计算")
+    public Result<UserOrderPreviewVO> previewDirect(@Valid @RequestBody UserOrderPreviewDirectDTO dto) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 直接购买商品预计算下单信息",userId);
+        return Result.success(orderService.previewDirect(userId, dto));
+    }
+
+    /**
+     * 预计算订单信息
+     * @param previewDTO 预计算参数
+     * @return 返回值
+     */
+    @PostMapping("/preview")
+    @Operation(summary = "预计算订单信息")
+    public Result<UserOrderPreviewVO> previewOrder(@RequestBody UserOrderPreviewDTO previewDTO){
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户:{} 预计算订单信息",userId);
-        UserOrderPreviewVO previewVO = orderService.previewOrder(userId,addressId,userCouponIds);
+        UserOrderPreviewVO previewVO = orderService.previewOrder(userId,previewDTO);
         return Result.success(previewVO);
     }
 

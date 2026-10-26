@@ -28,14 +28,16 @@
         where p.status = 1 and s.status = 1 and p.deleted = 0 and s.deleted = 0 and s.stock >= c.quantity
     </select>
     <select id="selectCheckedItemByUserId" resultType="cn.hisouten.mall.pojo.bo.cart.CartItemListBO">
-        SELECT c.id, c.product_id, c.sku_id, c.quantity,
-        p.merchant_id, p.name AS productName, p.main_image AS mainImage,
-        s.specs AS skuSpecs, s.price, s.stock,
-        s.status AS skuStatus, s.deleted AS skuDeleted,
-        p.status AS productStatus, p.deleted AS productDeleted
-        FROM cart_item c
-        INNER JOIN product p ON c.product_id = p.id
-        INNER JOIN product_sku s ON c.sku_id = s.id
-        WHERE c.user_id = #{userId} AND c.checked = 1
+        select c.id, c.product_id, c.sku_id, c.quantity,
+        p.merchant_id, p.name as productName, p.main_image as mainImage,
+        mp.shop_name as merchantName,s.image as skuImage,c.checked,
+        s.specs as skuSpecs, s.price, s.stock,
+        s.status as skuStatus, s.deleted as skuDeleted,
+        p.status as productStatus, p.deleted as productDeleted
+        from cart_item c
+        left join product p on c.product_id = p.id
+        left join product_sku s on c.sku_id = s.id
+        left join merchant_profile mp on p.merchant_id = mp.user_id
+        where c.user_id = #{userId} and c.checked = 1
     </select>
 </mapper>

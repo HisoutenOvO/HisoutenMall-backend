@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class UserAddressListVO {
     private Long id;
 
-    private String receiveName;
+    private String receiverName;
 
     private String province;
 

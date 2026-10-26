@@ -18,6 +18,7 @@
     <select id="selectSkusByActivityId" resultType="cn.hisouten.mall.pojo.bo.product.SeckillProductDetailBO">
         select sp.id, sp.sku_id, sp.seckill_price,sp.seckill_stock,sp.limit_per_user,
                p.name as productName,
+               p.id as productId,
                ps.specs as skuSpecs,ps.image, ps.price as originalPrice,ps.stock as skuStock
         from seckill_product sp
         left join product_sku ps on sp.sku_id = ps.id

@@ -35,9 +35,11 @@
     </select>
     <select id="selectValidActivityList" resultType="cn.hisouten.mall.pojo.entity.SeckillActivity">
         select sa.id, sa.name, sa.start_time, sa.end_time, sa.status, sa.merchant_id,
-               sum(sp.seckill_stock) as productCount
+               sum(sp.seckill_stock) as productCount,
+               mp.shop_name as merchantName
         from seckill_activity sa
-                 left join seckill_product sp on sa.id = sp.activity_id
+        left join seckill_product sp on sa.id = sp.activity_id
+        left join merchant_profile mp on mp.user_id = sa.merchant_id
         where sa.status in (0,1) and sa.deleted = 0
         group by sa.id, sa.name, sa.start_time, sa.end_time, sa.status, sa.merchant_id
         order by sa.status desc, sa.start_time

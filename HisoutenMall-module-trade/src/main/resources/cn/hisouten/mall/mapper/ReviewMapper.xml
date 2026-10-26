@@ -42,7 +42,7 @@
                  left join `order` o on oi.order_id = o.id
                  left join product_review r on r.order_item_id = oi.id
         where o.user_id = #{userId}
-          and o.status = 3   -- 已完成
+          and o.status = 4   -- 已完成
           and o.deleted = 0
           and r.id is null   -- 未评价
         order by o.finish_time desc

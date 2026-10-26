@@ -20,6 +20,8 @@ public class UserSeckillActivityListVO {
 
     private String name;
 
+    private String merchantName;
+
     private LocalDateTime startTime;
 
     private LocalDateTime endTime;
