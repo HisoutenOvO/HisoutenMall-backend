@@ -9,7 +9,8 @@
         c.name as categoryName,
         mp.shop_name as merchantName,
         sku_agg.min_price as minPrice,
-        sku_agg.total_stock as totalStock
+        sku_agg.total_stock as totalStock,
+        ifnull(sales_agg.sales, 0) as salesCount
         from product p
         left join merchant_profile mp on p.merchant_id = mp.user_id
         left join brand b on p.brand_id = b.id
@@ -20,12 +21,25 @@
         where deleted = 0
         group by product_id
         ) sku_agg on p.id = sku_agg.product_id
+        <!-- 统计商品销量 (只算已支付或已完成的订单) -->
+        left join (
+        select oi.product_id, SUM(oi.quantity) as sales
+        from order_item oi
+        left join `order` o on oi.order_id = o.id
+        where o.status in (1, 3, 4)
+        group by oi.product_id
+        ) sales_agg on p.id = sales_agg.product_id
         <where>
             <if test="dto.deleted != null">
                 and p.deleted = #{dto.deleted}
             </if>
             <if test="dto.keyword != null and dto.keyword != ''">
-                and p.name like concat('%', #{dto.keyword}, '%')
+                and (
+                p.name like concat('%', #{dto.keyword}, '%')
+                or c.name like concat('%', #{dto.keyword}, '%')
+                or b.name like concat('%', #{dto.keyword}, '%')
+                or mp.shop_name like concat('%', #{dto.keyword}, '%')
+                )
             </if>
             <if test="dto.categoryId != null">
                 and p.category_id = #{dto.categoryId}
@@ -43,7 +57,24 @@
                 and mp.shop_name like concat('%',#{dto.merchantName},'%')
             </if>
         </where>
-        order by p.create_time desc
+        <choose>
+            <when test="dto.sortType != null and dto.sortType == 1">
+                order by salesCount desc, p.create_time desc
+            </when>
+            <when test="dto.sortType != null and dto.sortType == 2">
+                order by minPrice asc, p.create_time desc
+            </when>
+            <when test="dto.sortType != null and dto.sortType == 3">
+                order by minPrice desc, p.create_time desc
+            </when>
+            <when test="dto.sortType != null and dto.sortType == 4">
+                order by p.create_time desc
+            </when>
+            <otherwise>
+                order BY p.create_time desc
+            </otherwise>
+        </choose>
+
     </select>
 
     <select id="selectExistedProductName" resultType="java.lang.String">

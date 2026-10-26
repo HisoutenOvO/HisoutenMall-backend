@@ -17,4 +17,6 @@ public class UserProductPageQueryDTO extends BasePageQueryDTO {
 
     private Long brandId;
 
+    private Integer sortType;
+
 }

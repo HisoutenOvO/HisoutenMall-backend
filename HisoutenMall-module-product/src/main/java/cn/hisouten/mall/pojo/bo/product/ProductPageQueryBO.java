@@ -22,4 +22,7 @@ public class ProductPageQueryBO extends BasePageQueryDTO {
     private Integer deleted;
 
     private String merchantName;
+
+    private Integer sortType;
+
 }

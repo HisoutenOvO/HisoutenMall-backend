@@ -37,4 +37,6 @@ public class UserProductPageResultVO {
     private BigDecimal minPrice;
 
     private Integer totalStock;
+
+    private Integer salesCount;
 }

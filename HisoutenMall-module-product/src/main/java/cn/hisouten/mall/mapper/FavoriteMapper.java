@@ -40,7 +40,6 @@ public interface FavoriteMapper extends BaseMapper<UserFavorite> {
      * 根据商品id取消收藏
      * @param productId 商品id
      * @param userId 用户id
-     * @return 返回值
      */
-    Product deleteByProductId(Long userId,Long productId);
+    void deleteByProductId(Long userId,Long productId);
 }

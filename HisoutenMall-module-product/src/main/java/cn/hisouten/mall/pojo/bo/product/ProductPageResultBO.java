@@ -37,5 +37,7 @@ public class ProductPageResultBO {
 
     private Integer totalStock;
 
+    private Integer salesCount;
+
     private LocalDateTime updateTime;
 }

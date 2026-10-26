@@ -379,6 +379,7 @@ public class ProductServiceImpl implements ProductService {
         BeanUtils.copyProperties(userProductPageQueryDTO,productPageQueryBO);
         productPageQueryBO.setStatus(ENABLED); //强制用户只能看到上架商品
         productPageQueryBO.setDeleted(DISABLED); //强制用户只能看到未删除的
+        productPageQueryBO.setSortType(userProductPageQueryDTO.getSortType());
         //分页查询
         Page<ProductPageResultBO> result = productMapper.pageQuery(page, productPageQueryBO);
         //总数
@@ -398,6 +399,7 @@ public class ProductServiceImpl implements ProductService {
                     .brandName(bo.getBrandName())
                     .mainImage(bo.getMainImage())
                     .minPrice(bo.getMinPrice())
+                    .salesCount(bo.getSalesCount())
                     .totalStock(bo.getTotalStock())
                     .build();
             records.add(vo);
