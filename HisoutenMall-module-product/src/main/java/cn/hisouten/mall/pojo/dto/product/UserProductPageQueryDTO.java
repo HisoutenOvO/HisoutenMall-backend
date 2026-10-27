@@ -15,6 +15,8 @@ public class UserProductPageQueryDTO extends BasePageQueryDTO {
 
     private Long categoryId;
 
+    private Long merchantId;
+
     private Long brandId;
 
     private Integer sortType;

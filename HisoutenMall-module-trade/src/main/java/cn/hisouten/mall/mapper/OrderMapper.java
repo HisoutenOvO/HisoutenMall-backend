@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -34,7 +35,7 @@ public interface OrderMapper extends BaseMapper<Order> {
      * @param deadLineTime 订单创建时间——截止时间
      * @return 返回值
      */
-    @Select("select * from `order` where status = 0 and deleted = 0 and create_time <= #{deadLineTime}")
+    @Select("select * from `order` where status = 0 and create_time <= #{deadLineTime}")
     List<Order> selectByCreateTime(LocalDateTime deadLineTime);
 
     /**
@@ -118,4 +119,10 @@ public interface OrderMapper extends BaseMapper<Order> {
      */
     List<DailySalesVO> getMerchantSalesTrend(Long merchantId);
 
+    /**
+     * 用户恢复删除的订单
+     * @param orderId 订单id
+     */
+    @Update("update `order` set deleted = 0 where id = #{orderId}")
+    void restoreOrder(Long orderId);
 }

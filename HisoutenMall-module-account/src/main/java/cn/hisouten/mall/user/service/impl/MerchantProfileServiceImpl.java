@@ -1,12 +1,14 @@
 package cn.hisouten.mall.user.service.impl;
 
 import cn.hisouten.mall.exception.BizException;
+import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.user.mapper.AuthMapper;
 import cn.hisouten.mall.user.mapper.MerchantProfileMapper;
 import cn.hisouten.mall.user.pojo.dto.update.MerchantUpdateDTO;
 import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
 import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.vo.merchant.MerchantDetailVO;
+import cn.hisouten.mall.user.pojo.vo.user.UserMerchantDetailVO;
 import cn.hisouten.mall.user.service.MerchantProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -16,11 +18,14 @@ import org.springframework.stereotype.Service;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.RedisConstant.CACHE_MERCHANT_NAME_PREFIX;
+import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
+import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
 
 @Service
 @RequiredArgsConstructor
 public class MerchantProfileServiceImpl implements MerchantProfileService {
     private final MerchantProfileMapper merchantProfileMapper;
+    private final ProductService productService;
     private final AuthMapper authMapper;
 
     /**
@@ -85,6 +90,90 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
         }
         BeanUtils.copyProperties(merchantUpdateDTO,merchantProfile);
         merchantProfileMapper.updateById(merchantProfile);
+    }
+
+    /**
+     * 用户查询商家详情
+     * @param userId 用户id
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    @Override
+    public UserMerchantDetailVO userDetailQuery(Long userId, Long merchantId) {
+        MerchantProfile merchantProfile = merchantProfileMapper.selectProfileByMerchantId(merchantId);
+        if(merchantProfile == null){
+            throw new BizException(MERCHANT_NOT_FOUND);
+        }
+        User merchant = authMapper.getUserByUserId(merchantId);
+        if(merchant == null || merchant.getStatus() != ENABLED){
+            throw new BizException(MERCHANT_NOT_FOUND);
+        }
+
+        Long productCount = 0L;
+        Long followerCount = 0L;
+        int isFollowed = 0;
+
+        productCount = productService.getOnSaleProductCount(merchantId);
+        followerCount = merchantProfileMapper.selectFollowerCount(merchantId);
+        isFollowed = merchantProfileMapper.isFollowed(userId,merchantId);
+
+        UserMerchantDetailVO detailVO = new UserMerchantDetailVO();
+        detailVO.setMerchantId(merchantProfile.getUserId());
+        detailVO.setShopName(merchantProfile.getShopName());
+        detailVO.setShopLogo(detailVO.getShopLogo());
+        detailVO.setShopDescription(detailVO.getShopDescription());
+        detailVO.setProductCount(productCount);
+        detailVO.setFollowerCount(followerCount);
+        detailVO.setIsFollowed(isFollowed != 0);
+        return detailVO;
+    }
+
+    /**
+     * 用户关注店铺
+     * @param userId 用户id
+     * @param merchantId 店铺id
+     */
+    @Override
+    public void followMerchant(Long userId, Long merchantId) {
+        User merchant = authMapper.getUserByUserId(merchantId);
+        if(merchant == null || merchant.getStatus() != ENABLED){
+            throw new BizException();
+        }
+        MerchantProfile merchantProfile = merchantProfileMapper.selectProfileByMerchantId(merchantId);
+        if(merchantProfile == null){
+            throw new BizException(MERCHANT_NOT_FOUND);
+        }
+        int isFollowed = merchantProfileMapper.isFollowed(userId,merchantId);
+
+        if(isFollowed == 0){
+            merchantProfileMapper.follow(userId,merchantId);
+        }else{
+            return;
+        }
+    }
+
+    /**
+     * 用户取关店铺
+     * @param userId 用户id
+     * @param merchantId 商家id
+     */
+    @Override
+    public void cancelFollow(Long userId, Long merchantId) {
+        User merchant = authMapper.getUserByUserId(merchantId);
+        if(merchant == null || merchant.getStatus() != ENABLED){
+            throw new BizException();
+        }
+        MerchantProfile merchantProfile = merchantProfileMapper.selectProfileByMerchantId(merchantId);
+        if(merchantProfile == null){
+            throw new BizException(MERCHANT_NOT_FOUND);
+        }
+        int isFollowed = merchantProfileMapper.isFollowed(userId,merchantId);
+
+        if(isFollowed != 0){
+            merchantProfileMapper.cancelFollow(userId,merchantId);
+        }else{
+            return;
+        }
     }
 
 

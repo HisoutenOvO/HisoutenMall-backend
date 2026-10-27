@@ -22,7 +22,6 @@ public class CheckStockTask {
 
     private final SeckillProductMapper seckillProductMapper;
     private final StringRedisTemplate stringRedisTemplate;
-    private final ProductService productService;
 
     /**
      * 每分钟对账一次

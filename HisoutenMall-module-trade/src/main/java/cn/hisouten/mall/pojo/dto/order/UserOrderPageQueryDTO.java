@@ -22,4 +22,6 @@ public class UserOrderPageQueryDTO extends BasePageQueryDTO {
     private Integer status;
 
     private Integer source;
+
+    private Integer deleted;
 }

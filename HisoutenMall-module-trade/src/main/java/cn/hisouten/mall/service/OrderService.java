@@ -195,4 +195,18 @@ public interface OrderService {
      * @return 返回值
      */
     UserOrderPreviewVO previewDirect(Long userId, @Valid UserOrderPreviewDirectDTO dto);
+
+    /**
+     * 用户删除订单
+     * @param userId 用户id
+     * @param orderNo 订单号
+     */
+    void userDeleteOrder(Long userId, String orderNo);
+
+    /**
+     * 用户恢复删除订单
+     * @param userId 用户id
+     * @param orderNo 订单号
+     */
+    void restoreOrder(Long userId, String orderNo);
 }

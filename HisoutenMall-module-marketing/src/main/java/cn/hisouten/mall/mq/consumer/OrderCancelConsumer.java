@@ -20,6 +20,9 @@ import static cn.hisouten.mall.constant.SeckillConstant.RUNNING;
 import static cn.hisouten.mall.mq.constant.MqConstant.ORDER_CANCEL_GROUP;
 import static cn.hisouten.mall.mq.constant.MqConstant.ORDER_CANCEL_TOPIC;
 
+/**
+ * 取消订单消费者
+ */
 @Component
 @Slf4j
 @RequiredArgsConstructor

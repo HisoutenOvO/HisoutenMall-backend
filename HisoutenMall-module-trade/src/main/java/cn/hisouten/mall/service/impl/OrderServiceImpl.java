@@ -356,6 +356,42 @@ public class OrderServiceImpl implements OrderService {
         return vo;
     }
 
+    /**
+     * 用户删除订单
+     * @param userId 用户id
+     * @param orderNo 订单号
+     */
+    @Transactional
+    public void userDeleteOrder(Long userId, String orderNo) {
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if (order == null || !Objects.equals(order.getUserId(), userId)) {
+            throw new BizException(ORDER_NOT_FOUND);
+        }
+        // 只有已取消和已完成的订单才能删除
+        if (order.getStatus() != CANCELLED && order.getStatus() != COMPLETED) {
+            throw new BizException(ORDER_STATUS_ERROR);
+        }
+        orderMapper.deleteById(order.getId());
+    }
+
+    /**
+     * 用户恢复删除订单
+     * @param userId 用户id
+     * @param orderNo 订单号
+     */
+    @Override
+    @Transactional
+    public void restoreOrder(Long userId, String orderNo) {
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if (order == null || !Objects.equals(order.getUserId(), userId)) {
+            throw new BizException(ORDER_NOT_FOUND);
+        }
+        if (order.getDeleted() == 0) {
+            throw new BizException(ORDER_STATUS_ERROR);
+        }
+        orderMapper.restoreOrder(order.getId());
+    }
+
 
     /**
      * 订单取消支付
@@ -411,6 +447,9 @@ public class OrderServiceImpl implements OrderService {
         Long userId = StpUtil.getLoginIdAsLong();
         //先查询订单主表
         Page<UserOrderPageResultVO> page = new Page<>(userOrderPageQueryDTO.getPage(), userOrderPageQueryDTO.getPageSize());
+        if(userOrderPageQueryDTO.getDeleted() == null){
+            userOrderPageQueryDTO.setDeleted(DISABLED);
+        }
         Page<UserOrderPageResultVO> result = orderMapper.pageQuery(userId,page,userOrderPageQueryDTO);
         long total = result.getTotal();
         //再查询每个订单的具体项
@@ -859,7 +898,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public BigDecimal getTotalSales(Long merchantId) {
-        return orderMapper.selectTodaySales(merchantId);
+        return orderMapper.selectTotalSales(merchantId);
     }
 
     /**

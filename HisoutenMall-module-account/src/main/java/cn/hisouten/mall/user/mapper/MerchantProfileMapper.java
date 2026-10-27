@@ -2,12 +2,11 @@ package cn.hisouten.mall.user.mapper;
 
 import cn.hisouten.mall.user.pojo.dto.AdminMerchantPageQueryDTO;
 import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
+import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantPageResultVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface MerchantProfileMapper extends BaseMapper<MerchantProfile> {
@@ -49,4 +48,37 @@ public interface MerchantProfileMapper extends BaseMapper<MerchantProfile> {
      */
     @Select("select * from merchant_profile where user_id = #{merchantId}")
     MerchantProfile selectProfileByMerchantId(Long merchantId);
+
+    /**
+     * 通过商家id获取关注人数
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    @Select("select count(*) from user_merchant_follow where merchant_id = #{merchantId}")
+    Long selectFollowerCount(Long merchantId);
+
+    /**
+     * 查询用户是否关注商家
+     * @param userId 用户id
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    @Select("select count(*) from user_merchant_follow where merchant_id = #{merchantId} and user_id = #{useId}")
+    int isFollowed(Long userId, Long merchantId);
+
+    /**
+     * 关注店铺
+     * @param userId 用户id
+     * @param merchantId 店铺id
+     */
+    @Insert("insert into user_merchant_follow set user_id = #{userId}, merchant_id = #{merchantId}, create_time = NOW()")
+    void follow(Long userId, Long merchantId);
+
+    /**
+     * 取关店铺
+     * @param userId 用户id
+     * @param merchantId 商家id
+     */
+    @Delete("delete from user_merchant_follow where user_id = #{userId} and merchant_id = #{merchantId}")
+    void cancelFollow(Long userId, Long merchantId);
 }

@@ -2,6 +2,7 @@ package cn.hisouten.mall.user.service;
 
 import cn.hisouten.mall.user.pojo.dto.update.MerchantUpdateDTO;
 import cn.hisouten.mall.user.pojo.vo.merchant.MerchantDetailVO;
+import cn.hisouten.mall.user.pojo.vo.user.UserMerchantDetailVO;
 
 public interface MerchantProfileService {
 
@@ -27,4 +28,25 @@ public interface MerchantProfileService {
     void updateInfo(Long merchantId, MerchantUpdateDTO merchantUpdateDTO);
 
 
+    /**
+     * 用户查询商家详情
+     * @param userId 用户id
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    UserMerchantDetailVO userDetailQuery(Long userId, Long merchantId);
+
+    /**
+     * 用户关注店铺
+     * @param userId 用户id
+     * @param merchantId 店铺id
+     */
+    void followMerchant(Long userId, Long merchantId);
+
+    /**
+     * 用户取关店铺
+     * @param userId 用户id
+     * @param merchantId 商家id
+     */
+    void cancelFollow(Long userId, Long merchantId);
 }

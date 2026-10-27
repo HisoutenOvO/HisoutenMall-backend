@@ -158,4 +158,32 @@ public class OrderController {
         orderService.receive(userId,orderNo);
         return Result.success();
     }
+
+    /**
+     * 删除订单
+     * @param orderNo 订单号
+     * @return 返回值
+     */
+    @DeleteMapping("/{orderNo}")
+    @Operation(summary = "用户删除订单")
+    public Result delete(@PathVariable String orderNo){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 删除订单:{} ",userId,orderNo);
+        orderService.userDeleteOrder(userId,orderNo);
+        return Result.success();
+    }
+
+    /**
+     * 用户恢复删除订单
+     * @param orderNo 订单号
+     * @return 返回值
+     */
+    @PutMapping("/{orderNo}/restore")
+    @Operation(summary = "恢复订单")
+    public Result restoreOrder(@PathVariable String orderNo) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 恢复订单:{}", userId, orderNo);
+        orderService.restoreOrder(userId, orderNo);
+        return Result.success();
+    }
 }

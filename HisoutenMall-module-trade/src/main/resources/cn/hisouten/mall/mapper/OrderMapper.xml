@@ -9,6 +9,9 @@
         left join merchant_profile m on o.merchant_id = m.user_id
         <where>
             and o.user_id = #{userId}
+            <if test="dto.deleted != null">
+                and deleted = #{dto.deleted}
+            </if>
             <if test="dto.keyword != null and dto.keyword != ''">
                 and order_no like concat('%', #{dto.keyword}, '%')
             </if>
@@ -28,7 +31,6 @@
             <if test="dto.source != null">
                 and o.source = #{dto.source}
             </if>
-        and deleted = 0
             ORDER BY
             CASE WHEN o.status = 0 THEN 0 ELSE 1 END,
             o.create_time DESC
@@ -53,7 +55,7 @@
         <if test="dto.source != null">
             and o.source = #{dto.source}
         </if>
-        and deleted = 0 and o.merchant_id = #{merchantId}
+        and o.merchant_id = #{merchantId}
         </where>
         order by o.create_time desc
     </select>
@@ -74,7 +76,6 @@
             <if test="dto.buyerName != null and dto.buyerName != ''">
                 and u.nickname like concat('%', #{dto.buyerName}, '%')
             </if>
-            and o.deleted = 0
         </where>
         order by m.create_time desc
     </select>
