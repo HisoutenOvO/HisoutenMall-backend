@@ -49,4 +49,12 @@ public interface MerchantProfileService {
      * @param merchantId 商家id
      */
     void cancelFollow(Long userId, Long merchantId);
+
+    /**
+     * 用户查询是否关注店铺
+     * @param userId 用户id
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    Boolean userIsFollowed(Long userId, Long merchantId);
 }

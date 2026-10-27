@@ -31,7 +31,7 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
     private final ProductService productService;
     private final AuthMapper authMapper;
 
-    private CacheClientUtils cacheClientUtils;
+    private final CacheClientUtils cacheClientUtils;
 
     /**
      * 根据商家id获取商家名称
@@ -153,7 +153,7 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
      * @return 返回值
      */
     private MerchantProfile getFromDB(Long merchantId){
-        return merchantProfileMapper.selectById(merchantId);
+        return merchantProfileMapper.selectProfileByMerchantId(merchantId);
     }
 
     /**
@@ -202,6 +202,18 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
         }else{
             return;
         }
+    }
+
+    /**
+     * 用户查询是否关注店铺
+     * @param userId 用户id
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    @Override
+    public Boolean userIsFollowed(Long userId, Long merchantId) {
+        int isFollowed = merchantProfileMapper.isFollowed(userId,merchantId);
+        return isFollowed == ENABLED;
     }
 
 

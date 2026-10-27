@@ -63,7 +63,7 @@ public interface MerchantProfileMapper extends BaseMapper<MerchantProfile> {
      * @param merchantId 商家id
      * @return 返回值
      */
-    @Select("select count(*) from user_merchant_follow where merchant_id = #{merchantId} and user_id = #{useId}")
+    @Select("select count(*) from user_merchant_follow where merchant_id = #{merchantId} and user_id = #{userId}")
     int isFollowed(Long userId, Long merchantId);
 
     /**

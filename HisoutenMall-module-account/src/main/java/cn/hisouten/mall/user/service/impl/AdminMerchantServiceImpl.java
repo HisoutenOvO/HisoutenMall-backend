@@ -34,7 +34,7 @@ public class AdminMerchantServiceImpl implements AdminMerchantService {
     private final AuthMapper authMapper;
     private final ProductService productService;
 
-    private CacheClientUtils cacheClientUtils;
+    private final CacheClientUtils cacheClientUtils;
 
     /**
      * 商家分页查询

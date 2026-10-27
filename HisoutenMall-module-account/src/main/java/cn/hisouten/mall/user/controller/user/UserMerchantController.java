@@ -77,4 +77,12 @@ public class UserMerchantController {
         PageResult<UserProductPageResultVO> pageResult = productService.userPageQuery(productPageQueryDTO);
         return Result.success(pageResult);
     }
+
+    @GetMapping("/{merchantId}/check-follow")
+    public Result<Boolean> checkFollow(@PathVariable Long merchantId){
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户:{} 查询是否关注店铺:{} ",userId,merchantId);
+        Boolean isFollowed = merchantProfileService.userIsFollowed(userId,merchantId);
+        return Result.success(isFollowed);
+    }
 }
