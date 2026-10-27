@@ -2,7 +2,7 @@ package cn.hisouten.mall.user.mapper;
 
 import cn.hisouten.mall.user.pojo.dto.AdminUserPageQueryDTO;
 import cn.hisouten.mall.user.pojo.entity.UserProfile;
-import cn.hisouten.mall.user.pojo.vo.user.AdminUserPageResultVO;
+import cn.hisouten.mall.user.pojo.vo.admin.AdminUserPageResultVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;

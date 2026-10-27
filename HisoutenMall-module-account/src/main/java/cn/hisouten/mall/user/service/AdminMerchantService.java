@@ -3,8 +3,8 @@ package cn.hisouten.mall.user.service;
 import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.user.pojo.dto.AdminAuditMerchantDTO;
 import cn.hisouten.mall.user.pojo.dto.AdminMerchantPageQueryDTO;
-import cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantDetailVO;
-import cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantPageResultVO;
+import cn.hisouten.mall.user.pojo.vo.admin.AdminMerchantDetailVO;
+import cn.hisouten.mall.user.pojo.vo.admin.AdminMerchantPageResultVO;
 import jakarta.validation.Valid;
 
 public interface AdminMerchantService {

@@ -2,8 +2,8 @@ package cn.hisouten.mall.user.mapper;
 
 import cn.hisouten.mall.user.pojo.dto.AdminMerchantPageQueryDTO;
 import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
-import cn.hisouten.mall.user.pojo.entity.User;
-import cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantPageResultVO;
+import cn.hisouten.mall.user.pojo.vo.admin.AdminMerchantPageResultVO;
+import cn.hisouten.mall.user.pojo.vo.user.UserMerchantFollowPageResultVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.*;
@@ -81,4 +81,12 @@ public interface MerchantProfileMapper extends BaseMapper<MerchantProfile> {
      */
     @Delete("delete from user_merchant_follow where user_id = #{userId} and merchant_id = #{merchantId}")
     void cancelFollow(Long userId, Long merchantId);
+
+    /**
+     * 分页查询已关注店铺列表
+     * @param userId 用户id
+     * @param page 分页参数
+     * @return 返回值
+     */
+    Page<UserMerchantFollowPageResultVO> followPageQuery(Long userId, Page<UserMerchantFollowPageResultVO> page);
 }

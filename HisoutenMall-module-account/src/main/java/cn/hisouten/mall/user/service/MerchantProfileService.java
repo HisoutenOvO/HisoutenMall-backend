@@ -1,8 +1,11 @@
 package cn.hisouten.mall.user.service;
 
+import cn.hisouten.mall.common.pojo.BasePageQueryDTO;
+import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.user.pojo.dto.update.MerchantUpdateDTO;
 import cn.hisouten.mall.user.pojo.vo.merchant.MerchantDetailVO;
 import cn.hisouten.mall.user.pojo.vo.user.UserMerchantDetailVO;
+import cn.hisouten.mall.user.pojo.vo.user.UserMerchantFollowPageResultVO;
 
 public interface MerchantProfileService {
 
@@ -57,4 +60,12 @@ public interface MerchantProfileService {
      * @return 返回值
      */
     Boolean userIsFollowed(Long userId, Long merchantId);
+
+    /**
+     * 用户分页查询已关注店铺列表
+     * @param userId 用户id
+     * @param pageQueryDTO 分页参数
+     * @return 返回值
+     */
+    PageResult<UserMerchantFollowPageResultVO> followPageQuery(Long userId, BasePageQueryDTO pageQueryDTO);
 }

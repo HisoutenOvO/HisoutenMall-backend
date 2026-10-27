@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.hisouten.mall.user.mapper.MerchantProfileMapper">
-    <select id="pageQuery" resultType="cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantPageResultVO">
+    <select id="pageQuery" resultType="cn.hisouten.mall.user.pojo.vo.admin.AdminMerchantPageResultVO">
         select u.id,u.username,u.status,u.deleted,u.create_time,u.update_time,
                mp.shop_name,mp.shop_logo,mp.contact_phone,mp.audit_status,mp.audit_reason
         from user u
@@ -24,7 +24,7 @@
             order by u.create_time desc
         </where>
     </select>
-    <select id="getMerchantById" resultType="cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantDetailVO">
+    <select id="getMerchantById" resultType="cn.hisouten.mall.user.pojo.vo.admin.AdminMerchantDetailVO">
         select u.id,u.username,u.status,
                mp.shop_name,mp.shop_logo,mp.shop_description,mp.contact_phone,mp.business_license,
                mp.audit_status,mp.audit_reason
@@ -51,5 +51,18 @@
         </if>
             </where>
 
+    </select>
+    <select id="followPageQuery" resultType="cn.hisouten.mall.user.pojo.vo.user.UserMerchantFollowPageResultVO">
+        select
+            f.merchant_id,
+            f.create_time as followTime,
+            m.shop_name as shopName,
+            m.shop_logo as shopLogo,
+            (select COUNT(*) FROM user_merchant_follow where merchant_id = f.merchant_id) as followerCount,
+            (select COUNT(*) FROM product where merchant_id = f.merchant_id and status = 1 and deleted = 0) as productCount
+        from user_merchant_follow f
+        left join merchant_profile m on f.merchant_id = m.user_id
+        where f.user_id = #{userId}
+        order by f.create_time desc
     </select>
 </mapper>

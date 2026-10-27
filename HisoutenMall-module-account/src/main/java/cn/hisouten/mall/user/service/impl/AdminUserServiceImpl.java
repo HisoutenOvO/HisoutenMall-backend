@@ -7,7 +7,7 @@ import cn.hisouten.mall.user.mapper.AuthMapper;
 import cn.hisouten.mall.user.mapper.UserProfileMapper;
 import cn.hisouten.mall.user.pojo.dto.AdminUserPageQueryDTO;
 import cn.hisouten.mall.user.pojo.entity.User;
-import cn.hisouten.mall.user.pojo.vo.user.AdminUserPageResultVO;
+import cn.hisouten.mall.user.pojo.vo.admin.AdminUserPageResultVO;
 import cn.hisouten.mall.user.service.AdminUserService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;

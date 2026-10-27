@@ -1,35 +1,35 @@
-package cn.hisouten.mall.user.pojo.vo.merchant;
+package cn.hisouten.mall.user.pojo.vo.admin;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 /**
- * 管理员查询商家详情返回值
+ * 管理员分页查询商家返回值
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class AdminMerchantDetailVO {
+public class AdminMerchantPageResultVO {
     private Long id;
 
     private String username;
 
     private Integer status;
 
+    private Integer deleted;
+
     private String shopName;
 
     private String shopLogo;
 
-    private String shopDescription;
-
     private String contactPhone;
-
-    private String businessLicense;
 
     private Integer auditStatus;
 
     private String auditReason;
+
+    private LocalDateTime createTime;
+
+    private LocalDateTime updateTime;
 }

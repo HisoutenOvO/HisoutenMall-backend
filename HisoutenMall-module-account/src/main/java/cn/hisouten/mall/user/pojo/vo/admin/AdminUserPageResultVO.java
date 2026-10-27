@@ -1,4 +1,4 @@
-package cn.hisouten.mall.user.pojo.vo.user;
+package cn.hisouten.mall.user.pojo.vo.admin;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

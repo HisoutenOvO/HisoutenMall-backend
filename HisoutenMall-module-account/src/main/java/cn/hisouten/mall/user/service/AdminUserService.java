@@ -2,7 +2,7 @@ package cn.hisouten.mall.user.service;
 
 import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.user.pojo.dto.AdminUserPageQueryDTO;
-import cn.hisouten.mall.user.pojo.vo.user.AdminUserPageResultVO;
+import cn.hisouten.mall.user.pojo.vo.admin.AdminUserPageResultVO;
 
 public interface AdminUserService {
     /**

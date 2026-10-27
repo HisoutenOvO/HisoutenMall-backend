@@ -1,5 +1,7 @@
 package cn.hisouten.mall.user.service.impl;
 
+import cn.hisouten.mall.common.pojo.BasePageQueryDTO;
+import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.user.mapper.AuthMapper;
@@ -9,8 +11,10 @@ import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
 import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.vo.merchant.MerchantDetailVO;
 import cn.hisouten.mall.user.pojo.vo.user.UserMerchantDetailVO;
+import cn.hisouten.mall.user.pojo.vo.user.UserMerchantFollowPageResultVO;
 import cn.hisouten.mall.user.service.MerchantProfileService;
 import cn.hisouten.mall.util.CacheClientUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
@@ -214,6 +218,19 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
     public Boolean userIsFollowed(Long userId, Long merchantId) {
         int isFollowed = merchantProfileMapper.isFollowed(userId,merchantId);
         return isFollowed == ENABLED;
+    }
+
+    /**
+     * 用户分页查询已关注店铺列表
+     * @param userId 用户id
+     * @param pageQueryDTO 分页参数
+     * @return 返回值
+     */
+    @Override
+    public PageResult<UserMerchantFollowPageResultVO> followPageQuery(Long userId, BasePageQueryDTO pageQueryDTO) {
+        Page<UserMerchantFollowPageResultVO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        Page<UserMerchantFollowPageResultVO> result = merchantProfileMapper.followPageQuery(userId,page);
+        return new PageResult<>(result.getTotal(),result.getRecords());
     }
 
 

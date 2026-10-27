@@ -10,8 +10,8 @@ import cn.hisouten.mall.user.pojo.dto.AdminAuditMerchantDTO;
 import cn.hisouten.mall.user.pojo.dto.AdminMerchantPageQueryDTO;
 import cn.hisouten.mall.user.pojo.entity.MerchantProfile;
 import cn.hisouten.mall.user.pojo.entity.User;
-import cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantDetailVO;
-import cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantPageResultVO;
+import cn.hisouten.mall.user.pojo.vo.admin.AdminMerchantDetailVO;
+import cn.hisouten.mall.user.pojo.vo.admin.AdminMerchantPageResultVO;
 import cn.hisouten.mall.user.service.AdminMerchantService;
 import cn.hisouten.mall.util.CacheClientUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -23,7 +23,6 @@ import java.util.List;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.RedisConstant.CACHE_MERCHANT_DETAIL_PREFIX;
-import static cn.hisouten.mall.constant.RoleConstant.ADMIN_ROLE;
 import static cn.hisouten.mall.constant.RoleConstant.MERCHANT_ROLE;
 import static cn.hisouten.mall.constant.StatusConstant.*;
 

@@ -6,7 +6,7 @@ import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.user.pojo.dto.AdminUserPageQueryDTO;
-import cn.hisouten.mall.user.pojo.vo.user.AdminUserPageResultVO;
+import cn.hisouten.mall.user.pojo.vo.admin.AdminUserPageResultVO;
 import cn.hisouten.mall.user.service.AdminUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
