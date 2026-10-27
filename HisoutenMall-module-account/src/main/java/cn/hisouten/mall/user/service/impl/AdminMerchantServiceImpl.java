@@ -13,6 +13,7 @@ import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantDetailVO;
 import cn.hisouten.mall.user.pojo.vo.merchant.AdminMerchantPageResultVO;
 import cn.hisouten.mall.user.service.AdminMerchantService;
+import cn.hisouten.mall.util.CacheClientUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
+import static cn.hisouten.mall.constant.RedisConstant.CACHE_MERCHANT_DETAIL_PREFIX;
 import static cn.hisouten.mall.constant.RoleConstant.ADMIN_ROLE;
 import static cn.hisouten.mall.constant.RoleConstant.MERCHANT_ROLE;
 import static cn.hisouten.mall.constant.StatusConstant.*;
@@ -31,6 +33,8 @@ public class AdminMerchantServiceImpl implements AdminMerchantService {
     private final MerchantProfileMapper merchantProfileMapper;
     private final AuthMapper authMapper;
     private final ProductService productService;
+
+    private CacheClientUtils cacheClientUtils;
 
     /**
      * 商家分页查询
@@ -98,6 +102,7 @@ public class AdminMerchantServiceImpl implements AdminMerchantService {
             productService.disableAllProductByMerchantId(merchantId);
         }
         StpUtil.kickout(merchantId);
+        cacheClientUtils.delete(CACHE_MERCHANT_DETAIL_PREFIX,merchantId);
     }
 
     /**

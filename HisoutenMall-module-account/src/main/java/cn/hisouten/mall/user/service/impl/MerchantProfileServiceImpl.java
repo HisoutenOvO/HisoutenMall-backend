@@ -95,6 +95,8 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
         }
         BeanUtils.copyProperties(merchantUpdateDTO,merchantProfile);
         merchantProfileMapper.updateById(merchantProfile);
+        //删除详情的缓存
+        cacheClientUtils.delete(CACHE_MERCHANT_DETAIL_PREFIX,merchantId);
     }
 
     /**
