@@ -6,7 +6,7 @@ package cn.hisouten.mall.constant;
 public class RedisConstant {
 
     //商家端查询商品详情键前缀
-    public static final String CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX = "cache:product:mrchant:detail:";
+    public static final String CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX = "cache:product:merchant:detail:";
 
     //用户端查询商品详情键前缀
     public static final String CACHE_PRODUCT_USER_DETAIL_PREFIX = "cache:product:key:detail:";
@@ -16,6 +16,12 @@ public class RedisConstant {
 
     //商品详情缓存过期时间
     public static final long CACHE_PRODUCT_DETAIL_TTL = 30L;
+
+    //用户查询商家详情键前缀
+    public static final String CACHE_MERCHANT_DETAIL_PREFIX = "cache:merchant:detail:";
+
+    //用户查询商家详情过期时间
+    public static final long CACHE_MERCHANT_DETAIL_TTL = 24L;
 
     //秒杀商品详情键前缀
     public static final String CACHE_SECKILL_PRODUCT_DETAIL_PREFIX = "cache:seckill:product:detail:";

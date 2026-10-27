@@ -10,14 +10,17 @@ import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.vo.merchant.MerchantDetailVO;
 import cn.hisouten.mall.user.pojo.vo.user.UserMerchantDetailVO;
 import cn.hisouten.mall.user.service.MerchantProfileService;
+import cn.hisouten.mall.util.CacheClientUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.TimeUnit;
+
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
-import static cn.hisouten.mall.constant.RedisConstant.CACHE_MERCHANT_NAME_PREFIX;
+import static cn.hisouten.mall.constant.RedisConstant.*;
 import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
 import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
 
@@ -27,6 +30,8 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
     private final MerchantProfileMapper merchantProfileMapper;
     private final ProductService productService;
     private final AuthMapper authMapper;
+
+    private CacheClientUtils cacheClientUtils;
 
     /**
      * 根据商家id获取商家名称
@@ -100,32 +105,53 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
      */
     @Override
     public UserMerchantDetailVO userDetailQuery(Long userId, Long merchantId) {
-        MerchantProfile merchantProfile = merchantProfileMapper.selectProfileByMerchantId(merchantId);
+        MerchantProfile merchantProfile = getProfileByCache(merchantId);
         if(merchantProfile == null){
             throw new BizException(MERCHANT_NOT_FOUND);
         }
-        User merchant = authMapper.getUserByUserId(merchantId);
-        if(merchant == null || merchant.getStatus() != ENABLED){
-            throw new BizException(MERCHANT_NOT_FOUND);
-        }
 
-        Long productCount = 0L;
-        Long followerCount = 0L;
+        Long productCount;
+        Long followerCount;
         int isFollowed = 0;
 
         productCount = productService.getOnSaleProductCount(merchantId);
         followerCount = merchantProfileMapper.selectFollowerCount(merchantId);
-        isFollowed = merchantProfileMapper.isFollowed(userId,merchantId);
+        if(userId != null) isFollowed = merchantProfileMapper.isFollowed(userId,merchantId);
 
         UserMerchantDetailVO detailVO = new UserMerchantDetailVO();
         detailVO.setMerchantId(merchantProfile.getUserId());
         detailVO.setShopName(merchantProfile.getShopName());
-        detailVO.setShopLogo(detailVO.getShopLogo());
-        detailVO.setShopDescription(detailVO.getShopDescription());
+        detailVO.setShopLogo(merchantProfile.getShopLogo());
+        detailVO.setShopDescription(merchantProfile.getShopDescription());
         detailVO.setProductCount(productCount);
         detailVO.setFollowerCount(followerCount);
         detailVO.setIsFollowed(isFollowed != 0);
         return detailVO;
+    }
+
+    /**
+     * 通过防穿透缓存查询店铺基本信息
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    private MerchantProfile getProfileByCache(Long merchantId){
+        return cacheClientUtils.queryWithPassThrough(
+                CACHE_MERCHANT_DETAIL_PREFIX,
+                merchantId,
+                MerchantProfile.class,
+                this::getFromDB,
+                CACHE_MERCHANT_DETAIL_TTL,
+                TimeUnit.HOURS
+        );
+    }
+
+    /**
+     * 查询商家信息回源方法
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    private MerchantProfile getFromDB(Long merchantId){
+        return merchantProfileMapper.selectById(merchantId);
     }
 
     /**

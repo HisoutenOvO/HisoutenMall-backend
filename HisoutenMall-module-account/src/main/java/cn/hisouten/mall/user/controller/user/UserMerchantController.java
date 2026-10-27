@@ -66,8 +66,8 @@ public class UserMerchantController {
 
     /**
      * 分页查询商品信息
-     * @param productPageQueryDTO
-     * @return
+     * @param productPageQueryDTO 分页参数
+     * @return 返回值
      */
     @GetMapping("/{merchantId}/product/page")
     @Operation(summary = "分页查询商家的商品信息")
