@@ -20,6 +20,12 @@ public class RedisConstant {
     //用户查询商家详情键前缀
     public static final String CACHE_MERCHANT_DETAIL_PREFIX = "cache:merchant:detail:";
 
+    //秒杀活动基本信息键前缀
+    public static final String CACHE_SECKILL_ACTIVITY_INFO_PREFIX = "cache:seckill:product:info:";
+
+    //秒杀商品合法skuId集合键前缀
+    public static final String CACHE_SECKILL_SKU_SET_PREFIX = "cache:seckill:sku:set:";
+
     //用户查询商家详情过期时间
     public static final long CACHE_MERCHANT_DETAIL_TTL = 24L;
 
@@ -72,13 +78,16 @@ public class RedisConstant {
     public static final String ALL = "'all'";
 
     //幂等订单取消键前缀
-    public static final String MQ_IDEMPOTENT_ORDER_CANCEL = "mq:idempotent:order-cancel:";
+    public static final String MQ_IDEMPOTENT_ORDER_CANCEL_PREFIX = "mq:idempotent:order-cancel:";
 
     //秒杀库存
     public static final String SECKILL_STOCK = "seckill:stock:";
 
     //秒杀用户
     public static final String SECKILL_USERS = "seckill:users:";
+
+    //秒杀商品限购数键前缀
+    public static final String SECKILL_PRODUCT_LIMIT = "cache:seckill:product:limit:";
 
     //防重复前缀
     public static final String REPEAT_SUBMIT = "repeat_submit:";

@@ -13,7 +13,7 @@ public class StatusConstant {
     // 订单支付状态
     public static final int PENDING_PAYMENT = 0; //待支付
 
-    public static final int PAID = 1; //已支付
+    public static final int PAID = 1; //已支付-待发货
 
     public static final int CANCELLED = 2; //已取消
 

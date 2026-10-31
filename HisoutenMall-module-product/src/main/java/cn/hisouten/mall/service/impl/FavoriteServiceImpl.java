@@ -2,8 +2,8 @@ package cn.hisouten.mall.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.exception.BizException;
-import cn.hisouten.mall.mapper.FavoriteMapper;
-import cn.hisouten.mall.mapper.ProductMapper;
+import cn.hisouten.mall.dao.mapper.FavoriteMapper;
+import cn.hisouten.mall.dao.mapper.ProductMapper;
 import cn.hisouten.mall.common.pojo.BasePageQueryDTO;
 import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.pojo.entity.UserFavorite;

@@ -1,4 +1,4 @@
-package cn.hisouten.mall.mapper;
+package cn.hisouten.mall.dao.mapper;
 
 import cn.hisouten.mall.pojo.entity.UserBrowseHistory;
 import cn.hisouten.mall.pojo.vo.history.UserHistoryPageResultVO;

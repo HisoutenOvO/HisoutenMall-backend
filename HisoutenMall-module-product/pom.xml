@@ -18,5 +18,10 @@
             <groupId>cn.hisouten.mall</groupId>
             <artifactId>HisoutenMall-framework</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+            <version>3.2.0</version>
+        </dependency>
     </dependencies>
 </project>

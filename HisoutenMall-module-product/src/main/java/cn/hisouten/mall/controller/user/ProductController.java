@@ -5,6 +5,7 @@ import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.dto.product.UserProductPageQueryDTO;
 import cn.hisouten.mall.pojo.vo.product.UserProductDetailVO;
 import cn.hisouten.mall.pojo.vo.product.UserProductPageResultVO;
+import cn.hisouten.mall.service.ProductSearchService;
 import cn.hisouten.mall.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
     private final ProductService productService;
 
+    private final ProductSearchService productSearchService;
+
     /**
      * 分页查询商品
      * @return 返回字段
@@ -32,7 +35,7 @@ public class ProductController {
     @Operation(summary = "分页查询商品")
     public Result<PageResult<UserProductPageResultVO>> pageQuery(@Valid UserProductPageQueryDTO userProductPageQueryDTO){
         log.info("分页查询商品");
-        PageResult<UserProductPageResultVO> pageQuery = productService.userPageQuery(userProductPageQueryDTO);
+        PageResult<UserProductPageResultVO> pageQuery = productSearchService.userPageQuery(userProductPageQueryDTO);
         return Result.success(pageQuery);
     }
 

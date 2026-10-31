@@ -1,4 +1,4 @@
-package cn.hisouten.mall.mapper;
+package cn.hisouten.mall.dao.mapper;
 
 import cn.hisouten.mall.pojo.bo.product.ProductPageQueryBO;
 import cn.hisouten.mall.pojo.entity.Brand;
@@ -8,6 +8,9 @@ import cn.hisouten.mall.pojo.bo.product.ProductPageResultBO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.*;
+
+import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ProductMapper extends BaseMapper<Product> {
@@ -110,4 +113,10 @@ public interface ProductMapper extends BaseMapper<Product> {
      */
     @Select("select count(*) from product where merchant_id = #{merchantId} and status = 1 and deleted = 0")
     Long selectOnSaleProductCount(Long merchantId);
+
+    /**
+     * 统计所有有效订单的商品销量
+     * @return 返回值
+     */
+    List<Map<String, Object>> selectTotalSalesByProductId();
 }

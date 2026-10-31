@@ -6,12 +6,14 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication(scanBasePackages = "cn.hisouten.mall")
 @Slf4j
 @MapperScan(basePackages = "cn.hisouten.mall", annotationClass = Mapper.class)
+@EnableElasticsearchRepositories(basePackages = "cn.hisouten.mall.dao.repository") //为了找到es的repo类
 @EnableTransactionManagement
 @EnableScheduling
 @EnableCaching

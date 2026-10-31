@@ -38,5 +38,5 @@ public class UserProductPageResultVO {
 
     private Integer totalStock;
 
-    private Integer salesCount;
+    private Long salesCount;
 }

@@ -78,9 +78,9 @@ public interface SeckillProductMapper extends BaseMapper<SeckillProduct> {
      * @param skuId skuId
      * @return 返回值
      */
-    @Select("SELECT COUNT(1) FROM `order` o " +
-            "INNER JOIN order_item oi ON o.id = oi.order_id " +
-            "WHERE o.user_id = #{userId} AND o.source = 1 AND oi.sku_id = #{skuId} AND o.deleted = 0 AND o.status != 2")
+    @Select("select COUNT(1) from `order` o " +
+            "inner join order_item oi on o.id = oi.order_id " +
+            "where o.user_id = #{userId} and o.source = 1 and oi.sku_id = #{skuId} and o.deleted = 0 and o.status != 2")
     int countSeckillOrder(Long userId, Long skuId);
 
     /**

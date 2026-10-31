@@ -13,6 +13,8 @@ import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.service.SeckillOrderService;
 import cn.hisouten.mall.user.pojo.entity.UserAddress;
 import cn.hisouten.mall.user.service.UserAddressService;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -68,7 +70,6 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
      * @return 返回下单成功
      */
     @Override
-    @Transactional
     public String seckillProduct(Long userId, SeckillExecuteDTO seckillExecuteDTO) {
         //1. 先获取Redisson锁对象
         String key = LOCK_SECKILL_ORDER_PREFIX + userId + ":" +seckillExecuteDTO.getSkuId();
@@ -86,23 +87,31 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
             throw new BizException(DO_NOT_CLICK_REPEATEDLY);
         }
         try{
-            //2. 判断活动和商品是否有效
-            SeckillActivity seckillActivity = seckillActivityMapper.selectById(seckillExecuteDTO.getActivityId());
+            //判断活动和商品是否有效
+            //从缓存里读出活动数据
+            String activityJson = stringRedisTemplate.opsForValue().get(CACHE_SECKILL_ACTIVITY_INFO_PREFIX + seckillExecuteDTO.getActivityId());
+            if (StrUtil.isBlank(activityJson)) {
+                throw new BizException(ACTIVITY_INVALID); // 没有预热，说明活动不存在或还没开始预热
+            }
+            SeckillActivity seckillActivity = JSONUtil.toBean(activityJson, SeckillActivity.class);
             LocalDateTime now = LocalDateTime.now();
             if (seckillActivity == null || !Objects.equals(seckillActivity.getStatus(), RUNNING) || seckillActivity.getStartTime().isAfter(now)
                     || seckillActivity.getEndTime().isBefore(now)) {
                 throw new BizException(ACTIVITY_INVALID);
             }
-            SeckillProduct seckillProduct = seckillProductMapper.selectBySkuIdAndActivityId(
-                    seckillExecuteDTO.getSkuId(), seckillExecuteDTO.getActivityId());
-            if(seckillProduct == null){
-                throw new BizException(PRODUCT_NOT_FOUND);
+            //查询商品sku是否合法
+            //校验商品是否属于该活动
+            String skuSetKey = CACHE_SECKILL_SKU_SET_PREFIX + seckillExecuteDTO.getActivityId();
+            Boolean isMember = stringRedisTemplate.opsForSet().isMember(skuSetKey, seckillExecuteDTO.getSkuId().toString());
+            if (!Boolean.TRUE.equals(isMember)) {
+                throw new BizException(PRODUCT_NOT_FOUND); // 商品不存在或不属于该活动
             }
-            //查询默认地址
-            UserAddress userAddress = userAddressService.getDefaultByUserId(userId);
-            if (userAddress == null) {
-                throw new BizException(SET_DEFAULT_ADDRESS_FIRST);
+            //查询限购数
+            String limitStr = stringRedisTemplate.opsForValue().get(SECKILL_PRODUCT_LIMIT + seckillExecuteDTO.getSkuId());
+            if (StrUtil.isBlank(limitStr)) {
+                throw new BizException(PRODUCT_NOT_FOUND); // 没预热，说明商品有问题
             }
+            int limitPerUser = Integer.parseInt(limitStr);
 
             //3.执行Lua脚本
             List<String> keys = new ArrayList<>();
@@ -114,12 +123,11 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
                     keys,
                     userId.toString(),
                     "1",
-                    seckillProduct.getLimitPerUser().toString()
+                    String.valueOf(limitPerUser)
             );
             //判断返回值
             if (result == 1) throw new BizException(OUT_OF_STOCK);
             if (result == 2) throw new BizException(DO_NOT_ORDER_REPEATEDLY);
-
         }finally {
             lock.unlock();
         }
@@ -130,7 +138,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
         msg.setActivityId(seckillExecuteDTO.getActivityId());
         msg.setSendTime(System.currentTimeMillis());
         try {
-            mqProducerService.send(SECKILL_ORDER_TOPIC, msg);
+            mqProducerService.sendAsync(SECKILL_ORDER_TOPIC, msg);
         } catch (Exception e) {
             // MQ 发送失败，回滚 Redis
             stringRedisTemplate.opsForValue().increment(SECKILL_STOCK + seckillExecuteDTO.getSkuId(), 1);
@@ -153,99 +161,88 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
         Long activityId = message.getActivityId();
         Long skuId = message.getSkuId();
 
-        // 分布式锁：同一用户同一 SKU 串行处理
-        String lockKey = "lock:seckill:create:" + userId + ":" + skuId;
-        RLock lock = redissonClient.getLock(lockKey);
-        boolean isLock = false;
-        try {
-            isLock = lock.tryLock(3, 10, TimeUnit.SECONDS);
-            if (!isLock) {
-                log.warn("[秒杀创建] 获取锁失败: userId={}, skuId={}", userId, skuId);
-                throw new BizException(SYSTEM_ERROR);
-            }
+        // 幂等校验
+        if (seckillProductMapper.countSeckillOrder(userId, skuId) > 0) {
+            log.warn("[秒杀幂等] 已存在订单，跳过: userId={}, skuId={}", userId, skuId);
+            return;
+        }
 
-            // 幂等校验（必须在锁内）
-            if (seckillProductMapper.countSeckillOrder(userId, skuId) > 0) {
-                log.warn("[秒杀幂等] 已存在订单，跳过: userId={}, skuId={}", userId, skuId);
-                return;
-            }
+        // 校验活动
+        SeckillActivity seckillActivity = seckillActivityMapper.selectById(activityId);
+        if (seckillActivity == null || !Objects.equals(seckillActivity.getStatus(), RUNNING)) {
+            return;
+        }
+        LocalDateTime now = LocalDateTime.now();
+        if (seckillActivity.getStartTime().isAfter(now) || seckillActivity.getEndTime().isBefore(now)) {
+            return;
+        }
 
-            // 校验活动
-            SeckillActivity seckillActivity = seckillActivityMapper.selectById(activityId);
-            if (seckillActivity == null || !Objects.equals(seckillActivity.getStatus(), RUNNING)) {
-                throw new BizException(ACTIVITY_INVALID);
-            }
-            LocalDateTime now = LocalDateTime.now();
-            if (seckillActivity.getStartTime().isAfter(now) || seckillActivity.getEndTime().isBefore(now)) {
-                throw new BizException(ACTIVITY_INVALID);
-            }
+        // 校验 SKU 和商品
+        ProductSku productSku = productService.getSkuBySkuId(skuId);
+        if (productSku == null) {
+            log.error("[秒杀对账] SKU不存在,skuId={}", skuId);
+            return;
+        }
+        Product product = productService.getProductByProductId(productSku.getProductId());
+        if (product == null) {
+            log.error("[秒杀对账] sku对应商品不存在,skuId={}", skuId);
+            return;
+        }
 
-            // 校验 SKU 和商品
-            ProductSku productSku = productService.getSkuBySkuId(skuId);
-            if (productSku == null) {
-                log.error("[秒杀对账] SKU不存在,skuId={}", skuId);
-                return;
-            }
-            Product product = productService.getProductByProductId(productSku.getProductId());
-            if (product == null) {
-                log.error("[秒杀对账] sku对应商品不存在,skuId={}", skuId);
-                return;
-            }
+        // 校验是否是秒杀商品
+        SeckillProduct seckillProduct = seckillProductMapper.selectBySkuIdAndActivityId(skuId, activityId);
+        if (seckillProduct == null || !seckillProduct.getActivityId().equals(message.getActivityId())) {
+            return;
+        }
 
-            // 校验是否是秒杀商品
-            SeckillProduct seckillProduct = seckillProductMapper.selectBySkuIdAndActivityId(skuId, activityId);
-            if (seckillProduct == null || !seckillProduct.getActivityId().equals(message.getActivityId())) {
-                throw new BizException(PRODUCT_NOT_FOUND);
-            }
+        UserAddress userAddress = userAddressService.getDefaultByUserId(userId);
 
-            UserAddress userAddress = userAddressService.getDefaultByUserId(userId);
+        // 乐观锁扣减秒杀库存
+        int seckillAffected = seckillProductMapper.deductSeckillStock(seckillProduct.getId(), 1);
+        if (seckillAffected == 0) {
+            return;
+        }
 
-            // 乐观锁扣减秒杀库存
-            int seckillAffected = seckillProductMapper.deductSeckillStock(seckillProduct.getId(), 1);
-            if (seckillAffected == 0) {
-                throw new BizException(OUT_OF_STOCK);
-            }
-
-            // 创建订单
-            Order order = new Order();
-            order.setOrderNo(System.currentTimeMillis()
-                    + String.format("%04d", ThreadLocalRandom.current().nextInt(10000)));
-            order.setUserId(userId);
-            order.setMerchantId(product.getMerchantId());
-            order.setTotalAmount(seckillProduct.getSeckillPrice());
-            order.setPayAmount(seckillProduct.getSeckillPrice());
-            order.setStatus(PENDING_PAYMENT);
+        // 创建订单
+        Order order = new Order();
+        order.setOrderNo(System.currentTimeMillis()
+                + String.format("%04d", ThreadLocalRandom.current().nextInt(10000)));
+        order.setUserId(userId);
+        order.setMerchantId(product.getMerchantId());
+        order.setTotalAmount(seckillProduct.getSeckillPrice());
+        order.setPayAmount(seckillProduct.getSeckillPrice());
+        order.setStatus(PENDING_PAYMENT);
+        if (userAddress != null) {
+            // 不为空赋值
             order.setReceiverName(userAddress.getReceiverName());
             order.setReceiverPhone(userAddress.getReceiverPhone());
             order.setReceiverAddress(userAddress.getProvince() + userAddress.getCity() + userAddress.getDistrict() + userAddress.getDetail());
-            order.setSource(SECKILL);
-            orderService.insertOrder(order);
-
-            // 创建订单明细
-            OrderItem item = new OrderItem();
-            item.setOrderId(order.getId());
-            item.setProductId(product.getId());
-            item.setSkuId(skuId);
-            item.setProductName(product.getName());
-            item.setSkuSpecs(productSku.getSpecs());
-            item.setPrice(seckillProduct.getSeckillPrice());
-            item.setQuantity(1);
-            item.setImage(productSku.getImage());
-            item.setTotalPrice(seckillProduct.getSeckillPrice());
-            orderService.insertOrderItem(item);
-
-            // 发延时消息（订单超时关闭）
-            OrderTimeoutMessage timeoutMsg = new OrderTimeoutMessage();
-            timeoutMsg.setOrderNo(order.getOrderNo());
-            mqProducerService.sendDelay(ORDER_TIMEOUT_TOPIC, timeoutMsg, THIRTY_MINUTE_DELAY);
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new BizException(SYSTEM_ERROR);
-        } finally {
-            if (isLock && lock.isHeldByCurrentThread()) {
-                lock.unlock();
-            }
+        } else {
+            // 没地址的兜底：给提示
+            order.setReceiverName(ADDRESS_NOT_FOUND);
+            order.setReceiverPhone("");
+            order.setReceiverAddress(ADDRESS_NOT_FOUND);
         }
+        order.setSource(SECKILL);
+        orderService.insertOrder(order);
+
+        // 创建订单明细
+        OrderItem item = new OrderItem();
+        item.setOrderId(order.getId());
+        item.setProductId(product.getId());
+        item.setSkuId(skuId);
+        item.setProductName(product.getName());
+        item.setSkuSpecs(productSku.getSpecs());
+        item.setPrice(seckillProduct.getSeckillPrice());
+        item.setQuantity(1);
+        item.setImage(productSku.getImage());
+        item.setTotalPrice(seckillProduct.getSeckillPrice());
+        orderService.insertOrderItem(item);
+
+        // 发延时消息（订单超时关闭）
+        OrderTimeoutMessage timeoutMsg = new OrderTimeoutMessage();
+        timeoutMsg.setOrderNo(order.getOrderNo());
+        mqProducerService.sendDelay(ORDER_TIMEOUT_TOPIC, timeoutMsg, THIRTY_MINUTE_DELAY);
+
     }
 }

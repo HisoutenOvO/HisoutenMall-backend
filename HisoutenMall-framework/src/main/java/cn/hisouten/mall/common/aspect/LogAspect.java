@@ -1,6 +1,7 @@
 package cn.hisouten.mall.common.aspect;
 
 import cn.hisouten.mall.common.annotation.Log;
+import cn.hisouten.mall.exception.BizException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -37,10 +38,13 @@ public class LogAspect {
             log.info("[{}] {} 耗时 {}ms, 参数: {}",
                     logAnnotation.value(), method, cost, Arrays.toString(args));
             return result;
+        } catch (BizException e) {
+            // 业务异常，只打一行warn不打印堆栈
+            log.warn("[{}] 业务拦截: {}", method, e.getMessage());
+            throw e;
         } catch (Throwable e) {
-            long cost = System.currentTimeMillis() - start;
-            log.error("[{}] {} 异常 耗时 {}ms, 错误: {}",
-                    logAnnotation.value(), method, cost, e.getMessage());
+            // 真正的系统异常才打error和堆栈
+            log.error("[{}] 系统异常！", method, e);
             throw e;
         }
     }

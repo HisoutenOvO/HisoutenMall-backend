@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cn.hisouten.mall.mapper.ProductMapper">
+<mapper namespace="cn.hisouten.mall.dao.mapper.ProductMapper">
     <select id="pageQuery" resultType="cn.hisouten.mall.pojo.bo.product.ProductPageResultBO">
         select
         p.id, p.name, p.merchant_id, p.category_id, p.brand_id,
@@ -74,7 +74,6 @@
                 order BY p.create_time desc
             </otherwise>
         </choose>
-
     </select>
 
     <select id="selectExistedProductName" resultType="java.lang.String">
@@ -95,5 +94,13 @@
         select c.* from product p
         left join category c on p.category_id = c.id
         where p.id = #{productId}
+    </select>
+    <select id="selectTotalSalesByProductId" resultType="java.util.Map">
+        select oi.product_id as productId, sum(oi.quantity) as totalSales
+        from order_item oi
+        inner join `order` o on oi.order_id = o.id
+        where o.status in (1, 3, 4)
+        and o.deleted = 0
+        group by oi.product_id
     </select>
 </mapper>

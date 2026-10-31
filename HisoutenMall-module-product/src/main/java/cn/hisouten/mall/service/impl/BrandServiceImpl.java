@@ -1,8 +1,8 @@
 package cn.hisouten.mall.service.impl;
 
 import cn.hisouten.mall.exception.BizException;
-import cn.hisouten.mall.mapper.BrandMapper;
-import cn.hisouten.mall.mapper.ProductMapper;
+import cn.hisouten.mall.dao.mapper.BrandMapper;
+import cn.hisouten.mall.dao.mapper.ProductMapper;
 import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.pojo.bo.brand.BrandPageQueryBO;
 import cn.hisouten.mall.pojo.bo.brand.BrandPageResultBO;

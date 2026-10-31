@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +33,6 @@ public class ChangeActivityStatusTask {
 
     private final ProductService productService;
 
-    private final StringRedisTemplate stringRedisTemplate;
     private final CacheManager cacheManager;
     private final CacheClientUtils cacheClientUtils;
 
@@ -62,11 +60,14 @@ public class ChangeActivityStatusTask {
                     productService.restoreStock(sp.getSkuId(), sp.getSeckillStock());
                 }
                 // 清理 Redis 缓存
-                stringRedisTemplate.delete(SECKILL_STOCK + sp.getSkuId());
-                stringRedisTemplate.delete(SECKILL_USERS + sp.getSkuId());
+                cacheClientUtils.delete(SECKILL_STOCK, sp.getSkuId());
+                cacheClientUtils.delete(SECKILL_USERS, sp.getSkuId());
+                cacheClientUtils.delete(CACHE_SECKILL_SKU_SET_PREFIX, sp.getSkuId());
+                cacheClientUtils.delete(SECKILL_PRODUCT_LIMIT, sp.getSkuId());
             }
 
             //清理活动详情缓存
+            cacheClientUtils.delete(CACHE_SECKILL_ACTIVITY_INFO_PREFIX, activity.getId());
             cacheClientUtils.delete(CACHE_SECKILL_PRODUCT_DETAIL_PREFIX, activity.getId());
 
             // 改活动状态

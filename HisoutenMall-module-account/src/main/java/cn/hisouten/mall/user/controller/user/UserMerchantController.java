@@ -6,6 +6,7 @@ import cn.hisouten.mall.common.pojo.PageResult;
 import cn.hisouten.mall.common.pojo.Result;
 import cn.hisouten.mall.pojo.dto.product.UserProductPageQueryDTO;
 import cn.hisouten.mall.pojo.vo.product.UserProductPageResultVO;
+import cn.hisouten.mall.service.ProductSearchService;
 import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.user.pojo.vo.user.UserMerchantDetailVO;
 import cn.hisouten.mall.user.pojo.vo.user.UserMerchantFollowPageResultVO;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserMerchantController {
     private final MerchantProfileService merchantProfileService;
-    private final ProductService productService;
+    private final ProductSearchService productSearchService;
 
     /**
      * 查询店铺详情
@@ -76,7 +77,7 @@ public class UserMerchantController {
     public Result<PageResult<UserProductPageResultVO>> productPageQuery(UserProductPageQueryDTO productPageQueryDTO, @PathVariable String merchantId){
         Long userId = StpUtil.getLoginIdAsLong();
         log.info("用户:{} 分页查询商家:{} 的商品信息",userId,merchantId);
-        PageResult<UserProductPageResultVO> pageResult = productService.userPageQuery(productPageQueryDTO);
+        PageResult<UserProductPageResultVO> pageResult = productSearchService.userPageQuery(productPageQueryDTO);
         return Result.success(pageResult);
     }
 

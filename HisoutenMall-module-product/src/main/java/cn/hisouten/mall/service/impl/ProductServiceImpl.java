@@ -2,9 +2,11 @@ package cn.hisouten.mall.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.exception.BizException;
-import cn.hisouten.mall.mapper.ProductMapper;
-import cn.hisouten.mall.mapper.ProductSkuMapper;
+import cn.hisouten.mall.dao.mapper.ProductMapper;
+import cn.hisouten.mall.dao.mapper.ProductSkuMapper;
 import cn.hisouten.mall.common.pojo.PageResult;
+import cn.hisouten.mall.mq.message.ProductSyncMessage;
+import cn.hisouten.mall.mq.producer.MqProducerService;
 import cn.hisouten.mall.pojo.bo.product.ProductPageQueryBO;
 import cn.hisouten.mall.pojo.dto.product.*;
 import cn.hisouten.mall.pojo.entity.Brand;
@@ -23,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -33,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.RedisConstant.*;
 import static cn.hisouten.mall.constant.StatusConstant.*;
+import static cn.hisouten.mall.mq.constant.MqConstant.*;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +52,7 @@ public class ProductServiceImpl implements ProductService {
 
     //注入工具类
     private final CacheClientUtils cacheClientUtils;
+    private final MqProducerService mqProducerService;
     //=======================================商家端逻辑================================================
 
     /**
@@ -186,6 +192,14 @@ public class ProductServiceImpl implements ProductService {
             productSkuList.add(productSKU);
         }
         productSkuMapper.insertBatch(productSkuList);
+
+        // 注册事务提交后的事件，提交成功才发 MQ
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                mqProducerService.send(PRODUCT_SYNC_TOPIC, new ProductSyncMessage(product.getId(), SAVE));
+            }
+        });
     }
 
     /**
@@ -259,6 +273,14 @@ public class ProductServiceImpl implements ProductService {
         }
         cacheClientUtils.delete(CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX, productId);
         cacheClientUtils.delete(CACHE_PRODUCT_USER_DETAIL_PREFIX, productId);
+
+        // 注册事务提交后的事件，提交成功才发 MQ
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                mqProducerService.send(PRODUCT_SYNC_TOPIC, new ProductSyncMessage(product.getId(), SAVE));
+            }
+        });
     }
 
     /**
@@ -283,6 +305,14 @@ public class ProductServiceImpl implements ProductService {
         productMapper.updateById(product);
         cacheClientUtils.delete(CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX, productId);
         cacheClientUtils.delete(CACHE_PRODUCT_USER_DETAIL_PREFIX, productId);
+
+        // 注册事务提交后的事件，提交成功才发 MQ
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                mqProducerService.send(PRODUCT_SYNC_TOPIC, new ProductSyncMessage(product.getId(), SAVE));
+            }
+        });
     }
 
     /**
@@ -301,6 +331,14 @@ public class ProductServiceImpl implements ProductService {
         favoriteService.deleteByProductId(productId);
         cacheClientUtils.delete(CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX, productId);
         cacheClientUtils.delete(CACHE_PRODUCT_USER_DETAIL_PREFIX, productId);
+
+        // 注册事务提交后的事件，提交成功才发 MQ
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                mqProducerService.send(PRODUCT_SYNC_TOPIC, new ProductSyncMessage(product.getId(), DELETE));
+            }
+        });
     }
 
     /**
@@ -326,6 +364,14 @@ public class ProductServiceImpl implements ProductService {
         productMapper.recoveryProduct(productId);
         cacheClientUtils.delete(CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX, productId);
         cacheClientUtils.delete(CACHE_PRODUCT_USER_DETAIL_PREFIX, productId);
+
+        // 注册事务提交后的事件，提交成功才发 MQ
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                mqProducerService.send(PRODUCT_SYNC_TOPIC, new ProductSyncMessage(product.getId(), SAVE));
+            }
+        });
     }
 
     /**
@@ -364,49 +410,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     //=======================================用户端逻辑================================================
-
-    /**
-     * 用户端分页查询商品分类
-     * @param userProductPageQueryDTO 分页查询参数
-     * @return 返回分页查询结果
-     */
-    @Override
-    public PageResult<UserProductPageResultVO> userPageQuery(UserProductPageQueryDTO userProductPageQueryDTO) {
-        //创建分页对象page
-        Page<ProductPageResultBO> page = new Page<>(userProductPageQueryDTO.getPage(), userProductPageQueryDTO.getPageSize());
-        //中转BO类介入，复制查询条件
-        ProductPageQueryBO productPageQueryBO = new ProductPageQueryBO();
-        BeanUtils.copyProperties(userProductPageQueryDTO,productPageQueryBO);
-        productPageQueryBO.setStatus(ENABLED); //强制用户只能看到上架商品
-        productPageQueryBO.setDeleted(DISABLED); //强制用户只能看到未删除的
-        productPageQueryBO.setSortType(userProductPageQueryDTO.getSortType());
-        //分页查询
-        Page<ProductPageResultBO> result = productMapper.pageQuery(page, productPageQueryBO);
-        //总数
-        long total = result.getTotal();
-        //记录数
-        List<UserProductPageResultVO> records = new ArrayList<>();
-        //中转记录回VO
-        for (ProductPageResultBO bo : result.getRecords()) {
-            UserProductPageResultVO vo = UserProductPageResultVO.builder()
-                    .id(bo.getId())
-                    .merchantId(bo.getMerchantId())
-                    .categoryId(bo.getCategoryId())
-                    .brandId(bo.getBrandId())
-                    .name(bo.getName())
-                    .merchantName(bo.getMerchantName())
-                    .categoryName(bo.getCategoryName())
-                    .brandName(bo.getBrandName())
-                    .mainImage(bo.getMainImage())
-                    .minPrice(bo.getMinPrice())
-                    .salesCount(bo.getSalesCount())
-                    .totalStock(bo.getTotalStock())
-                    .build();
-            records.add(vo);
-        }
-        //返回封装好的VO
-        return new PageResult<>(total, records);
-    }
 
     /**
      * 用户端查询商品详情

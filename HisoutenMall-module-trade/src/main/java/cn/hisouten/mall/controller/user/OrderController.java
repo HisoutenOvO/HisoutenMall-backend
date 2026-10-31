@@ -90,6 +90,21 @@ public class OrderController {
     }
 
     /**
+     * 用户修改订单地址
+     * @param orderNo 订单号
+     * @param addressId 地址id
+     * @return 返回值
+     */
+    @PutMapping("/{orderNo}/address")
+    @Operation(summary = "修改订单收货地址")
+    public Result updateOrderAddress(@PathVariable String orderNo, @RequestParam Long addressId) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        log.info("用户：{} 修改订单:{} 的地址",userId,orderNo);
+        orderService.updateOrderAddress(userId, orderNo, addressId);
+        return Result.success();
+    }
+
+    /**
      * 订单取消支付
      * @param orderNo 订单编号
      * @return 返回值

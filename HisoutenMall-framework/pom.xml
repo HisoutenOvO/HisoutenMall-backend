@@ -77,6 +77,21 @@
             <groupId>com.alipay.sdk</groupId>
             <artifactId>alipay-sdk-java</artifactId>
         </dependency>
-        <!-- Lombok 和 test 不用写，从父 pom 继承 -->
+        <!-- 1. Actuator 监控端点，用于暴露监控数据接口 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- 2. Micrometer 的 Prometheus 注册器，将监控数据转换为 Prometheus 格式 -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+            <version>3.2.0</version>
+        </dependency>
     </dependencies>
 </project>

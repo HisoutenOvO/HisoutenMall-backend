@@ -80,6 +80,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         }
         BeanUtils.copyProperties(userUpdateDTO,userProfile);
         userProfileMapper.updateById(userProfile);
+        cacheClientUtils.delete(CACHE_USER_DETAIL_PREFIX,userId);
     }
 
     /**

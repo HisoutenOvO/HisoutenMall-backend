@@ -209,4 +209,12 @@ public interface OrderService {
      * @param orderNo 订单号
      */
     void restoreOrder(Long userId, String orderNo);
+
+    /**
+     * 修改地址信息
+     * @param userId 用户id
+     * @param orderNo 订单号
+     * @param addressId 地址id
+     */
+    void updateOrderAddress(Long userId, String orderNo, Long addressId);
 }

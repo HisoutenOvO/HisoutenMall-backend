@@ -17,6 +17,14 @@ public class MqConstant {
     public static final String SECKILL_ORDER_TOPIC = "seckill-order-topic";
     public static final String SECKILL_ORDER_GROUP = "seckill-order-consumer-group";
 
+    // ========== es ==========
+    public static final String PRODUCT_SYNC_TOPIC = "product-sync-topic";
+    public static final String PRODUCT_SYNC_GROUP = "product-sync-consumer-group";
+
+    public static final String SAVE = "SAVE";
+    public static final String DELETE = "DELETE";
+    public static final String SALES = "SALES";
+
     // ========== 延迟等级 从1秒到2小时 ==========
     public static final int ONE_SECOND_DELAY = 1;
 

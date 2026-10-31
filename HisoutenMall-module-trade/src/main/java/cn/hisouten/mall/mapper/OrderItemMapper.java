@@ -11,6 +11,9 @@ import java.util.List;
 @Mapper
 public interface OrderItemMapper extends BaseMapper<OrderItem> {
 
+    @Select("SELECT COALESCE(SUM(quantity), 0) FROM order_item WHERE product_id = #{productId}")
+    Long getSalesByProductId( Long productId);
+
     /**
      * 根据订单id查找各订单项
      * @param orderId 订单id

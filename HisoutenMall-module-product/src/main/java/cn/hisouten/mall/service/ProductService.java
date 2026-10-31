@@ -67,12 +67,12 @@ public interface ProductService {
      */
     PageResult<MerchantProductPageResultVO> merchantPageQuery(MerchantProductPageQueryDTO merchantProductPageQueryDTO);
 
-    /**
-     * 用户端分页查询商品分类
-     * @param userProductPageQueryDTO 分页查询参数
-     * @return 返回分页查询结果
-     */
-    PageResult<UserProductPageResultVO> userPageQuery(UserProductPageQueryDTO userProductPageQueryDTO);
+//    /**
+//     * 用户端分页查询商品分类
+//     * @param userProductPageQueryDTO 分页查询参数
+//     * @return 返回分页查询结果
+//     */
+//    PageResult<UserProductPageResultVO> userPageQuery(UserProductPageQueryDTO userProductPageQueryDTO);
 
     /**
      * 查询某个商品全部sku

@@ -1,4 +1,4 @@
-package cn.hisouten.mall.mapper;
+package cn.hisouten.mall.dao.mapper;
 
 import cn.hisouten.mall.pojo.entity.ProductSku;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;

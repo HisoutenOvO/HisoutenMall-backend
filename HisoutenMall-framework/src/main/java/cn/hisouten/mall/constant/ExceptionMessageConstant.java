@@ -81,4 +81,5 @@ public class ExceptionMessageConstant {
     public static final String SIGNATURE_VERIFY_FAILED = "签名验证失败！";
     public static final String AMOUNT_VERIFY_FAILED = "支付金额验证失败！";
     public static final String HANDLE_NOTIFY_FAILED = "处理支付回调失败！";
+    public static final String PRICE_ERROR = "金额设定有误！";
 }

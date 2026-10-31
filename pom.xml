@@ -123,6 +123,10 @@
                 <version>${alipay-sdk.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+            </dependency>
+            <dependency>
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson-spring-boot-starter</artifactId>
                 <version>${redisson.version}</version> <!-- 版本需与你的 Spring Boot 匹配 -->

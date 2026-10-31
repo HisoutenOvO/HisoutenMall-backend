@@ -1,8 +1,8 @@
 package cn.hisouten.mall.service.impl;
 
 import cn.hisouten.mall.exception.BizException;
-import cn.hisouten.mall.mapper.CategoryMapper;
-import cn.hisouten.mall.mapper.ProductMapper;
+import cn.hisouten.mall.dao.mapper.CategoryMapper;
+import cn.hisouten.mall.dao.mapper.ProductMapper;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryAddDTO;
 import cn.hisouten.mall.pojo.dto.category.AdminCategoryUpdateDTO;
 import cn.hisouten.mall.pojo.entity.Category;

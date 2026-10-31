@@ -356,6 +356,9 @@ public class OrderServiceImpl implements OrderService {
         return vo;
     }
 
+
+
+
     /**
      * 用户删除订单
      * @param userId 用户id
@@ -390,6 +393,38 @@ public class OrderServiceImpl implements OrderService {
             throw new BizException(ORDER_STATUS_ERROR);
         }
         orderMapper.restoreOrder(order.getId());
+    }
+
+    /**
+     * 用户修改订单地址
+     * @param userId 用户id
+     * @param orderNo 订单号
+     * @param addressId 地址id
+     */
+    @Override
+    public void updateOrderAddress(Long userId, String orderNo, Long addressId) {
+        // 1. 查订单
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if (order == null || !order.getUserId().equals(userId)) {
+            throw new BizException(ORDER_NOT_FOUND);
+        }
+
+        // 2. 只有待付款或者已付款待发货才能改地址
+        if (order.getStatus() != PENDING_PAYMENT && order.getStatus() != PAID) {
+            throw new BizException(ORDER_STATUS_ERROR);
+        }
+
+        // 3. 查新地址
+        UserAddress address = userAddressService.getById(addressId);
+        if (address == null || !address.getUserId().equals(userId)) {
+            throw new BizException(ADDRESS_NOT_FOUND);
+        }
+
+        // 4. 更新订单地址快照
+        order.setReceiverName(address.getReceiverName());
+        order.setReceiverPhone(address.getReceiverPhone());
+        order.setReceiverAddress(address.getProvince() + address.getCity() + address.getDistrict() + address.getDetail());
+        orderMapper.updateById(order);
     }
 
 

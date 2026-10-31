@@ -40,7 +40,7 @@ public class OrderCancelConsumer implements RocketMQListener<OrderCancelMessage>
 
     @Override
     public void onMessage(OrderCancelMessage message) {
-        String idempotentKey = MQ_IDEMPOTENT_ORDER_CANCEL + message.getOrderNo();
+        String idempotentKey = MQ_IDEMPOTENT_ORDER_CANCEL_PREFIX + message.getOrderNo();
 
         // 1. 幂等校验
         Boolean firstTime = stringRedisTemplate.opsForValue()
