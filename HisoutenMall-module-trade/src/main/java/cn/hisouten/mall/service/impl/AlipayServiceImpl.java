@@ -82,6 +82,8 @@ public class AlipayServiceImpl implements AlipayService {
         String orderNo = params.get(OUT_TRADE_NO);
         String tradeStatus = params.get(TRADE_STATUS);
         String totalAmount = params.get(TOTAL_AMOUNT);
+        Order order = orderMapper.selectByOrderNo(orderNo);
+
         try {
             // 1. 验签
             boolean signVerified = AlipaySignature.rsaCheckV1(
@@ -91,9 +93,11 @@ public class AlipayServiceImpl implements AlipayService {
             }
 
             if (TRADE_SUCCESS.equals(tradeStatus) || TRADE_FINISHED.equals(tradeStatus)) {
-                Order order = orderMapper.selectByOrderNo(orderNo);
                 if (order == null || order.getPayAmount().compareTo(new BigDecimal(totalAmount)) != 0) {
                     throw new BizException(AMOUNT_VERIFY_FAILED);
+                }
+                if(order.getStatus() == PAID){
+                    return;
                 }
                 // 调用订单模块原有的支付成功逻辑（保证幂等）
                 orderService.paySuccess(orderNo);
@@ -103,11 +107,6 @@ public class AlipayServiceImpl implements AlipayService {
             throw new BizException(HANDLE_NOTIFY_FAILED);
         }
 
-        Order order = orderMapper.selectByOrderNo(orderNo);
-
-        if(order.getStatus() == PAID){
-            return;
-        }
 
         // 查出这个订单对应的所有商品明细
         List<OrderItem> orderItems = orderItemMapper.selectByOrderId(order.getId());
