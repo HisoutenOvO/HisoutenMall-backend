@@ -11,6 +11,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.stream.Collectors;
+
+import static cn.hisouten.mall.constant.ExceptionMessageConstant.NO_PERMISSION;
+import static cn.hisouten.mall.constant.ExceptionMessageConstant.SYSTEM_ERROR;
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -39,7 +44,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotRoleException.class)
     public Result<Void> handleNotRole(NotRoleException e) {
         log.warn("角色权限不足：{}", e.getMessage());
-        return Result.error(403, "权限不足");
+        return Result.error(403, NO_PERMISSION);
     }
 
     /**
@@ -70,25 +75,13 @@ public class GlobalExceptionHandler {
                 .orElse("参数绑定失败");
         return Result.error(message);
     }
-//
-//    /**
-//     * 参数校验异常（@Valid 校验 @RequestBody 失败）
-//     */
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    public Result<String> handleValidException(MethodArgumentNotValidException e) {
-//        String message = e.getBindingResult().getFieldErrors().stream()
-//                .map(FieldError::getDefaultMessage)
-//                .collect(Collectors.joining(", "));
-//        log.warn("参数校验失败：{}", message);
-//        return Result.error(400, message);
-//    }
-//
-//    /**
-//     * 兜底异常（所有未捕获的异常）
-//     */
-//    @ExceptionHandler(Exception.class)
-//    public Result<String> handleException(Exception e) {
-//        log.error("系统异常：", e);
-//        return Result.error(500, "系统繁忙，请稍后再试");
-//    }
+
+    /**
+     * 兜底异常（所有未捕获的异常）
+     */
+    @ExceptionHandler(Exception.class)
+    public Result<String> handleException(Exception e) {
+        log.error("系统异常：", e);
+        return Result.error(500, SYSTEM_ERROR);
+    }
 }

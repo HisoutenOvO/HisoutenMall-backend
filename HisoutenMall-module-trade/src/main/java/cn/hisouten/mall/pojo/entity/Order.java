@@ -42,6 +42,8 @@ public class Order {
 
     private Integer source;
 
+    private String merchantName; //冗余字段-用于提升查询效率而主动反范式
+
     @TableLogic
     private Integer deleted;
 }

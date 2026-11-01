@@ -35,7 +35,7 @@ public interface OrderMapper extends BaseMapper<Order> {
      * @param deadLineTime 订单创建时间——截止时间
      * @return 返回值
      */
-    @Select("select * from `order` where status = 0 and create_time <= #{deadLineTime}")
+    @Select("select id,order_no from `order` where status = 0 and create_time <= #{deadLineTime} and deleted = 0 limit 1000")
     List<Order> selectByCreateTime(LocalDateTime deadLineTime);
 
     /**

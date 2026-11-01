@@ -12,6 +12,7 @@ import cn.hisouten.mall.service.OrderService;
 import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.service.SeckillOrderService;
 import cn.hisouten.mall.user.pojo.entity.UserAddress;
+import cn.hisouten.mall.user.service.MerchantProfileService;
 import cn.hisouten.mall.user.service.UserAddressService;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
@@ -49,6 +50,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
     private final ProductService productService;
     private final UserAddressService userAddressService;
     private final OrderService orderService;
+    private final MerchantProfileService merchantProfileService;
 
     private final RedissonClient redissonClient;
     private final StringRedisTemplate stringRedisTemplate;
@@ -212,6 +214,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
         order.setTotalAmount(seckillProduct.getSeckillPrice());
         order.setPayAmount(seckillProduct.getSeckillPrice());
         order.setStatus(PENDING_PAYMENT);
+        order.setMerchantName(merchantProfileService.getMerchantNameByMerchantId(product.getMerchantId()));
         if (userAddress != null) {
             // 不为空赋值
             order.setReceiverName(userAddress.getReceiverName());

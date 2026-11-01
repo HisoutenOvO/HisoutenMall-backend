@@ -492,6 +492,7 @@ public class OrderServiceImpl implements OrderService {
         Long userId = StpUtil.getLoginIdAsLong();
         //先查询订单主表
         Page<UserOrderPageResultVO> page = new Page<>(userOrderPageQueryDTO.getPage(), userOrderPageQueryDTO.getPageSize());
+        page.setSearchCount(false);
         if(userOrderPageQueryDTO.getDeleted() == null){
             userOrderPageQueryDTO.setDeleted(DISABLED);
         }
@@ -521,6 +522,16 @@ public class OrderServiceImpl implements OrderService {
             }
             record.setItems(items);
         }
+        //将排序送进service里
+        records.sort((a, b) -> {
+            if (a.getStatus().equals(b.getStatus())) {
+                return b.getCreateTime().compareTo(a.getCreateTime()); // 时间降序
+            }
+            // status == 0 的排前面
+            if (a.getStatus() == 0) return -1;
+            if (b.getStatus() == 0) return 1;
+            return 0;
+        });
         return new PageResult<>(total,records);
     }
 
@@ -1080,6 +1091,7 @@ public class OrderServiceImpl implements OrderService {
             order.setReceiverPhone(userAddress.getReceiverPhone());
             order.setReceiverAddress(receiverAddress);
             order.setSource(NORMAL);
+            order.setMerchantName(merchantProfileService.getMerchantNameByMerchantId(merchantId));
             orderMapper.insert(order);
 
             // 扣除库存并插入订单明细表

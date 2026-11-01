@@ -31,6 +31,7 @@ public class OrderTimeoutTask {
     public void closeTimeOutOrders() {
         log.info("扫描超时订单中……");
         LocalDateTime deadLineTime = LocalDateTime.now().minusMinutes(30);
+        //每分钟扫描最多1000单，防止数据太大内存溢出
         List<Order> orderList = orderMapper.selectByCreateTime(deadLineTime);
         for (Order order : orderList) {
             try {
