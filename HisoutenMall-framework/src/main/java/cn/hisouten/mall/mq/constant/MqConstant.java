@@ -20,10 +20,11 @@ public class MqConstant {
     // ========== es ==========
     public static final String PRODUCT_SYNC_TOPIC = "product-sync-topic";
     public static final String PRODUCT_SYNC_GROUP = "product-sync-consumer-group";
+    public static final String PRODUCT_ADD_SALES_TOPIC = "product-add-sales-topic";
+    public static final String PRODUCT_ADD_SALES_GROUP = "product-add-sales-group";
 
     public static final String SAVE = "SAVE";
     public static final String DELETE = "DELETE";
-    public static final String SALES = "SALES";
 
     // ========== 延迟等级 从1秒到2小时 ==========
     public static final int ONE_SECOND_DELAY = 1;

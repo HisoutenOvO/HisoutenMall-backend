@@ -26,9 +26,16 @@ public interface ProductSearchService {
     void syncToEs(Long productId);
 
     /**
-     *
-     * @param productId
-     * @param totalSales
+     * 更新商品销量
+     * @param productId 商品id
+     * @param totalSales 总销量
      */
     void updateSalesInEs(Long productId, Integer totalSales);
+
+    /**
+     * 累加商品销量
+     * @param productId 商品id
+     * @param quantity 新增销量
+     */
+    void addSalesInEs(Long productId, Integer quantity);
 }

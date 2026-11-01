@@ -22,10 +22,9 @@ public class ProductSalesSyncTask {
     private final ProductSearchService productSearchService;
 
     /**
-     * 每分钟同步一次销量到 ES
-     * cron 表达式：0 0/5 * * * ?
+     * 每天3点同步一次销量到 ES
      */
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 0 3 * * ?")
     public void syncSalesToEs() {
         log.info("[定时任务] 开始同步商品销量到 ES...");
         long start = System.currentTimeMillis();

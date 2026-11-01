@@ -9,6 +9,7 @@ import cn.hisouten.mall.pojo.vo.order.*;
 import jakarta.validation.Valid;
 import org.apache.ibatis.annotations.Select;
 
+import javax.net.ssl.SSLSession;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -217,4 +218,11 @@ public interface OrderService {
      * @param addressId 地址id
      */
     void updateOrderAddress(Long userId, String orderNo, Long addressId);
+
+    /**
+     * 根据订单号查找订单
+     * @param orderNo 订单号
+     * @return 返回值
+     */
+    Order getOrderByNo(String orderNo);
 }

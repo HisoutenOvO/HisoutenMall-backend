@@ -38,55 +38,50 @@ public class ActivityPreheatTask {
     /**
      * 每分钟扫描一次是否有秒杀活动需要预热进redis
      */
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 0/1 * * * ?")
     public void preheatActivity(){
         log.info("扫描预热活动中……");
-        // 每分钟扫一次
-        List<SeckillProduct> list = seckillProductMapper.selectAboutToStart(5);  // 5分钟内开始的活动
+        List<SeckillProduct> list = seckillProductMapper.selectAboutToStart(5);
         Set<Long> activityIds = new HashSet<>();
+
         for (SeckillProduct sp : list) {
             String key = SECKILL_STOCK + sp.getSkuId();
-            // 幂等：只有key不存在才写
-            Boolean absent = stringRedisTemplate.opsForValue()
-                    .setIfAbsent(key, String.valueOf(sp.getSeckillStock()), 2, TimeUnit.HOURS);
-            if (Boolean.TRUE.equals(absent)) {
-                log.info("[预热] skuId={}, stock={}", sp.getSkuId(), sp.getSeckillStock());
-            }
+            stringRedisTemplate.opsForValue().setIfAbsent(key, String.valueOf(sp.getSeckillStock()), 2, TimeUnit.HOURS);
 
-            // 预热限购数
             String limitKey = SECKILL_PRODUCT_LIMIT + sp.getSkuId();
             stringRedisTemplate.opsForValue().setIfAbsent(limitKey, String.valueOf(sp.getLimitPerUser()), 2, TimeUnit.HOURS);
 
-            activityIds.add(sp.getActivityId());
-
-            // 把合法的skuId存入集合，这样秒杀时可以判断这个skuId到底属不属于这个活动
             String skuSetKey = CACHE_SECKILL_SKU_SET_PREFIX + sp.getActivityId();
             stringRedisTemplate.opsForSet().add(skuSetKey, sp.getSkuId().toString());
 
-            // 预热活动相关
-            for (Long activityId : activityIds) {
-                //预热活动基础信息,用于秒杀接口校验时间
-                SeckillActivity activity = seckillActivityMapper.selectById(activityId);
-                if (activity != null) {
-                    stringRedisTemplate.opsForValue().setIfAbsent(
-                            CACHE_SECKILL_ACTIVITY_INFO_PREFIX + activityId,
-                            JSONUtil.toJsonStr(activity),
-                            2, TimeUnit.HOURS
-                    );
-                }
-            }
+            activityIds.add(sp.getActivityId());
         }
 
-        // 预热活动详情
+        //统一查活动信息，并写入 Redis
         for (Long activityId : activityIds) {
+            // 先查 Redis，没有再去查库（防止重复查）
+            String cacheKey = CACHE_SECKILL_ACTIVITY_INFO_PREFIX + activityId;
+            Boolean absent = stringRedisTemplate.opsForValue().setIfAbsent(cacheKey, "1", 2, TimeUnit.HOURS);
+            // 如果 absent 为 true，说明刚占位，去查库并写回真正的数据
+            if (Boolean.TRUE.equals(absent)) {
+                SeckillActivity activity = seckillActivityMapper.selectById(activityId);
+                if (activity != null) {
+                    stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(activity), 2, TimeUnit.HOURS);
+                } else {
+                    stringRedisTemplate.delete(cacheKey); // 没查到把占位删了
+                }
+            }
+
+            // 3. 预热活动详情
             UserSeckillActivityDetailVO detail = seckillService.loadDetailFromDB(activityId);
-            if (detail == null) continue;
-            cacheClientUtils.setWithLogic(
-                    CACHE_SECKILL_PRODUCT_DETAIL_PREFIX + activityId,
-                    detail,
-                    CACHE_SECKILL_PRODUCT_DETAIL_TTL,
-                    TimeUnit.MINUTES
-            );
+            if (detail != null) {
+                cacheClientUtils.setWithLogic(
+                        CACHE_SECKILL_PRODUCT_DETAIL_PREFIX + activityId,
+                        detail,
+                        CACHE_SECKILL_PRODUCT_DETAIL_TTL,
+                        TimeUnit.MINUTES
+                );
+            }
         }
     }
 }

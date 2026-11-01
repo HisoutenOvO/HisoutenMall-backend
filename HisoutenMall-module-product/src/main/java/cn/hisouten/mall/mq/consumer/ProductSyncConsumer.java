@@ -9,6 +9,9 @@ import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.stereotype.Component;
 
+/**
+ * ES商品文档数据同步消费者
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -28,7 +31,7 @@ public class ProductSyncConsumer implements RocketMQListener<ProductSyncMessage>
                 // 删除 ES 中的文档
                 productSearchService.deleteById(message.getProductId());
             } else {
-                // SAVE 或 SALES 操作，都直接全量覆盖保存
+                // SAVE全量保存
                 productSearchService.syncToEs(message.getProductId());
             }
         } catch (Exception e) {

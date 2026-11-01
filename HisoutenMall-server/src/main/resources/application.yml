@@ -41,7 +41,7 @@ minio:
   secret-key: minioadmin
   bucket-name: mall-images
 rocketmq:
-  name-server: 10.143.155.105:9876
+  name-server: 10.143.165.146:9876
   producer:
     group: mall-producer-group
 knife4j:

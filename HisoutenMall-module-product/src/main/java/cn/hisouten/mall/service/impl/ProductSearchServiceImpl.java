@@ -235,8 +235,36 @@ public class ProductSearchServiceImpl implements ProductSearchService {
 
         try {
             elasticsearchOperations.update(updateQuery, elasticsearchOperations.getIndexCoordinatesFor(ProductDoc.class));
+        } catch (org.springframework.data.elasticsearch.ResourceNotFoundException e) {
+            // 忽略：说明该商品在 ES 中不存在（可能已下架或未同步）
+            log.debug("商品 {} 在 ES 中不存在，跳过销量更新", productId);
         } catch (Exception e) {
             log.error("更新商品销量失败, productId: {}", productId, e);
+        }
+    }
+
+    /**
+     * 累加商品销量
+     * @param productId 商品id
+     * @param quantity 新增销量
+     */
+    @Override
+    public void addSalesInEs(Long productId, Integer quantity) {
+        // 注意这里脚本写的是 += 累加
+        UpdateQuery updateQuery = UpdateQuery.builder(String.valueOf(productId))
+                .withScript("ctx._source.sales += params.increment")
+                .withParams(Map.of("increment", quantity))
+                .build();
+
+        try {
+            elasticsearchOperations.update(updateQuery, elasticsearchOperations.getIndexCoordinatesFor(ProductDoc.class));
+            log.info("[ES销量累加] productId: {} 销量增加 {}", productId, quantity);
+        } catch (org.springframework.data.elasticsearch.ResourceNotFoundException e) {
+            // ES里没这个商品，说明商品可能下架了，或者没做全量初始化，直接忽略即可
+            log.warn("[ES销量累加] 商品不存在或已下架, productId: {}", productId);
+        } catch (Exception e) {
+            log.error("[ES销量累加] 异常, productId: {}", productId, e);
+            throw e; // 抛出让 MQ 重试
         }
     }
 }

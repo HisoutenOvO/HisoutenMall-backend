@@ -26,20 +26,17 @@ public class CheckStockTask {
     /**
      * 每分钟对账一次
      */
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "20 0/1 * * * ?")
     public void checkStock() {
         for (SeckillProduct sp : seckillProductMapper.selectAllActive()) {
             String key = SECKILL_STOCK + sp.getSkuId();
             String redisStock = stringRedisTemplate.opsForValue().get(key);
             if (redisStock == null) continue;
 
-            SeckillProduct db = seckillProductMapper.selectById(sp.getId());
-            if (db == null) continue;
-
-            if (Integer.parseInt(redisStock) != db.getSeckillStock()) {
+            if (Integer.parseInt(redisStock) != sp.getSeckillStock()) {
                 log.warn("[对账] skuId={}, Redis={}, DB={}",
-                        sp.getSkuId(), redisStock, db.getSeckillStock());
-                stringRedisTemplate.opsForValue().set(key, String.valueOf(db.getSeckillStock()));
+                        sp.getSkuId(), redisStock, sp.getSeckillStock());
+                stringRedisTemplate.opsForValue().set(key, String.valueOf(sp.getSeckillStock()));
             }
         }
     }

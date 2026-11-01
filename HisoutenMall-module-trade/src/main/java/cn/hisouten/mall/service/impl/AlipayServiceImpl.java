@@ -2,8 +2,12 @@ package cn.hisouten.mall.service.impl;
 
 import cn.hisouten.mall.config.AlipayConfig;
 import cn.hisouten.mall.exception.BizException;
+import cn.hisouten.mall.mapper.OrderItemMapper;
 import cn.hisouten.mall.mapper.OrderMapper;
+import cn.hisouten.mall.mq.message.ProductSalesMessage;
+import cn.hisouten.mall.mq.producer.MqProducerService;
 import cn.hisouten.mall.pojo.entity.Order;
+import cn.hisouten.mall.pojo.entity.OrderItem;
 import cn.hisouten.mall.service.AlipayService;
 import cn.hisouten.mall.service.OrderService;
 import com.alipay.api.AlipayClient;
@@ -14,21 +18,29 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.PayConstant.*;
+import static cn.hisouten.mall.constant.StatusConstant.PAID;
 import static cn.hisouten.mall.constant.StatusConstant.PENDING_PAYMENT;
+import static cn.hisouten.mall.mq.constant.MqConstant.PRODUCT_ADD_SALES_TOPIC;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AlipayServiceImpl implements AlipayService {
 
+    private final OrderItemMapper orderItemMapper;
+
     private final AlipayClient alipayClient;
     private final AlipayConfig alipayConfig;
     private final OrderMapper orderMapper;
     private final OrderService orderService;
+
+    private final MqProducerService mqProducerService;
 
     /**
      * 生成支付宝支付表单
@@ -67,6 +79,9 @@ public class AlipayServiceImpl implements AlipayService {
      */
     @Override
     public void handleNotify(Map<String, String> params) {
+        String orderNo = params.get(OUT_TRADE_NO);
+        String tradeStatus = params.get(TRADE_STATUS);
+        String totalAmount = params.get(TOTAL_AMOUNT);
         try {
             // 1. 验签
             boolean signVerified = AlipaySignature.rsaCheckV1(
@@ -74,10 +89,6 @@ public class AlipayServiceImpl implements AlipayService {
             if (!signVerified) {
                 throw new BizException(SIGNATURE_VERIFY_FAILED);
             }
-
-            String orderNo = params.get(OUT_TRADE_NO);
-            String tradeStatus = params.get(TRADE_STATUS);
-            String totalAmount = params.get(TOTAL_AMOUNT);
 
             if (TRADE_SUCCESS.equals(tradeStatus) || TRADE_FINISHED.equals(tradeStatus)) {
                 Order order = orderMapper.selectByOrderNo(orderNo);
@@ -90,6 +101,23 @@ public class AlipayServiceImpl implements AlipayService {
         } catch (Exception e) {
             log.error("处理支付宝回调异常", e);
             throw new BizException(HANDLE_NOTIFY_FAILED);
+        }
+
+        Order order = orderMapper.selectByOrderNo(orderNo);
+
+        if(order.getStatus() == PAID){
+            return;
+        }
+
+        // 查出这个订单对应的所有商品明细
+        List<OrderItem> orderItems = orderItemMapper.selectByOrderId(order.getId());
+
+        for (OrderItem item : orderItems) {
+            // 组装销量累加消息
+            ProductSalesMessage msg = new ProductSalesMessage(item.getProductId(), item.getQuantity());
+
+            // 发送给 RocketMQ
+            mqProducerService.send(PRODUCT_ADD_SALES_TOPIC, msg);
         }
     }
 }

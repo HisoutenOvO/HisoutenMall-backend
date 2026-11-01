@@ -427,6 +427,16 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.updateById(order);
     }
 
+    /**
+     * 根据订单号查找订单
+     * @param orderNo 订单号
+     * @return 返回值
+     */
+    @Override
+    public Order getOrderByNo(String orderNo) {
+        return orderMapper.selectByOrderNo(orderNo);
+    }
+
 
     /**
      * 订单取消支付

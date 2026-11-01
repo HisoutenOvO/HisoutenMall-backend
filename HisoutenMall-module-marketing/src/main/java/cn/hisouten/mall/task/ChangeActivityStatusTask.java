@@ -40,10 +40,8 @@ public class ChangeActivityStatusTask {
      * 每分钟扫描一次是否有秒杀活动需要改变状态
      */
     @Transactional
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "10 0/1 * * * ?")
     public void changeStatus() {
-
-
 
         LocalDateTime now = LocalDateTime.now();
 
