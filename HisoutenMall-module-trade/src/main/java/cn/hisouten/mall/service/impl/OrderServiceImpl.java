@@ -25,6 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 import cn.hutool.core.bean.BeanUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -68,7 +70,7 @@ public class OrderServiceImpl implements OrderService {
      * @return 返回值
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class) //保证包括RuntimeException在内的所有异常都能回滚事务
     public UserOrderCreateVO createFromCart(Long userId, Long addressId,List<Long> userCouponIds) {
         //查看购物车勾选项
         List<CartItemListBO> cartItemList = cartItemMapper.selectCheckedItemByUserId(userId);
@@ -88,7 +90,22 @@ public class OrderServiceImpl implements OrderService {
 
         //获取下单后清除的购物车项id
         List<Long> clearIds = cartItemList.stream().map(CartItemListBO::getId).toList();
-        return doCreateOrder(userId,addressId,cartItemList,clearIds,userCouponIds);
+        UserOrderCreateVO userOrderCreateVO = doCreateOrder(userId, addressId, cartItemList, clearIds, userCouponIds);
+
+        //事务提交后再发送消息
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                // 3. 事务成功提交了，现在再发 MQ
+                for (String orderNo : userOrderCreateVO.getOrderNos()) {
+                    OrderTimeoutMessage message = new OrderTimeoutMessage();
+                    message.setOrderNo(orderNo);
+                    message.setSendTime(System.currentTimeMillis());
+                    mqProducerService.sendDelay(ORDER_TIMEOUT_TOPIC, message, THIRTY_MINUTE_DELAY);
+                }
+            }
+        });
+        return userOrderCreateVO;
     }
 
     /**
@@ -97,7 +114,7 @@ public class OrderServiceImpl implements OrderService {
      * @return 返回值
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class) //保证包括RuntimeException在内的所有异常都能回滚事务
     public UserOrderCreateVO createDirect(Long userId, UserOrderCreateDTO userOrderCreateDTO) {
         //判断有效性
         ProductSku sku = productService.getSkuBySkuId(userOrderCreateDTO.getSkuId());
@@ -133,7 +150,21 @@ public class OrderServiceImpl implements OrderService {
         if(userOrderCreateDTO.getUserCouponId() != null){
             userCouponIds.add(userOrderCreateDTO.getUserCouponId());
         }
-        return doCreateOrder(userId,userOrderCreateDTO.getAddressId(),List.of(item),null,userCouponIds);
+        UserOrderCreateVO userOrderCreateVO = doCreateOrder(userId, userOrderCreateDTO.getAddressId(), List.of(item), null, userCouponIds);
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                // 3. 事务成功提交了，现在再发 MQ
+                for (String orderNo : userOrderCreateVO.getOrderNos()) {
+                    OrderTimeoutMessage message = new OrderTimeoutMessage();
+                    message.setOrderNo(orderNo);
+                    message.setSendTime(System.currentTimeMillis());
+                    mqProducerService.sendDelay(ORDER_TIMEOUT_TOPIC, message, THIRTY_MINUTE_DELAY);
+                }
+            }
+        });
+        return userOrderCreateVO;
     }
 
     /**
@@ -1003,7 +1034,6 @@ public class OrderServiceImpl implements OrderService {
      * @param userCouponIds 用户优惠券id列表
      * @return 订单号列表
      */
-    @Transactional
     protected UserOrderCreateVO doCreateOrder(Long userId, Long addressId, List<CartItemListBO> items, List<Long> clearCartItemIds, List<Long> userCouponIds) {
         //1.校验地址属于登录用户
         UserAddress userAddress = userAddressService.getById(addressId);
@@ -1136,14 +1166,6 @@ public class OrderServiceImpl implements OrderService {
         //8.用户传了券，但购物车里没有该商家的商品
         if (userCouponIds != null && !userCouponIds.isEmpty() && !couponUsed) {
             throw new BizException(COUPON_NOT_USE);
-        }
-
-        //循环外发送消息队列
-        for (String orderNo : orderNos) {
-            OrderTimeoutMessage message = new OrderTimeoutMessage();
-            message.setOrderNo(orderNo);
-            message.setSendTime(System.currentTimeMillis());
-            mqProducerService.sendDelay(ORDER_TIMEOUT_TOPIC, message, THIRTY_MINUTE_DELAY);
         }
 
         //9.清空购物车
