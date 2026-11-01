@@ -16,7 +16,7 @@ import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
+import cn.hutool.core.bean.BeanUtil;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -70,7 +70,7 @@ public class CouponServiceImpl implements CouponService {
         if(addDTO.getType() == DISCOUNT_COUPON && (addDTO.getValue().compareTo(BigDecimal.ONE) >= 0 || addDTO.getValue().compareTo(BigDecimal.ZERO) <= 0)){
             throw new BizException(COUPON_INFO_INVALID);
         }
-        BeanUtils.copyProperties(addDTO,coupon);
+        BeanUtil.copyProperties(addDTO,coupon);
         coupon.setMerchantId(merchantId);
         coupon.setRemain(addDTO.getTotal());
         couponMapper.insert(coupon);
@@ -119,7 +119,7 @@ public class CouponServiceImpl implements CouponService {
     public PageResult<MerchantCouponPageResultVO> merchantPageQuery(Long merchantId, MerchantCouponPageQueryDTO pageQueryDTO) {
         Page<CouponPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
         CouponPageQueryBO pageQueryBO = new CouponPageQueryBO();
-        BeanUtils.copyProperties(pageQueryDTO,pageQueryBO);
+        BeanUtil.copyProperties(pageQueryDTO,pageQueryBO);
         Page<CouponPageResultBO> result = couponMapper.pageQuery(merchantId,page,pageQueryBO);
         if(result == null){
             return null;
@@ -128,7 +128,7 @@ public class CouponServiceImpl implements CouponService {
         List<MerchantCouponPageResultVO> records = new ArrayList<>();
         for (CouponPageResultBO record : result.getRecords()) {
             MerchantCouponPageResultVO vo = new MerchantCouponPageResultVO();
-            BeanUtils.copyProperties(record,vo);
+            BeanUtil.copyProperties(record,vo);
             if(record.getStartTime().isAfter(LocalDateTime.now())){
                 vo.setStatus(NOT_START);
             } else if (record.getStartTime().isBefore(LocalDateTime.now()) && record.getEndTime().isAfter(LocalDateTime.now())) {
@@ -154,7 +154,7 @@ public class CouponServiceImpl implements CouponService {
             throw new BizException(COUPON_NOT_FOUND);
         }
         MerchantCouponDetailVO detailVO = new MerchantCouponDetailVO();
-        BeanUtils.copyProperties(coupon,detailVO);
+        BeanUtil.copyProperties(coupon,detailVO);
         if(coupon.getStartTime().isAfter(LocalDateTime.now())){
             detailVO.setStatus(NOT_START);
         } else if (coupon.getStartTime().isBefore(LocalDateTime.now()) && coupon.getEndTime().isAfter(LocalDateTime.now())) {
@@ -205,7 +205,7 @@ public class CouponServiceImpl implements CouponService {
         List<AvailableCouponPageResultVO> records = new ArrayList<>();
         for (AvailableCouponPageResultVO record : result.getRecords()) {
             AvailableCouponPageResultVO vo = new AvailableCouponPageResultVO();
-            BeanUtils.copyProperties(record,vo);
+            BeanUtil.copyProperties(record,vo);
             boolean exist = userCouponIdList.contains(record.getId());
             vo.setReceived(exist);
             records.add(vo);
@@ -306,7 +306,7 @@ public class CouponServiceImpl implements CouponService {
     public PageResult<AdminCouponPageResultVO> adminPageQuery(Long adminId, AdminCouponPageQueryDTO pageQueryDTO) {
         Page<CouponPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
         CouponPageQueryBO pageQueryBO = new CouponPageQueryBO();
-        BeanUtils.copyProperties(pageQueryDTO,pageQueryBO);
+        BeanUtil.copyProperties(pageQueryDTO,pageQueryBO);
         Page<CouponPageResultBO> result = couponMapper.pageQuery(null,page,pageQueryBO);
         if(result == null){
             return null;
@@ -315,7 +315,7 @@ public class CouponServiceImpl implements CouponService {
         List<AdminCouponPageResultVO> records = new ArrayList<>();
         for (CouponPageResultBO record : result.getRecords()) {
             AdminCouponPageResultVO vo = new AdminCouponPageResultVO();
-            BeanUtils.copyProperties(record,vo);
+            BeanUtil.copyProperties(record,vo);
             if(record.getStartTime().isAfter(LocalDateTime.now())){
                 vo.setStatus(NOT_START);
             } else if (record.getStartTime().isBefore(LocalDateTime.now()) && record.getEndTime().isAfter(LocalDateTime.now())) {
@@ -340,7 +340,7 @@ public class CouponServiceImpl implements CouponService {
             throw new BizException(COUPON_NOT_FOUND);
         }
         AdminCouponDetailVO detailVO = new AdminCouponDetailVO();
-        BeanUtils.copyProperties(coupon,detailVO);
+        BeanUtil.copyProperties(coupon,detailVO);
         detailVO.setMerchantName(merchantProfileService.getMerchantNameByMerchantId(coupon.getMerchantId()));
         if(coupon.getStartTime().isAfter(LocalDateTime.now())){
             detailVO.setStatus(NOT_START);

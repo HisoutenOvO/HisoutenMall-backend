@@ -14,9 +14,9 @@ import cn.hisouten.mall.user.pojo.vo.user.UserMerchantDetailVO;
 import cn.hisouten.mall.user.pojo.vo.user.UserMerchantFollowPageResultVO;
 import cn.hisouten.mall.user.service.MerchantProfileService;
 import cn.hisouten.mall.util.CacheClientUtils;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.RedisConstant.*;
-import static cn.hisouten.mall.constant.StatusConstant.DISABLED;
 import static cn.hisouten.mall.constant.StatusConstant.ENABLED;
 
 @Service
@@ -97,7 +96,7 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
         if(existedContactPhone != null){
             throw new BizException(CONTACT_PHONE_ALREADY_EXIST);
         }
-        BeanUtils.copyProperties(merchantUpdateDTO,merchantProfile);
+        BeanUtil.copyProperties(merchantUpdateDTO,merchantProfile);
         merchantProfileMapper.updateById(merchantProfile);
         //删除详情的缓存
         cacheClientUtils.delete(CACHE_MERCHANT_DETAIL_PREFIX,merchantId);

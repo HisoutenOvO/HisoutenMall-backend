@@ -22,7 +22,7 @@ import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.util.CacheClientUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
+import cn.hutool.core.bean.BeanUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -64,7 +64,7 @@ public class ProductServiceImpl implements ProductService {
     public PageResult<MerchantProductPageResultVO> merchantPageQuery(MerchantProductPageQueryDTO merchantProductPageQueryDTO) {
         Page<ProductPageResultBO> page = new Page<>(merchantProductPageQueryDTO.getPage(), merchantProductPageQueryDTO.getPageSize());
         ProductPageQueryBO productPageQueryBO = new ProductPageQueryBO();
-        BeanUtils.copyProperties(merchantProductPageQueryDTO,productPageQueryBO);
+        BeanUtil.copyProperties(merchantProductPageQueryDTO,productPageQueryBO);
         //给BO里加入当前商家id，便于让商家查询自家商品
         productPageQueryBO.setMerchantId(StpUtil.getLoginIdAsLong());
         // 如果前端没传deleted条件，默认查未删除的
@@ -122,7 +122,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productMapper.selectByIdIgnoreLogic(productId);
         if (product == null) return null;
         MerchantProductDetailVO merchantProductDetailVO = new MerchantProductDetailVO();
-        BeanUtils.copyProperties(product, merchantProductDetailVO);
+        BeanUtil.copyProperties(product, merchantProductDetailVO);
         String categoryName = categoryService.getCategoryNameByCategoryId(product.getCategoryId());
         String merchantName = productMapper.getMerchantNameByMerchantId(product.getMerchantId());
         String brandName = brandService.getBrandNameByBrandId(product.getBrandId());
@@ -166,7 +166,7 @@ public class ProductServiceImpl implements ProductService {
         if (auditStatus == null || auditStatus != PASSED) {
             throw new BizException(MERCHANT_NOT_AUDIT);
         }
-        BeanUtils.copyProperties(merchantProductAddDTO,product);
+        BeanUtil.copyProperties(merchantProductAddDTO,product);
         product.setMerchantId(StpUtil.getLoginIdAsLong());
         product.setStatus(DISABLED);
         productMapper.insert(product);
@@ -217,7 +217,7 @@ public class ProductServiceImpl implements ProductService {
             throw new BizException(PRODUCT_NAME_ALREADY_EXIST);
         }
 
-        BeanUtils.copyProperties(merchantProductUpdateDTO,product);
+        BeanUtil.copyProperties(merchantProductUpdateDTO,product);
         productMapper.updateById(product);
 
         //更新对应的SKU，使用对比更新的方式
@@ -442,7 +442,7 @@ public class ProductServiceImpl implements ProductService {
             throw new BizException(PRODUCT_NOT_FOUND);
         }
         UserProductDetailVO userProductDetailVO = new UserProductDetailVO();
-        BeanUtils.copyProperties(product, userProductDetailVO);
+        BeanUtil.copyProperties(product, userProductDetailVO);
         String categoryName = null;
         String brandName = null;
         if(product.getCategoryId() != null){
@@ -489,7 +489,7 @@ public class ProductServiceImpl implements ProductService {
     public PageResult<AdminProductPageResultVO> adminPageQuery(Long adminId, AdminProductPageQueryDTO pageQueryDTO) {
         Page<ProductPageResultBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
         ProductPageQueryBO productPageQueryBO = new ProductPageQueryBO();
-        BeanUtils.copyProperties(pageQueryDTO,productPageQueryBO);
+        BeanUtil.copyProperties(pageQueryDTO,productPageQueryBO);
         // 如果前端没传deleted条件，默认查未删除的
         if (productPageQueryBO.getDeleted() == null) {
             productPageQueryBO.setDeleted(DISABLED);
@@ -550,7 +550,7 @@ public class ProductServiceImpl implements ProductService {
             throw new BizException(PRODUCT_NOT_FOUND);
         }
         AdminProductDetailVO adminProductDetailVO = new AdminProductDetailVO();
-        BeanUtils.copyProperties(product, adminProductDetailVO);
+        BeanUtil.copyProperties(product, adminProductDetailVO);
         String categoryName = categoryService.getCategoryNameByCategoryId(product.getCategoryId());
         String merchantName = productMapper.getMerchantNameByMerchantId(product.getMerchantId());
         String brandName = brandService.getBrandNameByBrandId(product.getBrandId());
@@ -614,7 +614,7 @@ public class ProductServiceImpl implements ProductService {
     public MerchantProductSkuVO skuDetailQuery(Long skuId) {
         ProductSku productSku = checkSkuOwnership(skuId);
         MerchantProductSkuVO merchantProductSkuVO = new MerchantProductSkuVO();
-        BeanUtils.copyProperties(productSku,merchantProductSkuVO);
+        BeanUtil.copyProperties(productSku,merchantProductSkuVO);
         return merchantProductSkuVO;
     }
 
@@ -633,7 +633,7 @@ public class ProductServiceImpl implements ProductService {
                 throw new BizException(SPECS_ALREADY_EXIST);
             }
         }
-        BeanUtils.copyProperties(merchantProductSkuDTO,productSku);
+        BeanUtil.copyProperties(merchantProductSkuDTO,productSku);
         productSkuMapper.updateById(productSku);
         cacheClientUtils.delete(CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX, productSku.getProductId());
         cacheClientUtils.delete(CACHE_PRODUCT_USER_DETAIL_PREFIX, productSku.getProductId());

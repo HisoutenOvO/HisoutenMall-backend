@@ -23,7 +23,7 @@ import cn.hisouten.mall.user.service.UserProfileService;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
+import cn.hutool.core.bean.BeanUtil;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -110,7 +110,7 @@ public class ReviewServiceImpl implements ReviewService {
         List<UserReviewPageResultVO> voList = new ArrayList<>();
         for (ReviewPageResultBO bo : boList) {
             UserReviewPageResultVO vo = new UserReviewPageResultVO();
-            BeanUtils.copyProperties(bo,vo);
+            BeanUtil.copyProperties(bo,vo);
             String image = bo.getImages();
             //转成单个字符串
             List<String> images = StrUtil.split(image,",");
@@ -141,7 +141,7 @@ public class ReviewServiceImpl implements ReviewService {
         List<UserSelfReviewPageResultVO> voList = new ArrayList<>();
         for (ReviewPageResultBO bo : boList) {
             UserSelfReviewPageResultVO vo = new UserSelfReviewPageResultVO();
-            BeanUtils.copyProperties(bo,vo);
+            BeanUtil.copyProperties(bo,vo);
             String image = bo.getImages();
             //转成单个字符串
             List<String> images = StrUtil.split(image,",");
@@ -171,7 +171,7 @@ public class ReviewServiceImpl implements ReviewService {
         List<MerchantReviewPageResultVO> voList = new ArrayList<>();
         for (ReviewPageResultBO bo : boList) {
             MerchantReviewPageResultVO vo = new MerchantReviewPageResultVO();
-            BeanUtils.copyProperties(bo,vo);
+            BeanUtil.copyProperties(bo,vo);
             String image = bo.getImages();
             //转成单个字符串
             List<String> images = StrUtil.split(image,",");
@@ -283,7 +283,7 @@ public class ReviewServiceImpl implements ReviewService {
         List<AdminReviewPageResultVO> voList = new ArrayList<>();
         for (ReviewPageResultBO bo : boList) {
             AdminReviewPageResultVO vo = new AdminReviewPageResultVO();
-            BeanUtils.copyProperties(bo,vo);
+            BeanUtil.copyProperties(bo,vo);
             String image = bo.getImages();
             //转成单个字符串
             List<String> images = StrUtil.split(image,",");
@@ -326,7 +326,7 @@ public class ReviewServiceImpl implements ReviewService {
             }
         }
         ReviewDetailVO detailVO = new ReviewDetailVO();
-        BeanUtils.copyProperties(review,detailVO);
+        BeanUtil.copyProperties(review,detailVO);
         UserProfile userProfile = userProfileService.getProfileByUserId(review.getUserId());
         if(userProfile != null){
             detailVO.setNickname(userProfile.getNickname());

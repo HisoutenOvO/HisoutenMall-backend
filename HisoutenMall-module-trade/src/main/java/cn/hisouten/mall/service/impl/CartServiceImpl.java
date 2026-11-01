@@ -13,7 +13,7 @@ import cn.hisouten.mall.pojo.vo.cart.UserCartItemListVO;
 import cn.hisouten.mall.service.CartService;
 import cn.hisouten.mall.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
+import cn.hutool.core.bean.BeanUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -94,7 +94,7 @@ public class CartServiceImpl implements CartService {
         List<UserCartItemListVO> voList = new ArrayList<>();
         for (CartItemListBO bo : boList) {
             UserCartItemListVO vo = new UserCartItemListVO();
-            BeanUtils.copyProperties(bo, vo);
+            BeanUtil.copyProperties(bo, vo);
             //设置图片
             if (bo.getSkuImage() != null) {
                 vo.setImage(bo.getSkuImage());

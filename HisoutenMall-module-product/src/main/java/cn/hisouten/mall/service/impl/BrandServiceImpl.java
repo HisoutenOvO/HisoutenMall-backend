@@ -16,7 +16,7 @@ import cn.hisouten.mall.pojo.vo.brand.BrandListVO;
 import cn.hisouten.mall.service.BrandService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
+import cn.hutool.core.bean.BeanUtil;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -78,7 +78,7 @@ public class BrandServiceImpl implements BrandService {
     public PageResult<AdminBrandPageResultVO> pageQuery(AdminBrandPageQueryDTO adminBrandPageQueryDTO) {
         Page<BrandPageQueryBO> page = new Page<>(adminBrandPageQueryDTO.getPage(), adminBrandPageQueryDTO.getPageSize());
         BrandPageQueryBO brandPageQueryBO = new BrandPageQueryBO();
-        BeanUtils.copyProperties(adminBrandPageQueryDTO,brandPageQueryBO);
+        BeanUtil.copyProperties(adminBrandPageQueryDTO,brandPageQueryBO);
         // 如果前端没传deleted条件，默认查未删除的
         if (brandPageQueryBO.getDeleted() == null) {
             brandPageQueryBO.setDeleted(DISABLED);
@@ -114,7 +114,7 @@ public class BrandServiceImpl implements BrandService {
             throw new BizException(BRAND_NOT_FOUND);
         }
         AdminBrandDetailVO adminBrandDetailVO = new AdminBrandDetailVO();
-        BeanUtils.copyProperties(brand,adminBrandDetailVO);
+        BeanUtil.copyProperties(brand,adminBrandDetailVO);
         return adminBrandDetailVO;
     }
 
@@ -130,7 +130,7 @@ public class BrandServiceImpl implements BrandService {
         if(existedName != null){
             throw new BizException(BRAND_NAME_ALREADY_EXIST);
         }
-        BeanUtils.copyProperties(adminBrandAddDTO,brand);
+        BeanUtil.copyProperties(adminBrandAddDTO,brand);
         brandMapper.insert(brand);
     }
 
@@ -149,7 +149,7 @@ public class BrandServiceImpl implements BrandService {
         if(existedName != null){
             throw new BizException(BRAND_NAME_ALREADY_EXIST);
         }
-        BeanUtils.copyProperties(adminBrandUpdateDTO,brand);
+        BeanUtil.copyProperties(adminBrandUpdateDTO,brand);
         brandMapper.updateById(brand);
     }
 

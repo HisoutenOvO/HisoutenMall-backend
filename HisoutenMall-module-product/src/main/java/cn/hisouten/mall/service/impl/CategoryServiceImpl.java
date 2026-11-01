@@ -9,7 +9,7 @@ import cn.hisouten.mall.pojo.entity.Category;
 import cn.hisouten.mall.pojo.vo.category.*;
 import cn.hisouten.mall.service.CategoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
+import cn.hutool.core.bean.BeanUtil;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -109,7 +109,7 @@ public class CategoryServiceImpl implements CategoryService {
             throw new BizException(CATEGORY_NOT_FOUND);
         }
         AdminCategoryDetailVO vo = new AdminCategoryDetailVO();
-        BeanUtils.copyProperties(category, vo);
+        BeanUtil.copyProperties(category, vo);
         return vo;
     }
 
@@ -140,7 +140,7 @@ public class CategoryServiceImpl implements CategoryService {
             level = parent.getLevel() + 1;
         }
         Category category = new Category();
-        BeanUtils.copyProperties(adminCategoryAddDTO, category);
+        BeanUtil.copyProperties(adminCategoryAddDTO, category);
         category.setLevel(level);
         category.setStatus(ENABLED);
         categoryMapper.insert(category);
@@ -219,7 +219,7 @@ public class CategoryServiceImpl implements CategoryService {
         for (Category c : all) {
             if (c.getParentId().equals(parentId)) {
                 AdminCategoryTreeVO vo = new AdminCategoryTreeVO();
-                BeanUtils.copyProperties(c, vo);
+                BeanUtil.copyProperties(c, vo);
                 vo.setChildren(buildTree(all, c.getId()));
                 result.add(vo);
             }
@@ -238,7 +238,7 @@ public class CategoryServiceImpl implements CategoryService {
         for (Category c : all) {
             if (c.getParentId().equals(parentId)) {
                 CategoryTreeVO vo = new CategoryTreeVO();
-                BeanUtils.copyProperties(c, vo);
+                BeanUtil.copyProperties(c, vo);
                 vo.setChildren(buildTree(all, c.getId()));
                 result.add(vo);
             }

@@ -21,7 +21,7 @@ import org.springframework.data.elasticsearch.core.query.highlight.HighlightFiel
 import org.springframework.data.elasticsearch.core.query.highlight.HighlightParameters;
 import co.elastic.clients.json.JsonData;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
+import cn.hutool.core.bean.BeanUtil;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -156,7 +156,7 @@ public class ProductSearchServiceImpl implements ProductSearchService {
         for (SearchHit<ProductDoc> hit : searchHits) {
             ProductDoc doc = hit.getContent();
             UserProductPageResultVO vo = new UserProductPageResultVO();
-            BeanUtils.copyProperties(doc, vo);
+            BeanUtil.copyProperties(doc, vo);
             vo.setId(Long.valueOf(doc.getId()));
             vo.setSalesCount(doc.getSales());
 
@@ -200,7 +200,7 @@ public class ProductSearchServiceImpl implements ProductSearchService {
 
         // 3. 组装 ProductDoc
         ProductDoc doc = new ProductDoc();
-        BeanUtils.copyProperties(product, doc);
+        BeanUtil.copyProperties(product, doc);
         doc.setId(productId.toString());
         doc.setMinPrice(minPrice);
         doc.setTotalStock(totalStock);

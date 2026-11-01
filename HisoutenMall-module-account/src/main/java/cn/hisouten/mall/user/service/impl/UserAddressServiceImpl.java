@@ -10,8 +10,8 @@ import cn.hisouten.mall.user.pojo.vo.user.UserAddressDetailVO;
 import cn.hisouten.mall.user.pojo.vo.user.UserAddressListVO;
 import cn.hisouten.mall.user.service.UserAddressService;
 import cn.hisouten.mall.util.CacheClientUtils;
+import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,7 +80,7 @@ public class UserAddressServiceImpl implements UserAddressService {
             throw new BizException(NO_PERMISSION);
         }
         UserAddressDetailVO userAddressDetailVO = new UserAddressDetailVO();
-        BeanUtils.copyProperties(userAddress,userAddressDetailVO);
+        BeanUtil.copyProperties(userAddress,userAddressDetailVO);
         return userAddressDetailVO;
     }
 
@@ -93,7 +93,7 @@ public class UserAddressServiceImpl implements UserAddressService {
     @Transactional
     public void addAddress(Long userId, UserAddressAddDTO userAddressAddDTO) {
         UserAddress userAddress = new UserAddress();
-        BeanUtils.copyProperties(userAddressAddDTO,userAddress);
+        BeanUtil.copyProperties(userAddressAddDTO,userAddress);
         if(userAddressAddDTO.getIsDefault() == ENABLED){
             userAddressMapper.changeDefaultAddress(userId);
         }
@@ -116,7 +116,7 @@ public class UserAddressServiceImpl implements UserAddressService {
         if(!userAddress.getUserId().equals(StpUtil.getLoginIdAsLong())){
             throw new BizException(NO_PERMISSION);
         }
-        BeanUtils.copyProperties(userAddressUpdateDTO,userAddress);
+        BeanUtil.copyProperties(userAddressUpdateDTO,userAddress);
         if(userAddressUpdateDTO.getIsDefault() == ENABLED){
             userAddressMapper.changeDefaultAddress(userAddress.getUserId());
         }

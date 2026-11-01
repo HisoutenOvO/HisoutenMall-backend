@@ -20,14 +20,11 @@ import cn.hisouten.mall.pojo.vo.product.MerchantSeckillProductVO;
 import cn.hisouten.mall.pojo.vo.product.UserSeckillProductVO;
 import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.service.SeckillService;
-import cn.hisouten.mall.user.pojo.entity.AdminProfile;
-import cn.hisouten.mall.user.service.AdminProfileService;
 import cn.hisouten.mall.user.service.MerchantProfileService;
 import cn.hisouten.mall.util.CacheClientUtils;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -112,7 +109,7 @@ public class SeckillServiceImpl implements SeckillService {
     public PageResult<MerchantSeckillActivityPageResultVO> pageQueryMerchant(Long merchantId, MerchantSeckillActivityPageQueryDTO pageQueryDTO) {
         Page<SeckillActivityPageQueryBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
         SeckillActivityPageQueryBO pageQueryBO = new SeckillActivityPageQueryBO();
-        BeanUtils.copyProperties(pageQueryDTO,pageQueryBO);
+        BeanUtil.copyProperties(pageQueryDTO,pageQueryBO);
         if(pageQueryDTO.getDeleted() == null){
             pageQueryDTO.setDeleted(DISABLED);
         }
@@ -122,7 +119,7 @@ public class SeckillServiceImpl implements SeckillService {
         List<MerchantSeckillActivityPageResultVO> records = new ArrayList<>();
         for (SeckillActivity activity : seckillActivityList) {
             MerchantSeckillActivityPageResultVO vo = new MerchantSeckillActivityPageResultVO();
-            BeanUtils.copyProperties(activity,vo);
+            BeanUtil.copyProperties(activity,vo);
             records.add(vo);
         }
         return new PageResult<>(total,records);
@@ -138,7 +135,7 @@ public class SeckillServiceImpl implements SeckillService {
     public MerchantSeckillActivityDetailVO merchantDetailQuery(Long merchantId, Long activityId) {
         SeckillActivity seckillActivity = checkValid(merchantId,activityId);
         MerchantSeckillActivityDetailVO detailVO = new MerchantSeckillActivityDetailVO();
-        BeanUtils.copyProperties(seckillActivity,detailVO);
+        BeanUtil.copyProperties(seckillActivity,detailVO);
         //查询秒杀商品列表
         List<SeckillProductDetailBO> boList = seckillProductMapper.selectSkusByActivityId(activityId);
         List<MerchantSeckillProductVO> productItemVOList = BeanUtil.copyToList(boList,MerchantSeckillProductVO.class);
@@ -384,7 +381,7 @@ public class SeckillServiceImpl implements SeckillService {
             return null;
         }
         UserSeckillActivityDetailVO detailVO = new UserSeckillActivityDetailVO();
-        BeanUtils.copyProperties(seckillActivity,detailVO);
+        BeanUtil.copyProperties(seckillActivity,detailVO);
 
         //计算 remainSeconds (剩余秒数)
         LocalDateTime now = LocalDateTime.now();
@@ -428,7 +425,7 @@ public class SeckillServiceImpl implements SeckillService {
     public PageResult<AdminSeckillActivityPageResultVO> pageQueryAdmin(Long adminId, AdminSeckillActivityPageQueryDTO pageQueryDTO) {
         Page<SeckillActivityPageQueryBO> page = new Page<>(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
         SeckillActivityPageQueryBO pageQueryBO = new SeckillActivityPageQueryBO();
-        BeanUtils.copyProperties(pageQueryDTO,pageQueryBO);
+        BeanUtil.copyProperties(pageQueryDTO,pageQueryBO);
         //默认查找没被删除的
         if(pageQueryDTO.getDeleted() == null){
             pageQueryDTO.setDeleted(DISABLED);
@@ -439,7 +436,7 @@ public class SeckillServiceImpl implements SeckillService {
         List<AdminSeckillActivityPageResultVO> records = new ArrayList<>();
         for (SeckillActivity activity : seckillActivityList) {
             AdminSeckillActivityPageResultVO vo = new AdminSeckillActivityPageResultVO();
-            BeanUtils.copyProperties(activity,vo);
+            BeanUtil.copyProperties(activity,vo);
             records.add(vo);
         }
         return new PageResult<>(total,records);
@@ -457,7 +454,7 @@ public class SeckillServiceImpl implements SeckillService {
             throw new BizException(ACTIVITY_NOT_FOUND);
         }
         AdminSeckillActivityDetailVO detailVO = new AdminSeckillActivityDetailVO();
-        BeanUtils.copyProperties(seckillActivity,detailVO);
+        BeanUtil.copyProperties(seckillActivity,detailVO);
         detailVO.setMerchantName(merchantProfileService.getMerchantNameByMerchantId(seckillActivity.getMerchantId()));
         //查询秒杀商品列表
         List<SeckillProductDetailBO> boList = seckillProductMapper.selectSkusByActivityId(activityId);

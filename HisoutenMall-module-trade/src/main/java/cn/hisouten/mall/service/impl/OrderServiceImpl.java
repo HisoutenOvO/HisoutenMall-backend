@@ -22,7 +22,7 @@ import cn.hisouten.mall.user.service.UserProfileService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
+import cn.hutool.core.bean.BeanUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -551,7 +551,7 @@ public class OrderServiceImpl implements OrderService {
             merchantName = MERCHANT_NOT_FOUND;
         }
         UserOrderDetailVO detailVO = new UserOrderDetailVO();
-        BeanUtils.copyProperties(order,detailVO);
+        BeanUtil.copyProperties(order,detailVO);
         detailVO.setMerchantName(merchantName);
         detailVO.setDiscountAmount(order.getTotalAmount().subtract(order.getPayAmount()));
 
@@ -560,7 +560,7 @@ public class OrderServiceImpl implements OrderService {
             Logistics logistics = logisticsMapper.selectByOrderId(order.getId());
             if (logistics != null) {
                 UserLogisticsVO logisticsVO = new UserLogisticsVO();
-                BeanUtils.copyProperties(logistics, logisticsVO);
+                BeanUtil.copyProperties(logistics, logisticsVO);
                 detailVO.setLogistics(logisticsVO);
             }
         }
@@ -585,7 +585,7 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItemVO> itemVOList = new ArrayList<>();
         for (OrderItem item : itemList) {
             OrderItemVO orderItemVO = new OrderItemVO();
-            BeanUtils.copyProperties(item,orderItemVO);
+            BeanUtil.copyProperties(item,orderItemVO);
             itemVOList.add(orderItemVO);
         }
         detailVO.setItems(itemVOList);
@@ -650,7 +650,7 @@ public class OrderServiceImpl implements OrderService {
             buyerName = USER_NOT_FOUND;
         }
         MerchantOrderDetailVO detailVO = new MerchantOrderDetailVO();
-        BeanUtils.copyProperties(order,detailVO);
+        BeanUtil.copyProperties(order,detailVO);
         detailVO.setBuyerUsername(buyerName);
         detailVO.setDiscountAmount(order.getTotalAmount().subtract(order.getPayAmount()));
 
@@ -659,7 +659,7 @@ public class OrderServiceImpl implements OrderService {
             Logistics logistics = logisticsMapper.selectByOrderId(order.getId());
             if (logistics != null) {
                 UserLogisticsVO logisticsVO = new UserLogisticsVO();
-                BeanUtils.copyProperties(logistics, logisticsVO);
+                BeanUtil.copyProperties(logistics, logisticsVO);
                 detailVO.setLogistics(logisticsVO);
             }
         }
@@ -684,7 +684,7 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItemVO> itemVOList = new ArrayList<>();
         for (OrderItem item : itemList) {
             OrderItemVO orderItemVO = new OrderItemVO();
-            BeanUtils.copyProperties(item,orderItemVO);
+            BeanUtil.copyProperties(item,orderItemVO);
             itemVOList.add(orderItemVO);
         }
         detailVO.setItems(itemVOList);
@@ -835,7 +835,7 @@ public class OrderServiceImpl implements OrderService {
             throw new BizException(ORDER_NOT_FOUND);
         }
         UserLogisticsVO logisticsVO = new UserLogisticsVO();
-        BeanUtils.copyProperties(logistics,logisticsVO);
+        BeanUtil.copyProperties(logistics,logisticsVO);
         logisticsVO.setShipTime(logistics.getCreateTime());
         return logisticsVO;
     }
@@ -886,7 +886,7 @@ public class OrderServiceImpl implements OrderService {
             merchantName = MERCHANT_NOT_FOUND;
         }
         AdminOrderDetailVO detailVO = new AdminOrderDetailVO();
-        BeanUtils.copyProperties(order,detailVO);
+        BeanUtil.copyProperties(order,detailVO);
         detailVO.setBuyerUsername(buyerName);
         detailVO.setMerchantName(merchantName);
         detailVO.setDiscountAmount(order.getTotalAmount().subtract(order.getPayAmount()));
@@ -896,7 +896,7 @@ public class OrderServiceImpl implements OrderService {
             Logistics logistics = logisticsMapper.selectByOrderId(order.getId());
             if (logistics != null) {
                 UserLogisticsVO logisticsVO = new UserLogisticsVO();
-                BeanUtils.copyProperties(logistics, logisticsVO);
+                BeanUtil.copyProperties(logistics, logisticsVO);
                 detailVO.setLogistics(logisticsVO);
             }
         }
@@ -920,7 +920,7 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItemVO> itemVOList = new ArrayList<>();
         for (OrderItem item : itemList) {
             OrderItemVO orderItemVO = new OrderItemVO();
-            BeanUtils.copyProperties(item,orderItemVO);
+            BeanUtil.copyProperties(item,orderItemVO);
             itemVOList.add(orderItemVO);
         }
         detailVO.setItems(itemVOList);

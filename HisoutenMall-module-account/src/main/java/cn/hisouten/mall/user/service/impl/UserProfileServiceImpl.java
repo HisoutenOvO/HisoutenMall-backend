@@ -9,8 +9,8 @@ import cn.hisouten.mall.user.pojo.entity.UserProfile;
 import cn.hisouten.mall.user.pojo.vo.user.UserDetailVO;
 import cn.hisouten.mall.user.service.UserProfileService;
 import cn.hisouten.mall.util.CacheClientUtils;
+import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -78,7 +78,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         if(userProfile == null){
             throw new BizException(USER_NOT_FOUND);
         }
-        BeanUtils.copyProperties(userUpdateDTO,userProfile);
+        BeanUtil.copyProperties(userUpdateDTO,userProfile);
         userProfileMapper.updateById(userProfile);
         cacheClientUtils.delete(CACHE_USER_DETAIL_PREFIX,userId);
     }

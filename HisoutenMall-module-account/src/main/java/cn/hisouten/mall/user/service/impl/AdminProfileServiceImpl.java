@@ -7,9 +7,8 @@ import cn.hisouten.mall.user.pojo.entity.AdminProfile;
 import cn.hisouten.mall.user.pojo.entity.User;
 import cn.hisouten.mall.user.pojo.vo.admin.AdminProfileDetailVO;
 import cn.hisouten.mall.user.service.AdminProfileService;
-import cn.hisouten.mall.user.service.AuthService;
+import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import static cn.hisouten.mall.constant.ExceptionMessageConstant.USER_NOT_FOUND;
@@ -36,7 +35,7 @@ public class AdminProfileServiceImpl implements AdminProfileService {
             throw new BizException(USER_NOT_FOUND);
         }
         AdminProfileDetailVO detailVO = new AdminProfileDetailVO();
-        BeanUtils.copyProperties(adminProfile,detailVO);
+        BeanUtil.copyProperties(adminProfile,detailVO);
         detailVO.setUsername(user.getUsername());
         return detailVO;
     }
