@@ -1,16 +1,7 @@
 package cn.hisouten.mall.server;
 
-import cn.hisouten.mall.mapper.ProductMapper;
-import cn.hisouten.mall.pojo.entity.Product;
-import cn.hisouten.mall.util.CacheClientUtils;
 import cn.hutool.core.lang.UUID;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
