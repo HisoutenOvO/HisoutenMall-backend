@@ -119,4 +119,12 @@ public interface ProductMapper extends BaseMapper<Product> {
      * @return 返回值
      */
     List<Map<String, Object>> selectTotalSalesByProductId();
+
+    /**
+     * 根据商家id查询商品
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    @Select("select * from product where merchant_id = #{merchantId}")
+    List<Product> selectByMerchantId(Long merchantId);
 }

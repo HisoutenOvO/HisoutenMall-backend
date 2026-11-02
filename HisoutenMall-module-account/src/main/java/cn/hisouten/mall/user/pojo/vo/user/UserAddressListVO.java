@@ -13,6 +13,8 @@ public class UserAddressListVO {
 
     private String receiverName;
 
+    private String receiverPhone;
+
     private String province;
 
     private String city;

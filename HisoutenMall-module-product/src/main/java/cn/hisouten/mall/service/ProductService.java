@@ -191,4 +191,10 @@ public interface ProductService {
      */
     Long getOnSaleProductCount(Long merchantId);
 
+    /**
+     * 根据根据商家id查询商品
+     * @param merchantId 商家id
+     * @return 返回值
+     */
+    List<Product> getProductListByMerchantId(Long merchantId);
 }

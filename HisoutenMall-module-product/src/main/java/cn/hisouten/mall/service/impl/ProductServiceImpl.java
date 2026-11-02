@@ -306,13 +306,10 @@ public class ProductServiceImpl implements ProductService {
         cacheClientUtils.delete(CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX, productId);
         cacheClientUtils.delete(CACHE_PRODUCT_USER_DETAIL_PREFIX, productId);
 
-        // 注册事务提交后的事件，提交成功才发 MQ
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                mqProducerService.send(PRODUCT_SYNC_TOPIC, new ProductSyncMessage(product.getId(), SAVE));
-            }
-        });
+        // 发MQ
+        mqProducerService.send(PRODUCT_SYNC_TOPIC, new ProductSyncMessage(product.getId(), SAVE));
+
+
     }
 
     /**
@@ -332,13 +329,9 @@ public class ProductServiceImpl implements ProductService {
         cacheClientUtils.delete(CACHE_PRODUCT_MERCHANT_DETAIL_PREFIX, productId);
         cacheClientUtils.delete(CACHE_PRODUCT_USER_DETAIL_PREFIX, productId);
 
-        // 注册事务提交后的事件，提交成功才发 MQ
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                mqProducerService.send(PRODUCT_SYNC_TOPIC, new ProductSyncMessage(product.getId(), DELETE));
-            }
-        });
+        //发 MQ
+        mqProducerService.send(PRODUCT_SYNC_TOPIC, new ProductSyncMessage(product.getId(), DELETE));
+
     }
 
     /**
@@ -366,12 +359,7 @@ public class ProductServiceImpl implements ProductService {
         cacheClientUtils.delete(CACHE_PRODUCT_USER_DETAIL_PREFIX, productId);
 
         // 注册事务提交后的事件，提交成功才发 MQ
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                mqProducerService.send(PRODUCT_SYNC_TOPIC, new ProductSyncMessage(product.getId(), SAVE));
-            }
-        });
+        mqProducerService.send(PRODUCT_SYNC_TOPIC, new ProductSyncMessage(product.getId(), SAVE));
     }
 
     /**
@@ -535,6 +523,7 @@ public class ProductServiceImpl implements ProductService {
         }
         product.setStatus(DISABLED);
         productMapper.updateById(product);
+        mqProducerService.send(PRODUCT_SYNC_TOPIC, new ProductSyncMessage(product.getId(), SAVE));
     }
 
     /**
@@ -779,6 +768,16 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Long getOnSaleProductCount(Long merchantId) {
         return productMapper.selectOnSaleProductCount(merchantId);
+    }
+
+    /**
+     * 根据商家id查询商品
+     * @param merchantId 商家id
+     * @return
+     */
+    @Override
+    public List<Product> getProductListByMerchantId(Long merchantId) {
+        return productMapper.selectByMerchantId(merchantId);
     }
 
 

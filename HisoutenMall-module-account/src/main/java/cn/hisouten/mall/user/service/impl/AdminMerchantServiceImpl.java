@@ -3,6 +3,9 @@ package cn.hisouten.mall.user.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hisouten.mall.exception.BizException;
 import cn.hisouten.mall.common.pojo.PageResult;
+import cn.hisouten.mall.mq.message.ProductSyncMessage;
+import cn.hisouten.mall.mq.producer.MqProducerService;
+import cn.hisouten.mall.pojo.entity.Product;
 import cn.hisouten.mall.service.ProductService;
 import cn.hisouten.mall.user.mapper.AuthMapper;
 import cn.hisouten.mall.user.mapper.MerchantProfileMapper;
@@ -18,6 +21,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 
@@ -25,6 +30,8 @@ import static cn.hisouten.mall.constant.ExceptionMessageConstant.*;
 import static cn.hisouten.mall.constant.RedisConstant.CACHE_MERCHANT_DETAIL_PREFIX;
 import static cn.hisouten.mall.constant.RoleConstant.MERCHANT_ROLE;
 import static cn.hisouten.mall.constant.StatusConstant.*;
+import static cn.hisouten.mall.mq.constant.MqConstant.PRODUCT_SYNC_TOPIC;
+import static cn.hisouten.mall.mq.constant.MqConstant.SAVE;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +39,7 @@ public class AdminMerchantServiceImpl implements AdminMerchantService {
     private final MerchantProfileMapper merchantProfileMapper;
     private final AuthMapper authMapper;
     private final ProductService productService;
+    private final MqProducerService mqProducerService;
 
     private final CacheClientUtils cacheClientUtils;
 
@@ -102,6 +110,17 @@ public class AdminMerchantServiceImpl implements AdminMerchantService {
         }
         StpUtil.kickout(merchantId);
         cacheClientUtils.delete(CACHE_MERCHANT_DETAIL_PREFIX,merchantId);
+
+        // 注册事务提交后的事件，提交成功才发 MQ
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                List<Product> productList = productService.getProductListByMerchantId(merchantId);
+                for (Product product : productList) {
+                    mqProducerService.send(PRODUCT_SYNC_TOPIC, new ProductSyncMessage(product.getId(), SAVE));
+                }
+            }
+        });
     }
 
     /**

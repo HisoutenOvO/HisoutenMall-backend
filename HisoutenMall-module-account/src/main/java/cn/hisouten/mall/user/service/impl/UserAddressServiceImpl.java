@@ -44,6 +44,7 @@ public class UserAddressServiceImpl implements UserAddressService {
             UserAddressListVO vo = new UserAddressListVO();
             vo.setId(userAddress.getId());
             vo.setReceiverName(userAddress.getReceiverName());
+            vo.setReceiverPhone(userAddress.getReceiverPhone());
             vo.setProvince(userAddress.getProvince());
             vo.setCity(userAddress.getCity());
             vo.setDistrict(userAddress.getDistrict());
